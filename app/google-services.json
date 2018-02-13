@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "29286946505",
+    "firebase_url": "https://beer-here-aacfb.firebaseio.com",
+    "project_id": "beer-here-aacfb",
+    "storage_bucket": "beer-here-aacfb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29286946505:android:4a74fd8e22767f90",
+        "android_client_info": {
+          "package_name": "org.com2027.group11.beerhere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "29286946505-5fm8ud5b4m46q6c3sh2edhuagfigsccd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcJ6ICM0pfLL5D66neGlqrmDzE77qzh1o"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
