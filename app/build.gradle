@@ -25,7 +25,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    //Included so we can use snackbars
+    compile 'com.android.support:design:26.1.0'
+    //Include firebase
     compile 'com.google.firebase:firebase-core:11.8.0'
+    //Include firebase authentication
+    compile 'com.google.firebase:firebase-auth:11.8.0'
+    compile 'com.google.android.gms:play-services-auth:11.8.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

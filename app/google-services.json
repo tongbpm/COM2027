@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "29286946505-j2ircavnah5p7qr7s8m9fhnig4he5bsp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.com2027.group11.beerhere",
+            "certificate_hash": "a6655e0a9005084da2959d55707925eeab5569de"
+          }
+        },
+        {
           "client_id": "29286946505-5fm8ud5b4m46q6c3sh2edhuagfigsccd.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "29286946505-5fm8ud5b4m46q6c3sh2edhuagfigsccd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

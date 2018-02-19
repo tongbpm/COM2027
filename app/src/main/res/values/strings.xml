@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Beer Here</string>
+    <string name="title_text">Welcome to Beer Here!</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="signed_out">You have not yet signed in</string>
 </resources>
