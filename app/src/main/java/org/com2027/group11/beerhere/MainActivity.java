@@ -41,8 +41,6 @@ public class MainActivity extends AppCompatActivity {
                         .setAvailableProviders(providers)
                         .build(),
                 RC_SIGN_IN);
-
-
     }
 
 
@@ -66,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 //Sign in failed
                 Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
             }
+        } else {
+            Snackbar.make(findViewById(R.id.main_layout), "Facebook log In.", Snackbar.LENGTH_SHORT).show();
         }
     }
 

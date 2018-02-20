@@ -8,17 +8,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="ThemeOverlay.MyTextDetail" parent="AppTheme">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:fadeScrollbars">true</item>
-        <item  name="android:gravity">center</item>
-        <item name="android:maxLines">5</item>
-        <item name="android:padding">4dp</item>
-        <item name="android:scrollbars">vertical</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
     <style name="FirebaseUI.AuthMethodPicker.Logo">
         <item name="android:layout_width">256dp</item>
         <item name="android:layout_height">256dp</item>
