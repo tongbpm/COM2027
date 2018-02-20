@@ -9,4 +9,5 @@
     <string name="disconnect">Disconnect</string>
     <string name="signed_out">You have not yet signed in.</string>
     <string name="sign_in_error">Error Signing in.</string>
+    <string name="hello">Hello %1$s!</string>
 </resources>
