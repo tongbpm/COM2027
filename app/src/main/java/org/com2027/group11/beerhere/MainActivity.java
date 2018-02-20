@@ -2,15 +2,22 @@ package org.com2027.group11.beerhere;
 
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -20,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -38,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView mStatusTextView;
     private  TextView mDetailTextView;
 
+    private CallbackManager mCallbackManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mStatusTextView = findViewById(R.id.status_text_view);
         mDetailTextView = findViewById(R.id.detail_text_view);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.google_sign_in_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
 
         //Set up the google sign in options
@@ -59,6 +69,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
 
         mAuth = FirebaseAuth.getInstance();
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        mCallbackManager = CallbackManager.Factory.create();
+        LoginButton facebookLoginButton = findViewById(R.id.facebook_sign_in_button);
+        facebookLoginButton.setReadPermissions("email", "public_profile");
+        facebookLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                handleFacebookAccessToken(loginResult.getAccessToken());
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "facebook:onCancel");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "facebook:onError", error);
+                Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -81,9 +117,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } catch (ApiException e) {
                 e.printStackTrace();
             }
+        } else {
+            //If not google it must be facebook
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
     }
 
+    /**
+     * Authorise using the users google in in the firebase back end
+     *
+     * @param account the google account to authorise with
+     */
     private void firebaseAuthWithGoogle(GoogleSignInAccount account) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
 
@@ -99,8 +143,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             updateUI(user);
                         }else{
                             //Sign in failed
-                            Log.w(TAG, "signInWithCredntial:failure", task.getException());
-                            Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Snackbar.make(findViewById(R.id.main_layout), getText(R.string.sign_in_error), Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            //Successfully signed in
+                            Log.d(TAG, "signInWithCredential:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            updateUI(user);
+                        } else {
+                            //Sign in failed
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Snackbar.make(findViewById(R.id.main_layout), R.string.sign_in_error, Snackbar.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -111,14 +177,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mStatusTextView.setText("Hello " +  user.getEmail());
             mDetailTextView.setText(user.getUid());
 
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            findViewById(R.id.google_sign_in_button).setVisibility(View.GONE);
+            findViewById(R.id.facebook_sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
         }else{
-            mStatusTextView.setText("Signed out");
+            mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
 
             findViewById(R.id.sign_out_button).setVisibility(View.GONE);
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.facebook_sign_in_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.google_sign_in_button).setVisibility(View.VISIBLE);
         }
 
     }
@@ -127,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         int i = view.getId();
         switch (i) {
-            case (R.id.sign_in_button):
+            case (R.id.google_sign_in_button):
                 signIn();
                 break;
             case(R.id.sign_out_button):
@@ -145,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 updateUI(null);
             }
         });
+
     }
 
     private void signIn() {

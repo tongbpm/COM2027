@@ -1,7 +1,12 @@
 <resources>
+    <!--Facebook api keys -->
+    <string name="facebook_app_id">993971107420951</string>
+    <string name="fb_login_protocol_scheme">fb993971107420951</string>
+
     <string name="app_name">Beer Here</string>
     <string name="title_text">Welcome to Beer Here!</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
-    <string name="signed_out">You have not yet signed in</string>
+    <string name="signed_out">You have not yet signed in.</string>
+    <string name="sign_in_error">Error Signing in.</string>
 </resources>
