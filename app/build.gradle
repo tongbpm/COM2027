@@ -29,7 +29,7 @@ dependencies {
     compile 'com.android.support:design:26.1.0'
     //Include firebase
     compile 'com.google.firebase:firebase-core:11.4.2'
-    //Include firebase authentication
+    compile 'com.google.firebase:firebase-database:11.4.2'
     compile 'com.firebaseui:firebase-ui-auth:3.1.0'
     // Include facebook log in
     compile('com.facebook.android:facebook-android-sdk:4.27.0')
