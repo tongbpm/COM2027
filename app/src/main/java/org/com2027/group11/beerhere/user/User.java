@@ -8,11 +8,26 @@ import java.util.Date;
  * Created by river on 27/02/18.
  */
 @IgnoreExtraProperties
+/**
+ * A class that keeps track of users details
+ */
 public class User {
 
+    /**
+     * The User's name
+     */
     public String name;
+    /**
+     * The User's email address
+     */
     public String email;
+    /**
+     * The User's date of birth
+     */
     public Date dateOfBirth;
+    /**
+     * The country the user lives in
+     */
     public String country;
 
     public User() {
