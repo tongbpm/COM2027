@@ -17,6 +17,7 @@
         android:id="@+id/date_of_birth_form"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_field_margin"
         android:hint="@string/date_of_birth_hint"
         android:inputType="date"
         android:onClick="showDatePicker"
@@ -32,13 +33,14 @@
     <Spinner
         android:id="@+id/country_spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></Spinner>
-
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_field_margin" />
 
     <Button
         android:id="@+id/sign_up_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_button_margin"
         android:text="@string/submit" />
 
 

@@ -19,10 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.com2027.group11.beerhere.user.User;
-
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -30,12 +27,11 @@ import java.util.List;
  * they will be presented with log in information
  */
 public class MainActivity extends AppCompatActivity {
-
     private static final String TAG = "MAIN_ACTIVITY";
     //Arbitrary code returned on successful log in
     private static final int RC_SIGN_IN = 123;
 
-    private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
     @Override
@@ -43,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                 new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
@@ -98,17 +94,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Snackbar.make(findViewById(R.id.main_layout), "Facebook log In.", Snackbar.LENGTH_SHORT).show();
         }
-    }
-
-    private void writeNewUser() {
-        Log.d(TAG, "Writing user data to database");
-        String name = mAuth.getCurrentUser().getDisplayName();
-        String email = mAuth.getCurrentUser().getEmail();
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(1997, 11, 2);
-        User user = new User(name, email, calendar.getTime(), "United Kingdom");
-
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).setValue(user);
     }
 
     private void signOut() {
