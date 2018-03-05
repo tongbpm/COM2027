@@ -1,6 +1,14 @@
 language: android
-sudo: required
+sudo: false
 jdk: oraclejdk8
+
+env:
+  global:
+    # tell glibc to use less memory
+    - MALLOC_ARENA_MAX=2
+    # adb: wait for up to 10 mins 
+    - ADB_INSTALL_TIMEOUT=10
+
 android:
 
   # Emulator Management: Create, Start and Wait
@@ -13,8 +21,8 @@ android:
   components:
     # Uncomment the lines below if you want to
     # use the latest revision of Android SDK Tools
-    # - tools
-    # - platform-tools
+    #- tools
+    #- platform-tools
 
     # The BuildTools version used by your project
     - build-tools-26.0.2
