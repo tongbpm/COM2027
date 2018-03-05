@@ -4,8 +4,8 @@ sudo: false
 
 env:
     matrix:
-        - ANDROID_TARGET=android-26 ANDROID_ABI=x86_64 ANDROID_TAG=google_apis 
-        - ANDROID_TARGET=android-24 ANDROID_ABI=x86_64 ANDROID_TAG=google_apis
+        - ANDROID_TARGET=android-26 ANDROID_ABI=armeabi-v7a ANDROID_TAG=google_apis 
+        - ANDROID_TARGET=android-24 ANDROID_ABI=armeabi-v7a ANDROID_TAG=google_apis
     global:
         - ADB_INSTALL_TIMEOUT=10    #Time out to 10 mins
 
@@ -24,7 +24,9 @@ android:
         - platform-tools
         - tools
         - build-tools-26.0.2
+        - build-tools-24.0.0
         - android-26
+        - android-24
 
         # Additional components
         - extra-google-google_play_services
@@ -33,8 +35,8 @@ android:
         - extra-android-support
 
         #system images
-        - sys-img-x86_64-google_apis-26
-        - sys-img-x86_64-google_apis-24
+        - sys-img-armeabi-v7a-google_apis-26
+        - sys-img-armeabi-v7a-google_apis-24
 
 licenses:
     - 'android-sdk-preview-license-52d11cd2'
