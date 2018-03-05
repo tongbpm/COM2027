@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -54,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setLogo(R.drawable.ic_beer)
                         .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false)
                         .build(),
                 RC_SIGN_IN);
     }
@@ -82,8 +80,9 @@ public class MainActivity extends AppCompatActivity {
                             //todo Send user to home page
                         } else {
                             //todo Send user to activity with sign up form
-                            writeNewUser();
-
+                            Intent signUpIntent = new Intent(MainActivity.this, SignUpActivity.class);
+                            startActivity(signUpIntent);
+                            // writeNewUser();
                         }
                     }
 
@@ -92,12 +91,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "Unable to read data snapshot");
                     }
                 });
-
-                try {
-                    ((TextView) findViewById(R.id.main_text)).setText(getString(R.string.hello, user.getDisplayName()));
-                } catch (NullPointerException e) {
-                    Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
-                }
             } else {
                 //Sign in failed
                 Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
