@@ -5,7 +5,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -16,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+
+    private List<Beer> beers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAvailableProviders(providers)
                         .build(),
                 RC_SIGN_IN);
+
     }
 
 
@@ -61,6 +72,30 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
                 try {
                     ((TextView) findViewById(R.id.main_text)).setText(getString(R.string.hello, user.getDisplayName()));
+
+                    List<String> beerTitles;
+                    beers = getBeers();
+                    beerTitles = getBeerTitles();
+
+                    ListAdapter adapter = new BeerAdapter(this, beerTitles, beers);
+
+                    ListView listView = (ListView) findViewById(R.id.beersLV);
+
+                    listView.setAdapter(adapter);
+
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+
+                            Log.i("DEBUG: ", String.valueOf(position));
+                            String beerSelected = "You selected " +
+                                    String.valueOf(adapterView.getItemAtPosition(position));
+
+                            Toast.makeText(MainActivity.this, beerSelected, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
@@ -81,5 +116,24 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.main_layout), "Logged out.s", Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private List<Beer> getBeers(){
+        List<Beer> beers = new ArrayList<>();
+
+        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351));
+        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363));
+        beers.add(new Beer("Utenos", R.drawable.utenos, 291));
+        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123));
+
+        return beers;
+    }
+
+    private List<String> getBeerTitles(){
+        List<String> beerTitles = new ArrayList<>();
+        for(Beer beer : beers){
+            beerTitles.add(beer.getTitle());
+        }
+        return beerTitles;
     }
 }
