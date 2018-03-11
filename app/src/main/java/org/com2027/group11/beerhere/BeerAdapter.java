@@ -30,17 +30,23 @@ class BeerAdapter extends ArrayAdapter<String> {
 
         String beerTitle = getItem(position);
 
-        TextView rankTV = (TextView) view.findViewById(R.id.rankTV);
-        rankTV.setText(String.valueOf(position+1));
+        TextView tvRank = (TextView) view.findViewById(R.id.tv_rank);
+        tvRank.setText(String.valueOf(position+1));
 
-        TextView beerTitleTV = (TextView) view.findViewById(R.id.beerTitleTV);
-        beerTitleTV.setText(beerTitle);
+        TextView tvBeerTitle = (TextView) view.findViewById(R.id.tv_beer_title);
+        tvBeerTitle.setText(beerTitle);
 
-        TextView ratingTV = (TextView) view.findViewById(R.id.ratingTV);
-        ratingTV.setText(String.valueOf(beers.get(position).getRating()));
+        TextView tvRating = (TextView) view.findViewById(R.id.tv_rating);
+        tvRating.setText(String.valueOf(beers.get(position).getRating()));
 
-        ImageView imageView = (ImageView) view.findViewById(R.id.beerImageView);
-        imageView.setImageResource(beers.get(position).getImageId());
+        ImageView ivBeer = (ImageView) view.findViewById(R.id.iv_beer);
+        ivBeer.setImageResource(beers.get(position).getImageId());
+
+        ImageView ivThumbsUp = (ImageView) view.findViewById(R.id.iv_thumbs_up);
+        ivThumbsUp.setImageResource(R.drawable.thumbs_up);
+
+        ImageView ivThumbsDown= (ImageView) view.findViewById(R.id.iv_thumbs_down);
+        ivThumbsDown.setImageResource(R.drawable.thumbs_down);
 
         return view;
     }

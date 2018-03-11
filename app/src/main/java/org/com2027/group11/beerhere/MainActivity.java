@@ -72,30 +72,7 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
                 try {
                     ((TextView) findViewById(R.id.main_text)).setText(getString(R.string.hello, user.getDisplayName()));
-
-                    List<String> beerTitles;
-                    beers = getBeers();
-                    beerTitles = getBeerTitles();
-
-                    ListAdapter adapter = new BeerAdapter(this, beerTitles, beers);
-
-                    ListView listView = (ListView) findViewById(R.id.beersLV);
-
-                    listView.setAdapter(adapter);
-
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-                            Log.i("DEBUG: ", String.valueOf(position));
-                            String beerSelected = "You selected " +
-                                    String.valueOf(adapterView.getItemAtPosition(position));
-
-                            Toast.makeText(MainActivity.this, beerSelected, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
+                    displayBeers();
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
@@ -116,6 +93,29 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.main_layout), "Logged out.s", Snackbar.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void displayBeers(){
+
+        beers = getBeers();
+        List<String> beerTitles = getBeerTitles();
+
+        ListAdapter adapter = new BeerAdapter(this, beerTitles, beers);
+
+        ListView lvBeers = (ListView) findViewById(R.id.lv_beers);
+
+        lvBeers.setAdapter(adapter);
+
+        lvBeers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String beerSelected = "Beer selected: " +
+                        String.valueOf(adapterView.getItemAtPosition(position));
+
+                Toast.makeText(MainActivity.this, beerSelected, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private List<Beer> getBeers(){

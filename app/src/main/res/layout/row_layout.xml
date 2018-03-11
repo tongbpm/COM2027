@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/rankTV"
+        android:id="@+id/tv_rank"
         android:textSize="30sp"
         android:padding="15dp" />
 
@@ -19,13 +19,13 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="25dp"
         android:layout_marginBottom="10dp"
-        android:id="@+id/beerImageView"/>
+        android:id="@+id/iv_beer"/>
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/beerTitleTV"
+        android:id="@+id/tv_beer_title"
         android:textSize="30sp"
         android:padding="0dp"/>
 
@@ -39,7 +39,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/ratingTV"
+            android:id="@+id/tv_rating"
             android:textSize="22sp"
             android:padding="0dp"/>
 
@@ -48,16 +48,16 @@
             android:layout_height="50dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/thumbs_up"
-            android:background="@null"/>
+            android:background="@null"
+            android:id="@+id/iv_thumbs_up"/>
 
         <ImageButton
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
-            android:src="@drawable/thumbs_down"
-            android:background="@null"/>
+            android:background="@null"
+            android:id="@+id/iv_thumbs_down"/>
 
     </LinearLayout>
 
