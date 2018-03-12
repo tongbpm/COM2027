@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     ((TextView) findViewById(R.id.main_text)).setText(getString(R.string.hello, user.getDisplayName()));
                     displayBeers();
+                    setAddButtonFunc();
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
@@ -116,6 +118,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void setAddButtonFunc(){
+        ImageButton addButton = (ImageButton) findViewById(R.id.button_add);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "Clicked add button", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private List<Beer> getBeers(){
