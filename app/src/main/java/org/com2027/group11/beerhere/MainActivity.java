@@ -107,10 +107,8 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "Unable to read data snapshot");
                     }
                 });
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
                 try {
-                    ((TextView) findViewById(R.id.main_text)).setText(getString(R.string.hello, user.getDisplayName()));
                     displayBeers();
                     setAddButtonFunc();
                 } catch (NullPointerException e) {
@@ -156,7 +154,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Async Execution Finished");
             ((TextView) findViewById(R.id.main_text)).setText(user.name);
         }
-    private void displayBeers(){
+
+    }
+
+    private void displayBeers() {
 
         beers = getBeers();
         List<String> beerTitles = getBeerTitles();
@@ -179,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void setAddButtonFunc(){
+    private void setAddButtonFunc() {
         ImageButton addButton = (ImageButton) findViewById(R.id.button_add);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private List<Beer> getBeers(){
+    private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
         beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351));
@@ -200,12 +201,12 @@ public class MainActivity extends AppCompatActivity {
         return beers;
     }
 
-    private List<String> getBeerTitles(){
+    private List<String> getBeerTitles() {
         List<String> beerTitles = new ArrayList<>();
-        for(Beer beer : beers){
+        for (Beer beer : beers) {
             beerTitles.add(beer.getTitle());
         }
         return beerTitles;
     }
-}
 
+}
