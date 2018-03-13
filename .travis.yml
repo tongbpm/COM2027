@@ -1,66 +1,25 @@
 language: android
 jdk: oraclejdk8
-sudo: false
-
 env:
-    matrix:
-        - ANDROID_TARGET=android-26 ANDROID_ABI=armeabi-v7a ANDROID_TAG=google_apis 
-        - ANDROID_TARGET=android-24 ANDROID_ABI=armeabi-v7a ANDROID_TAG=google_apis
-    global:
-        - ADB_INSTALL_TIMEOUT=10    #Time out to 10 mins
-
-before_cache:
-    - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-
-cache:
-  directories:      #Cache all dirs under .gradle folder
-    - $HOME/.gradle/daemon      #Cache daemon logs
-    - $HOME/.gradle/native      #Cache library downloaded from the gradle dependency
-    - $HOME/.gradle/wrapper     #Cache the gradle
-
+ global:
+    - ANDROID_API_LEVEL=26
+    - ANDROID_BUILD_TOOLS_VERSION=26.0.2
 android:
-    update_sdk: true
-    components:
-        - platform-tools
-        - tools
-        - build-tools-26.0.2
-        - build-tools-24.0.0
-        - android-26
-        - android-24
-
-        # Additional components
-        - extra-google-google_play_services
-        - extra-google-m2repository
-        - extra-android-m2repository
-        - extra-android-support
-
-        #system images
-        - sys-img-armeabi-v7a-google_apis-26
-        - sys-img-armeabi-v7a-google_apis-24
-
-licenses:
-    - 'android-sdk-preview-license-52d11cd2'
+ licenses:
+    - 'android-sdk-preview-license-.+'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-
-before_script:
-    - chmod +x gradlew      #Grand permissions
-    - android list targets
-    - echo no | android create avd --force --name test --target $ANDROID_TARGET --abi $ANDROID_ABI --tag $ANDROID_TAG    #Create AVD for given api
-    - emulator -avd test -no-skin -no-audio -no-window &    #Start emulator
-
+ components:
+    - tools
+    - platform-tools
+    # The BuildTools version used by your project
+    - build-tools-$ANDROID_BUILD_TOOLS_VERSION
+    # The SDK version used to compile your project
+    - android-$ANDROID_API_LEVEL
+    # Additional components
+    - extra-google-google_play_services
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - addon-google_apis-google-$ANDROID_API_LEVEL
 script:
-    - echo "Travis branch is $TRAVIS_BRANCH"
-    - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
-    - android-wait-for-emulator
-    - adb devices   #Display list of devices
-    - adb shell input keyevent 82 &
-    - ./gradlew connectedCheck -PdisablePreDex --stacktrace
-
-before_install:
-    - pip install --user codecov    #Install codecov
-
-after_success:
-    - codecov                       #Run codecov
-
-after_failure: "cat $TRAVIS_BUILD_DIR/app/build/outputs/lint-results-debug.xml"
+    - ./gradlew build check
