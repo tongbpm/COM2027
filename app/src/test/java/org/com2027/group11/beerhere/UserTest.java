@@ -24,7 +24,7 @@ public class UserTest {
     public void paramaterisedConstructor() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(1997, 11, 2);
-        User user = new User("River Phillips", "rp00375@surrey.ac.uk", calendar.getTime(), "United Kingdom");
+        User user = new User("UID", "River Phillips", "rp00375@surrey.ac.uk", calendar.getTime(), "United Kingdom");
         assertEquals(user.name, "River Phillips");
         assertEquals(user.email, "rp00375@surrey.ac.uk");
         assertEquals(user.dateOfBirth, calendar.getTime());

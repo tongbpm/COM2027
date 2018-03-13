@@ -1,23 +1,29 @@
 package org.com2027.group11.beerhere;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.com2027.group11.beerhere.user.User;
+import org.com2027.group11.beerhere.user.UserDao;
+import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,14 +38,17 @@ public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private DatabaseReference mDatabase;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        mContext = this.getApplicationContext();
+
         List<AuthUI.IdpConfig> providers = Arrays.asList(
                 new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(),
                 new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
@@ -49,8 +58,10 @@ public class MainActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setLogo(R.drawable.ic_beer)
                         .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false)
                         .build(),
                 RC_SIGN_IN);
+
     }
 
 
@@ -64,9 +75,6 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 //Successfully signed in
                 mAuth = FirebaseAuth.getInstance();
-                FirebaseUser user = mAuth.getCurrentUser();
-                Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
-
                 //Checks once if the user that logs in exists
                 mDatabase.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -74,11 +82,12 @@ public class MainActivity extends AppCompatActivity {
                         if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
                             Log.d(TAG, "User has logged in before");
                             //todo Send user to home page
+                            new AsyncGetUser(mContext).execute(mAuth.getCurrentUser().getUid());
                         } else {
-                            //todo Send user to activity with sign up form
+                            //Sends user to activity with sign up form
                             Intent signUpIntent = new Intent(MainActivity.this, SignUpActivity.class);
                             startActivity(signUpIntent);
-                            // writeNewUser();
+
                         }
                     }
 
@@ -91,8 +100,6 @@ public class MainActivity extends AppCompatActivity {
                 //Sign in failed
                 Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
             }
-        } else {
-            Snackbar.make(findViewById(R.id.main_layout), "Facebook log In.", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -105,4 +112,30 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+
+    private class AsyncGetUser extends AsyncTask<String, Void, User> {
+        private Context context;
+
+        public AsyncGetUser(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected User doInBackground(String... strings) {
+            User user;
+            AppDatabase database = AppDatabase.getAppDatabase(context);
+            UserDao userDao = database.userDao();
+            Log.d(TAG, "Async Task first arg: " + strings[0]);
+            user = userDao.getAll().get(0);
+            return user;
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
+            Log.d(TAG, "Async Execution Finished");
+            ((TextView) findViewById(R.id.main_text)).setText(user.name);
+        }
+    }
 }
+

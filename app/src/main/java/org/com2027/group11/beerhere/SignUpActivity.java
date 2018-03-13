@@ -2,6 +2,7 @@ package org.com2027.group11.beerhere;
 
 import android.annotation.TargetApi;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.icu.text.DateFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.DatePickerFragment;
+import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -109,16 +111,24 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         Log.d(TAG, "Form submitted");
         mCountryString = mCountry.getSelectedItem().toString();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        User user = new User(firebaseUser.getDisplayName(), firebaseUser.getEmail(), mDateOfBirthValue, mCountryString);
+        User user = new User(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), mDateOfBirthValue, mCountryString);
 
         writeNewUser(user);
         //Todo user has now completed sign up send them to activity where they can view beers
+        Intent mainIntent = new Intent(SignUpActivity.this, MainActivity.class);
+        startActivity(mainIntent);
     }
 
 
-    private void writeNewUser(User user) {
+    private void writeNewUser(final User user) {
         Log.d(TAG, "Writing user data to database");
+        //Write User to external database
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).setValue(user);
+        //Write user to local database
+        new Thread(() -> {
+            Log.d(TAG, "Writing to local DB. UID:" + user.uid);
+            AppDatabase.getAppDatabase(getApplicationContext()).userDao().insertUser(user);
+        }).start();
     }
 
 }
