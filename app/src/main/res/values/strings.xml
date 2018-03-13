@@ -10,4 +10,9 @@
     <string name="signed_out">You have not yet signed in.</string>
     <string name="sign_in_error">Error Signing in.</string>
     <string name="hello">Hello %1$s!</string>
+    <string name="date_of_birth">Date Of Birth:</string>
+    <string name="date_of_birth_hint">Date of Birth</string>
+    <string name="home_country">Home Country:</string>
+    <string name="Home_country_spinner">Home Country</string>
+    <string name="submit">Submit</string>
 </resources>
