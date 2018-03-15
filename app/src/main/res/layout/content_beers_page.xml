@@ -5,7 +5,21 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="org.com2027.group11.beerhere.user.BeersPage"
+    tools:context="org.com2027.group11.beerhere.BeersPage"
     tools:showIn="@layout/activity_beers_page">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rv_beers"
+            >
+        </android.support.v7.widget.RecyclerView>
+
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

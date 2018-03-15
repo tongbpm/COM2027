@@ -7,11 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -29,7 +29,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.com2027.group11.beerhere.user.BeersPage;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                             //Sends user to activity with sign up form
                             Intent signUpIntent = new Intent(MainActivity.this, SignUpActivity.class);
                             startActivity(signUpIntent);
-
                         }
                     }
 
