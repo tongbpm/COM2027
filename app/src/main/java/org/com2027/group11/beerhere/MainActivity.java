@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.com2027.group11.beerhere.user.BeersPage;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
@@ -111,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     displayBeers();
                     setAddButtonFunc();
+                    Intent beersPageIntent = new Intent(this, BeersPage.class);
+                    startActivity(beersPageIntent);
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
