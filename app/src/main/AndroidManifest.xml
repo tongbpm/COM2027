@@ -29,9 +29,10 @@
 
         <activity android:name=".SignUpActivity" />
         <activity
-            android:name=".BeersPage"
+            android:name=".BeersActivity"
             android:label="@string/title_activity_beers_page"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".AddBeerActivity"></activity>
     </application>
 
 </manifest>

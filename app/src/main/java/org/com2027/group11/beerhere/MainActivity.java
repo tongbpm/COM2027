@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import android.view.View;
@@ -110,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     displayBeers();
                     setAddButtonFunc();
-                    Intent beersPageIntent = new Intent(this, BeersPage.class);
+                    Intent beersPageIntent = new Intent(this, BeersActivity.class);
                     startActivity(beersPageIntent);
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();

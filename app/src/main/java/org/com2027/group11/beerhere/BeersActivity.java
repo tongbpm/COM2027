@@ -1,5 +1,6 @@
 package org.com2027.group11.beerhere;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,7 +16,7 @@ import org.com2027.group11.beerhere.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeersPage extends AppCompatActivity {
+public class BeersActivity extends AppCompatActivity {
 
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
@@ -31,8 +32,8 @@ public class BeersPage extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent AddBeerIntent = new Intent(BeersActivity.this, AddBeerActivity.class);
+                startActivity(AddBeerIntent);
             }
         });
 
