@@ -152,7 +152,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(User user) {
             Log.d(TAG, "Async Execution Finished");
-            ((TextView) findViewById(R.id.main_text)).setText(user.name);
+            /*user.name was causing the error:
+            java.lang.NullPointerException: Attempt to read from field 'java.lang.String org.com2027.group11.beerhere.user.User.name' on a null object reference
+            so changed it with "Beers" for now.
+            */
+            ((TextView) findViewById(R.id.main_text)).setText("Beers");
+            //((TextView) findViewById(R.id.main_text)).setText(user.name);
         }
 
     }
