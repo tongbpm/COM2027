@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,14 +31,16 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         ImageView imBeer;
         TextView tvBeerTitle;
         TextView tvRating;
-        RelativeLayout beerRowLayout;
+        ImageButton ibUpvote;
+        ImageButton ibDownVote;
         public BeersViewHolder(View itemView){
             super(itemView);
             tvRank = itemView.findViewById(R.id.tv_rank);
             imBeer = itemView.findViewById(R.id.iv_beer);
             tvBeerTitle = itemView.findViewById(R.id.tv_beer_title);
             tvRating = itemView.findViewById(R.id.tv_rating);
-            beerRowLayout = itemView.findViewById(R.id.beer_row_layout);
+            ibUpvote = itemView.findViewById(R.id.ib_thumbs_up);
+            ibDownVote = itemView.findViewById(R.id.ib_thumbs_down);
         }
     }
 
@@ -57,10 +60,18 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         holder.imBeer.setImageResource(beer.getImageId());
         holder.tvBeerTitle.setText(beer.getTitle());
         holder.tvRating.setText(String.valueOf(beer.getRating()));
-        holder.beerRowLayout.setOnClickListener(new View.OnClickListener() {
+
+        holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You selected " + beer.getTitle(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "You upvoted " + beer.getTitle(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        holder.ibDownVote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(v.getContext(), "You downvoted " + beer.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
     }

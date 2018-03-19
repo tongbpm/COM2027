@@ -4,15 +4,19 @@
     android:id="@+id/beer_row_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_marginBottom="15dp"
     android:background="#FFFFFF"
-    android:padding="15dp">
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="10dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_alignParentLeft="true">
+        android:layout_alignParentLeft="true"
+        android:paddingTop="4dp"
+        android:paddingLeft="4dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -64,7 +68,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:background="@null"
-            android:id="@+id/iv_thumbs_up"
+            android:id="@+id/ib_thumbs_up"
             android:src="@drawable/thumbs_up" />
 
         <ImageButton
@@ -73,7 +77,7 @@
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
             android:background="@null"
-            android:id="@+id/iv_thumbs_down"
+            android:id="@+id/ib_thumbs_down"
             android:src="@drawable/thumbs_down"
             android:layout_marginLeft="15dp"/>
 

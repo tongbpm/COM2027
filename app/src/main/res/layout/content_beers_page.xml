@@ -17,9 +17,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rv_beers"
-            android:layout_margin="15dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
             >
         </android.support.v7.widget.RecyclerView>
+
 
     </LinearLayout>
 
