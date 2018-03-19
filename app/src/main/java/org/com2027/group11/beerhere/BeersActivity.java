@@ -37,6 +37,10 @@ public class BeersActivity extends AppCompatActivity {
             }
         });
 
+        displayBeers();
+    }
+
+    private void displayBeers(){
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvBeers = findViewById(R.id.rv_beers);

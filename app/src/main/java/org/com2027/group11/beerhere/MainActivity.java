@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Context mContext;
 
-    private List<Beer> beers;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,10 +105,8 @@ public class MainActivity extends AppCompatActivity {
                 });
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
                 try {
-                    displayBeers();
-                    setAddButtonFunc();
-                    Intent beersPageIntent = new Intent(this, BeersActivity.class);
-                    startActivity(beersPageIntent);
+                    Intent beersActivityIntent = new Intent(this, BeersActivity.class);
+                    startActivity(beersActivityIntent);
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
@@ -152,66 +148,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(User user) {
             Log.d(TAG, "Async Execution Finished");
-            /*user.name was causing the error:
-            java.lang.NullPointerException: Attempt to read from field 'java.lang.String org.com2027.group11.beerhere.user.User.name' on a null object reference
-            so changed it with "Beers" for now.
-            */
-            ((TextView) findViewById(R.id.main_text)).setText("Beers");
-            //((TextView) findViewById(R.id.main_text)).setText(user.name);
+            ((TextView) findViewById(R.id.main_text)).setText(user.name);
         }
 
-    }
-
-    private void displayBeers() {
-
-        beers = getBeers();
-        List<String> beerTitles = getBeerTitles();
-
-        ListAdapter adapter = new BeerAdapter(this, beerTitles, beers);
-
-        ListView lvBeers = (ListView) findViewById(R.id.lv_beers);
-
-        lvBeers.setAdapter(adapter);
-
-        lvBeers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String beerSelected = "Beer selected: " +
-                        String.valueOf(adapterView.getItemAtPosition(position));
-
-                Toast.makeText(MainActivity.this, beerSelected, Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-
-    private void setAddButtonFunc() {
-        ImageButton addButton = (ImageButton) findViewById(R.id.button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked add button", Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private List<Beer> getBeers() {
-        List<Beer> beers = new ArrayList<>();
-
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123));
-
-        return beers;
-    }
-
-    private List<String> getBeerTitles() {
-        List<String> beerTitles = new ArrayList<>();
-        for (Beer beer : beers) {
-            beerTitles.add(beer.getTitle());
-        }
-        return beerTitles;
     }
 
 }

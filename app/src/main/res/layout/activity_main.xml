@@ -14,26 +14,4 @@
         android:layout_gravity="center"
         android:text="@string/title_text" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/lv_beers">
-        </ListView>
-
-        <ImageButton
-            android:layout_width="65dp"
-            android:layout_height="65dp"
-            android:background="@drawable/oval"
-            android:id="@+id/button_add"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="20dp"
-            android:src="@drawable/plus"
-            />
-
-    </FrameLayout>
-
 </LinearLayout>
