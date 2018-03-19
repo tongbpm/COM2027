@@ -98,12 +98,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
-                try {
-                    Intent beersActivityIntent = new Intent(this, BeersActivity.class);
-                    startActivity(beersActivityIntent);
-                } catch (NullPointerException e) {
-                    Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
-                }
+
+                Intent beersActivityIntent = new Intent(this, BeersActivity.class);
+                startActivity(beersActivityIntent);
             } else {
                 //Sign in failed
                 Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();

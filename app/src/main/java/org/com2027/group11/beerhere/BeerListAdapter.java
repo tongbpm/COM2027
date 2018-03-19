@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,14 +30,14 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         ImageView imBeer;
         TextView tvBeerTitle;
         TextView tvRating;
-        LinearLayout beerLinearLayout;
+        RelativeLayout beerRowLayout;
         public BeersViewHolder(View itemView){
             super(itemView);
             tvRank = itemView.findViewById(R.id.tv_rank);
             imBeer = itemView.findViewById(R.id.iv_beer);
             tvBeerTitle = itemView.findViewById(R.id.tv_beer_title);
             tvRating = itemView.findViewById(R.id.tv_rating);
-            beerLinearLayout = itemView.findViewById(R.id.beer_linear_layout);
+            beerRowLayout = itemView.findViewById(R.id.beer_row_layout);
         }
     }
 
@@ -56,7 +57,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         holder.imBeer.setImageResource(beer.getImageId());
         holder.tvBeerTitle.setText(beer.getTitle());
         holder.tvRating.setText(String.valueOf(beer.getRating()));
-        holder.beerLinearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.beerRowLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(v.getContext(), "You selected " + beer.getTitle(), Toast.LENGTH_SHORT).show();

@@ -1,46 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/beer_linear_layout"
+    android:id="@+id/beer_row_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:layout_marginBottom="8dp"
-    android:descendantFocusability="blocksDescendants">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_rank"
-        android:textSize="30sp"
-        android:padding="15dp" />
-
-    <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="10dp"
-        android:id="@+id/iv_beer"/>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tv_beer_title"
-        android:textSize="30sp" />
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:background="#FFFFFF"
+    android:padding="15dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_alignParentLeft="true">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_rating"
-            android:textSize="22sp" />
+            android:id="@+id/tv_rank"
+            android:textSize="30sp"
+            android:layout_marginRight="15dp"/>
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginRight="15dp"
+            android:id="@+id/iv_beer"
+            android:layout_marginTop="10dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_beer_title"
+                android:textSize="30sp"
+                android:layout_marginBottom="15dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_rating"
+                android:textSize="24sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp">
 
         <ImageButton
             android:layout_width="50dp"
@@ -49,7 +65,7 @@
             android:scaleType="fitCenter"
             android:background="@null"
             android:id="@+id/iv_thumbs_up"
-            android:src="@drawable/thumbs_up"/>
+            android:src="@drawable/thumbs_up" />
 
         <ImageButton
             android:layout_width="50dp"
@@ -58,8 +74,9 @@
             android:scaleType="fitCenter"
             android:background="@null"
             android:id="@+id/iv_thumbs_down"
-            android:src="@drawable/thumbs_down"/>
+            android:src="@drawable/thumbs_down"
+            android:layout_marginLeft="15dp"/>
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>
