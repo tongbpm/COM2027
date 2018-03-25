@@ -114,9 +114,9 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         User user = new User(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), mDateOfBirthValue, mCountryString);
 
         writeNewUser(user);
-        //Todo user has now completed sign up send them to activity where they can view beers
-        Intent mainIntent = new Intent(SignUpActivity.this, MainActivity.class);
-        startActivity(mainIntent);
+        //Now user is signed up send them to beers page
+        Intent beerIntent = new Intent(SignUpActivity.this, BeersActivity.class);
+        startActivity(beerIntent);
     }
 
 
