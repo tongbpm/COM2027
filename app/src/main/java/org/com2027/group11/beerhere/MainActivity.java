@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             AppDatabase database = AppDatabase.getAppDatabase(context);
             UserDao userDao = database.userDao();
             Log.d(TAG, "Async Task first arg: " + strings[0]);
-            user = userDao.getAll().get(0);
+            user = userDao.findByID(strings[0]);
             return user;
         }
 
