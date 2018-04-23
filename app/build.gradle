@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
 
     implementation 'android.arch.lifecycle:common-java8:1.1.1'
+    implementation 'com.android.support:support-annotations:27.1.1'
 
     //Include firebase
     implementation 'com.google.firebase:firebase-core:11.4.2'

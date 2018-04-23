@@ -1,10 +1,17 @@
 package org.com2027.group11.beerhere.utilities.database;
 
+import android.arch.persistence.room.Database;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
+import android.util.Log;
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -14,13 +21,23 @@ import java.util.Map;
  */
 public class SynchronisationManager {
 
+    private static final String LOG_TAG = "BEER-HERE";
+
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-    private HashMap<String, String> firebasePaths = new HashMap<String, String>() {
+    // Path enumerations for adding data to Firebase storage
+    // Android doesn't like Enum structures, so use this for better performance
+    public static final String BEER = "beer";
+    public static final String USER = "user";
+    @StringDef({BEER, USER})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Path {}
+
+    private Map<String, String> firebasePaths = new HashMap<String, String>() {
         {
-            put("beer", "server/beers");
-            put("user", "server/users");
+            put("beer", "server/beerhere/beers");
+            put("user", "server/beerhere/users");
         }
     };
 
@@ -54,8 +71,27 @@ public class SynchronisationManager {
         return null;
     }
 
-    public boolean saveBeerToFirebase() {
-        return true;
+    public <T> void saveNewObjectToFirebase(@Path String type, T savedObject) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        DatabaseReference ref = this.database.getReference(path);
+        DatabaseReference newObjectRef = ref.push();
+
+        newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                // Could change to snackbars later on...
+                if (databaseError != null) {
+                    Log.e(LOG_TAG, "Data could not be saved to Firebase: " + databaseError.getMessage());
+                } else {
+                    Log.e(LOG_TAG, "Data saved successfully.");
+                }
+            }
+        });
+
     }
 
 
