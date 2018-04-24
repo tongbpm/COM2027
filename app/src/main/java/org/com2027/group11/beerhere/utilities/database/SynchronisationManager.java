@@ -13,6 +13,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -136,7 +138,7 @@ public class SynchronisationManager {
         });
     }
 
-    public List<Object> getObjectsForTypeFromFirebase(@Path String type) throws NullPointerException {
+    public void getObjectsForTypeFromFirebase(@NonNull FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
@@ -144,17 +146,18 @@ public class SynchronisationManager {
 
         DatabaseReference ref = this.database.getReference(path);
 
-        List<Object> objects = new ArrayList<Object>();
-
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Object> objects = new ArrayList<Object>();
                 Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
 
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     Object child = childSnapshot.getValue(Object.class);
                     objects.add(child);
                 }
+
+                firebaseAccessorContext.callbackGetObjectsFromFirebase(objects);
             }
 
             @Override
@@ -162,8 +165,6 @@ public class SynchronisationManager {
 
             }
         });
-
-        return objects;
     }
 
     
