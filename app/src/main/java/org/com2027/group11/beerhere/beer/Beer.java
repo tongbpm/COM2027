@@ -15,8 +15,8 @@ public class Beer {
 
     public Bitmap beerImageBmp;
     public String beerName;
-    private int beerUpvotes;
-    private int beerDownvotes;
+    public int beerUpvotes;
+    public int beerDownvotes;
     private int beerRating;
     public int imageID;
     public long timeCreated;
