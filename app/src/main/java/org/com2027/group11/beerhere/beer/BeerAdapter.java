@@ -10,9 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.com2027.group11.beerhere.beer.Beer;
+
 import java.util.List;
 
-class BeerAdapter extends ArrayAdapter<String> {
+public class BeerAdapter extends ArrayAdapter<String> {
     private List<Beer> beers;
 
     public BeerAdapter(@NonNull Context context, List<String> beerTitles, List<Beer> beers) {
@@ -37,15 +39,15 @@ class BeerAdapter extends ArrayAdapter<String> {
         tvBeerTitle.setText(beerTitle);
 
         TextView tvRating = (TextView) view.findViewById(R.id.tv_rating);
-        tvRating.setText(String.valueOf(beers.get(position).getRating()));
+        tvRating.setText(String.valueOf(beers.get(position).beerUpvotes));
 
         ImageView ivBeer = (ImageView) view.findViewById(R.id.iv_beer);
-        ivBeer.setImageResource(beers.get(position).getImageId());
+        ivBeer.setImageBitmap(beers.get(position).beerImageBmp);
 
-        ImageView ivThumbsUp = (ImageView) view.findViewById(R.id.iv_thumbs_up);
+        ImageView ivThumbsUp = (ImageView) view.findViewById(R.id.ib_thumbs_up);
         ivThumbsUp.setImageResource(R.drawable.thumbs_up);
 
-        ImageView ivThumbsDown= (ImageView) view.findViewById(R.id.iv_thumbs_down);
+        ImageView ivThumbsDown= (ImageView) view.findViewById(R.id.ib_thumbs_down);
         ivThumbsDown.setImageResource(R.drawable.thumbs_down);
 
         return view;

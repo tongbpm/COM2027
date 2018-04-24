@@ -15,4 +15,5 @@
     <string name="home_country">Home Country:</string>
     <string name="Home_country_spinner">Home Country</string>
     <string name="submit">Submit</string>
+    <string name="title_activity_beers_page">BeersPage</string>
 </resources>
