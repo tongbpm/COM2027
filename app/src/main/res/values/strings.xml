@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Beer Here</string>
+    <string name="title_activity_countries">CountriesActivity</string>
 </resources>

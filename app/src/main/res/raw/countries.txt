@@ -1,0 +1,6 @@
+France*Europe
+England*Europe
+Germany*Europe
+Belgium*Europe
+China*Asia
+Japan*Asia

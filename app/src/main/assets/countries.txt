@@ -1,0 +1,253 @@
+Algeria*Africa
+Angola*Africa
+Benin*Africa
+Botswana*Africa
+Burkina Faso*Africa
+Burundi*Africa
+Cameroon*Africa
+Cape Verde*Africa
+Central African Republic*Africa
+Chad*Africa
+Comoros*Africa
+Congo-Brazzaville*Africa
+Congo-Kinshasa*Africa
+Côte d’Ivoire*Africa
+Djibouti*Africa
+Egypt*Africa
+Equatorial Guinea*Africa
+Eritrea*Africa
+Ethiopia*Africa
+Gabon*Africa
+Gambia*Africa
+Ghana*Africa
+Guinea*Africa
+Guinea-Bissau*Africa
+Kenya*Africa
+Lesotho*Africa
+Liberia*Africa
+Libya*Africa
+Madagascar*Africa
+Malawi*Africa
+Mali*Africa
+Mauritania*Africa
+Mauritius*Africa
+Mayotte*Africa
+Morocco*Africa
+Mozambique*Africa
+Namibia*Africa
+Niger*Africa
+Nigeria*Africa
+Rwanda*Africa
+Réunion*Africa
+Saint Helena*Africa
+Senegal*Africa
+Seychelles*Africa
+Sierra Leone*Africa
+Somalia*Africa
+South Africa*Africa
+Sudan*Africa
+Swaziland*Africa
+São Tomé and Príncipe*Africa
+Tanzania*Africa
+Togo*Africa
+Tunisia*Africa
+Uganda*Africa
+Western Sahara*Africa
+Zambia*Africa
+Zimbabwe*Africa
+Anguilla*America
+Antigua and Barbuda*America
+Argentina*America
+Aruba*America
+Bahamas*America
+Barbados*America
+Belize*America
+Bermuda*America
+Bolivia*America
+Brazil*America
+British Virgin Islands*America
+Canada*America
+Cayman Islands*America
+Chile*America
+Colombia*America
+Costa Rica*America
+Cuba*America
+Dominica*America
+Dominican Republic*America
+Ecuador*America
+El Salvador*America
+Falkland Islands*America
+French Guiana*America
+Greenland*America
+Grenada*America
+Guadeloupe*America
+Guatemala*America
+Guyana*America
+Haiti*America
+Honduras*America
+Jamaica*America
+Martinique*America
+Mexico*America
+Montserrat*America
+Netherlands Antilles*America
+Nicaragua*America
+Panama*America
+Paraguay*America
+Peru*America
+Puerto Rico*America
+Saint Barthélemy*America
+Saint Kitts and Nevis*America
+Saint Lucia*America
+Saint Martin*America
+Saint Pierre and Miquelon*America
+Saint Vincent and the Grenadines*America
+Suriname*America
+Trinidad and Tobago*America
+Turks and Caicos Islands*America
+U.S. Virgin Islands*America
+United States*America
+Uruguay*America
+Venezuela*America
+Afghanistan*Asia
+Armenia*Asia
+Azerbaijan*Asia
+Bahrain*Asia
+Bangladesh*Asia
+Bhutan*Asia
+Brunei*Asia
+Cambodia*Asia
+China*Asia
+Cyprus*Asia
+Georgia*Asia
+Hong Kong SAR China*Asia
+India*Asia
+Indonesia*Asia
+Iran*Asia
+Iraq*Asia
+Israel*Asia
+Japan*Asia
+Jordan*Asia
+Kazakhstan*Asia
+Kuwait*Asia
+Kyrgyzstan*Asia
+Laos*Asia
+Lebanon*Asia
+Macau SAR China*Asia
+Malaysia*Asia
+Maldives*Asia
+Mongolia*Asia
+Myanmar [Burma]*Asia
+Nepal*Asia
+Neutral Zone*Asia
+North Korea*Asia
+Oman*Asia
+Pakistan*Asia
+Palestinian Territories*Asia
+People's Democratic Republic of Yemen*Asia
+Philippines*Asia
+Qatar*Asia
+Saudi Arabia*Asia
+Singapore*Asia
+South Korea*Asia
+Sri Lanka*Asia
+Syria*Asia
+Taiwan*Asia
+Tajikistan*Asia
+Thailand*Asia
+Timor-Leste*Asia
+Turkey*Asia
+Turkmenistan*Asia
+United Arab Emirates*Asia
+Uzbekistan*Asia
+Vietnam*Asia
+Yemen*Asia
+Albania*Europe
+Andorra*Europe
+Austria*Europe
+Belarus*Europe
+Belgium*Europe
+Bosnia and Herzegovina*Europe
+Bulgaria*Europe
+Croatia*Europe
+Cyprus*Europe
+Czech Republic*Europe
+Denmark*Europe
+East Germany*Europe
+Estonia*Europe
+Faroe Islands*Europe
+Finland*Europe
+France*Europe
+Germany*Europe
+Gibraltar*Europe
+Greece*Europe
+Guernsey*Europe
+Hungary*Europe
+Iceland*Europe
+Ireland*Europe
+Isle of Man*Europe
+Italy*Europe
+Jersey*Europe
+Latvia*Europe
+Liechtenstein*Europe
+Lithuania*Europe
+Luxembourg*Europe
+Macedonia*Europe
+Malta*Europe
+Metropolitan France*Europe
+Moldova*Europe
+Monaco*Europe
+Montenegro*Europe
+Netherlands*Europe
+Norway*Europe
+Poland*Europe
+Portugal*Europe
+Romania*Europe
+Russia*Europe
+San Marino*Europe
+Serbia*Europe
+Serbia and Montenegro*Europe
+Slovakia*Europe
+Slovenia*Europe
+Spain*Europe
+Svalbard and Jan Mayen*Europe
+Sweden*Europe
+Switzerland*Europe
+Ukraine*Europe
+Union of Soviet Socialist Republics*Europe
+United Kingdom*Europe
+Vatican City*Europe
+Åland Islands*Europe
+American Samoa*Oceania
+Antarctica*Oceania
+Australia*Oceania
+Bouvet Island*Oceania
+British Indian Ocean Territory*Oceania
+Christmas Island*Oceania
+Cocos [Keeling] Islands*Oceania
+Cook Islands*Oceania
+Fiji*Oceania
+French Polynesia*Oceania
+French Southern Territories*Oceania
+Guam*Oceania
+Heard Island and McDonald Islands*Oceania
+Kiribati*Oceania
+Marshall Islands*Oceania
+Micronesia*Oceania
+Nauru*Oceania
+New Caledonia*Oceania
+New Zealand*Oceania
+Niue*Oceania
+Norfolk Island*Oceania
+Northern Mariana Islands*Oceania
+Palau*Oceania
+Papua New Guinea*Oceania
+Pitcairn Islands*Oceania
+Samoa*Oceania
+Solomon Islands*Oceania
+South Georgia and the South Sandwich Islands*Oceania
+Tokelau*Oceania
+Tonga*Oceania
+Tuvalu*Oceania
+U.S. Minor Outlying Islands*Oceania
+Vanuatu*Oceania
+Wallis and Futuna*Oceania
