@@ -6,14 +6,19 @@ import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
 import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +30,8 @@ public class SynchronisationManager {
 
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+    private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
 
     // Path enumerations for adding data to Firebase storage
     // Android doesn't like Enum structures, so use this for better performance
@@ -41,7 +48,43 @@ public class SynchronisationManager {
         }
     };
 
-    protected SynchronisationManager() {}
+    protected SynchronisationManager() {
+        Iterator iter = this.firebasePaths.entrySet().iterator();
+
+        while (iter.hasNext()) {
+            Map.Entry pair = (Map.Entry) iter.next();
+            this.references.add(this.database.getReference(pair.getValue().toString()));
+        }
+
+        for (DatabaseReference databaseReference : this.references) {
+            databaseReference.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                }
+
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
 
     public static SynchronisationManager getInstance() {
         if (instance == null) {
@@ -91,6 +134,36 @@ public class SynchronisationManager {
                 }
             }
         });
+    }
+
+    public List<Object> getObjectsForTypeFromFirebase(@Path String type) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        DatabaseReference ref = this.database.getReference(path);
+
+        List<Object> objects = new ArrayList<Object>();
+
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
+
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    Object child = childSnapshot.getValue(Object.class);
+                    objects.add(child);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return objects;
     }
 
     
