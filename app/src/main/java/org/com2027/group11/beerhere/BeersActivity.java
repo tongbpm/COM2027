@@ -3,7 +3,6 @@ package org.com2027.group11.beerhere;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.com2027.group11.beerhere.R;
+import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.beer.BeerListAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +52,10 @@ public class BeersActivity extends AppCompatActivity {
     private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123));
+        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0));
+        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
+        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0));
+        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
 
         return beers;
     }

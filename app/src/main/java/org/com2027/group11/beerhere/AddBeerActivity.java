@@ -3,6 +3,8 @@ package org.com2027.group11.beerhere;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import org.com2027.group11.beerhere.R;
+
 public class AddBeerActivity extends AppCompatActivity {
 
     @Override
