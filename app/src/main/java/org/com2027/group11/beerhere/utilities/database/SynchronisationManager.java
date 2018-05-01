@@ -32,6 +32,7 @@ public class SynchronisationManager {
 
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private List<FirebaseMutator> registeredCallbacks;
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
 
@@ -52,6 +53,8 @@ public class SynchronisationManager {
 
     protected SynchronisationManager() {
         Iterator iter = this.firebasePaths.entrySet().iterator();
+
+        this.registeredCallbacks = new ArrayList<FirebaseMutator>();
 
         while (iter.hasNext()) {
             Map.Entry pair = (Map.Entry) iter.next();
@@ -88,7 +91,7 @@ public class SynchronisationManager {
         }
     }
 
-    public static SynchronisationManager getInstance() {
+    public static SynchronisationManager getInstance(@NonNull FirebaseMutator firebaseAccessorContext) {
         if (instance == null) {
             instance = new SynchronisationManager();
         }
@@ -138,7 +141,7 @@ public class SynchronisationManager {
         });
     }
 
-    public void getObjectsForTypeFromFirebase(@NonNull FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
+    public void getObjectsForTypeFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
@@ -157,7 +160,14 @@ public class SynchronisationManager {
                     objects.add(child);
                 }
 
-                firebaseAccessorContext.callbackGetObjectsFromFirebase(objects);
+                if (firebaseAccessorContext != null) {
+                    firebaseAccessorContext.callbackGetObjectsFromFirebase(objects);
+                } else {
+                    // Send callback message to all registered clients
+                    for (FirebaseMutator mut : registeredCallbacks) {
+                        mut.callbackGetObjectsFromFirebase(objects);
+                    }
+                }
             }
 
             @Override
@@ -167,8 +177,13 @@ public class SynchronisationManager {
         });
     }
 
-    
-
-
+    /**
+     * Call this before using the manager so it can keep track of where to send updated objects,
+     * as it operates asynchronously.
+     * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
+     */
+    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
+        this.registeredCallbacks.add(mutatorContext);
+    }
 
 }
