@@ -1,6 +1,5 @@
 package org.com2027.group11.beerhere.utilities.database;
 
-import android.arch.persistence.room.Database;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
@@ -190,6 +189,14 @@ public class SynchronisationManager {
      */
     public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
         this.registeredCallbacks.add(mutatorContext);
+    }
+
+    /**
+     * Call this if a class implementing the callback FirebaseMutator interface is no longer active.
+     * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
+     */
+    public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
+        this.registeredCallbacks.remove(mutatorContext);
     }
 
 }
