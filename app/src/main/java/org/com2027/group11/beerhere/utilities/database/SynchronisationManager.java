@@ -65,17 +65,23 @@ public class SynchronisationManager {
             databaseReference.addChildEventListener(new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
+                    for (FirebaseMutator mut : registeredCallbacks) {
+                        mut.callbackObjectChangedFromFirebase(dataSnapshot.getValue(Object.class));
+                    }
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                    for (FirebaseMutator mut : registeredCallbacks) {
+                        mut.callbackObjectChangedFromFirebase(dataSnapshot.getValue(Object.class));
+                    }
                 }
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+                    for (FirebaseMutator mut : registeredCallbacks) {
+                        mut.callbackObjectRemovedFromFirebase(dataSnapshot.getValue(Object.class));
+                    }
                 }
 
                 @Override
@@ -85,7 +91,7 @@ public class SynchronisationManager {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    Log.e(LOG_TAG, "Error: Firebase access event cancelled!");
                 }
             });
         }

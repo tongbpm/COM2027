@@ -5,7 +5,8 @@ import java.util.List;
 
 public interface FirebaseMutator {
 
-    Iterator<Object> callbackGetObjectsFromFirebase(List<Object> objects);
-    Object callbackObjectUpdatedFromFirebase();
+    void callbackGetObjectsFromFirebase(List<Object> objects);
+    void callbackObjectChangedFromFirebase(Object object);
+    void callbackObjectRemovedFromFirebase(Object object);
 
 }
