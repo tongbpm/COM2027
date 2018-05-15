@@ -189,7 +189,7 @@ public class SynchronisationManager {
             throw new NullPointerException("Firebase database path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference().child(type);
+        DatabaseReference ref = this.database.getReference().getRoot().child(type);
         DatabaseReference newObjectRef = ref.child(id);
 
         newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
@@ -211,7 +211,7 @@ public class SynchronisationManager {
             throw new NullPointerException("Firebase database path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference().child(path);
+        DatabaseReference ref = this.database.getReference().getRoot().child(path);
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -239,6 +239,16 @@ public class SynchronisationManager {
 
             }
         });
+    }
+
+    public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        DatabaseReference ref = this.database.getReference().getRoot().child(path);
+        ref.setValue(null);
     }
 
     /**
