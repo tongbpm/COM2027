@@ -12,14 +12,18 @@ import android.view.ViewGroup;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
+import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BeersActivity extends AppCompatActivity {
+public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
+    private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
+    private List<Beer> beers = new ArrayList<Beer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,8 @@ public class BeersActivity extends AppCompatActivity {
         setContentView(R.layout.activity_beers_page);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        this.firebaseManager.registerCallbackWithManager(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -50,14 +56,41 @@ public class BeersActivity extends AppCompatActivity {
     }
 
     private List<Beer> getBeers() {
-        List<Beer> beers = new ArrayList<>();
+        return this.beers;
+    }
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
+    @Override
+    public void callbackGetObjectsFromFirebase(List<Object> objects) {
+        for (Object object : objects) {
+            this.beers.add((Beer) object);
+        }
 
-        return beers;
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackObjectRemovedFromFirebase(String id) {
+        for (Beer beer : this.beers) {
+            if (beer.beerName.equals(id)) {
+                this.beers.remove(beer);
+            }
+        }
+
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackObjectChangedFromFirebase(Object object) {
+        Beer beer = (Beer) object;
+
+        for (Beer b : this.beers) {
+            if (b.beerName.equals(beer.beerName)) {
+                this.beers.remove(b);
+                this.beers.add(beer);
+            }
+        }
+
+        this.adapter.notifyDataSetChanged();
     }
 
 }

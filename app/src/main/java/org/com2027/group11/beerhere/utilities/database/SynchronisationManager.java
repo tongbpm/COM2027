@@ -138,7 +138,7 @@ public class SynchronisationManager {
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     for (FirebaseMutator mut : registeredCallbacks) {
-                        mut.callbackObjectRemovedFromFirebase(dataSnapshot.getValue(Object.class));
+                        mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
                     }
                 }
 
@@ -155,7 +155,7 @@ public class SynchronisationManager {
         }
     }
 
-    public static SynchronisationManager getInstance(@NonNull FirebaseMutator firebaseAccessorContext) {
+    public static SynchronisationManager getInstance() {
         if (instance == null) {
             instance = new SynchronisationManager();
         }
@@ -249,6 +249,8 @@ public class SynchronisationManager {
 
         DatabaseReference ref = this.database.getReference().getRoot().child(path);
         ref.setValue(null);
+
+
     }
 
     /**

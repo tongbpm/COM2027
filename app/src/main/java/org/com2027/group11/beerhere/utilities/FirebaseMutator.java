@@ -7,6 +7,6 @@ public interface FirebaseMutator {
 
     void callbackGetObjectsFromFirebase(List<Object> objects);
     void callbackObjectChangedFromFirebase(Object object);
-    void callbackObjectRemovedFromFirebase(Object object);
+    void callbackObjectRemovedFromFirebase(String id);
 
 }
