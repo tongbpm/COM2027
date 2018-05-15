@@ -39,14 +39,73 @@ public class SynchronisationManager {
     // Android doesn't like Enum structures, so use this for better performance
     public static final String BEER = "beer";
     public static final String USER = "user";
-    @StringDef({BEER, USER})
+    public static final String AUSTRIA = "Austria";
+    public static final String BELGIUM = "Belgium";
+    public static final String BULGARIA = "Bulgaria";
+    public static final String CROATIA = "Croatia";
+    public static final String CYPRUS = "Cyprus";
+    public static final String CZECH_REPUBLIC = "Czech_Republic";
+    public static final String DENMARK = "Denmark";
+    public static final String ESTONIA = "Estonia";
+    public static final String FINLAND = "Finland";
+    public static final String FRANCE = "France";
+    public static final String GERMANY = "Germany";
+    public static final String GREECE = "Greece";
+    public static final String HUNGARY = "Hungary";
+    public static final String IRELAND = "Ireland";
+    public static final String ITALY = "Italy";
+    public static final String LATVIA = "Latvia";
+    public static final String LITHUANIA = "Lithuania";
+    public static final String LUXEMBOURG = "Luxembourg";
+    public static final String MALTA = "Malta";
+    public static final String NETHERLANDS = "Netherlands";
+    public static final String POLAND = "Poland";
+    public static final String PORTUGAL = "Portugal";
+    public static final String ROMANIA = "Romania";
+    public static final String SLOVAKIA = "Slovakia";
+    public static final String SLOVENIA = "Slovenia";
+    public static final String SPAIN = "Spain";
+    public static final String SWEDEN = "Sweden";
+    public static final String UNITED_KINGDOM = "United_Kingdom";
+
+    @StringDef({BEER, USER, AUSTRIA, BELGIUM, BULGARIA, CROATIA, CYPRUS, CZECH_REPUBLIC, DENMARK, ESTONIA, FINLAND, FRANCE,
+                GERMANY, GREECE, HUNGARY, IRELAND, ITALY, LATVIA, LITHUANIA, LUXEMBOURG, MALTA, NETHERLANDS, POLAND, PORTUGAL,
+                ROMANIA, SLOVAKIA, SLOVENIA, SPAIN, SWEDEN, UNITED_KINGDOM})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Path {}
 
     private Map<String, String> firebasePaths = new HashMap<String, String>() {
         {
-            put("beer", "server/beerhere/beers");
-            put("user", "server/beerhere/users");
+            put("beer", "beers");
+            put("user", "users");
+            put("Austria", "countries/Austria");
+            put("Belgium", "countries/Belgium");
+            put("Bulgaria", "countries/Bulgaria");
+            put("Croatia", "countries/Croatia");
+            put("Cyprus", "countries/Cyprus");
+            put("Czech_Republic", "countries/Czech_Republic");
+            put("Denmark", "countries/Denmark");
+            put("Estonia", "countries/Estonia");
+            put("Finland", "countries/Finland");
+            put("France", "countries/France");
+            put("Germany", "countries/Germany");
+            put("Greece", "countries/Greece");
+            put("Hungary", "countries/Hungary");
+            put("Ireland", "countries/Ireland");
+            put("Italy", "countries/Italy");
+            put("Latvia", "countries/Latvia");
+            put("Lithuania", "countries/Lithuania");
+            put("Luxembourg", "countries/Luxembourg");
+            put("Malta", "countries/Malta");
+            put("Netherlands", "countries/Netherlands");
+            put("Poland", "countries/Poland");
+            put("Portugal", "countries/Portugal");
+            put("Romania", "countries/Romania");
+            put("Slovakia", "countries/Slovakia");
+            put("Slovenia", "countries/Slovenia");
+            put("Spain", "countries/Spain");
+            put("Sweden", "countries/Sweden");
+            put("United_Kingdom", "countries/United_Kingdom");
         }
     };
 
@@ -130,7 +189,7 @@ public class SynchronisationManager {
             throw new NullPointerException("Firebase database path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference(path);
+        DatabaseReference ref = this.database.getReference().child(type);
         DatabaseReference newObjectRef = ref.child(id);
 
         newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
@@ -152,7 +211,7 @@ public class SynchronisationManager {
             throw new NullPointerException("Firebase database path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference(path);
+        DatabaseReference ref = this.database.getReference().child(path);
 
         ref.addValueEventListener(new ValueEventListener() {
             @Override
