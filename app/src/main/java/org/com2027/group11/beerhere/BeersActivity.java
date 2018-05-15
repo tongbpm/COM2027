@@ -50,13 +50,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvBeers = findViewById(R.id.rv_beers);
-        adapter = new BeerListAdapter(this, getBeers());
+        adapter = new BeerListAdapter(this, this.beers);
         rvBeers.setAdapter(adapter);
         rvBeers.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    private List<Beer> getBeers() {
-        return this.beers;
     }
 
     @Override
