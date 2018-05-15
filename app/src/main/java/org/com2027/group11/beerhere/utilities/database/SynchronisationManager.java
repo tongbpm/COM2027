@@ -124,14 +124,14 @@ public class SynchronisationManager {
         return null;
     }
 
-    public <T> void saveNewObjectToFirebase(@Path String type, T savedObject) throws NullPointerException {
+    public <T> void saveObjectToFirebase(@Path String type, String id, T savedObject) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
         }
 
         DatabaseReference ref = this.database.getReference(path);
-        DatabaseReference newObjectRef = ref.push();
+        DatabaseReference newObjectRef = ref.child(id);
 
         newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
             @Override
