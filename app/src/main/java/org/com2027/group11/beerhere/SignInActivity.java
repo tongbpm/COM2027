@@ -9,14 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -29,11 +22,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +34,7 @@ import java.util.List;
  * Main activity is served to a user when they open the app, if a user is not logged in
  * they will be presented with log in information
  */
-public class MainActivity extends AppCompatActivity {
+public class SignInActivity extends AppCompatActivity {
     private static final String TAG = "MAIN_ACTIVITY";
     //Arbitrary code returned on successful log in
     private static final int RC_SIGN_IN = 123;
@@ -92,11 +85,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
                             Log.d(TAG, "User has logged in before");
-                            //todo Send user to home page
                             new AsyncGetUser(mContext).execute(mAuth.getCurrentUser().getUid());
+                            Intent beerIntent = new Intent(SignInActivity.this, BeersActivity.class);
+                            startActivity(beerIntent);
                         } else {
                             //Sends user to activity with sign up form
-                            Intent signUpIntent = new Intent(MainActivity.this, SignUpActivity.class);
+                            Intent signUpIntent = new Intent(SignInActivity.this, SignUpActivity.class);
                             startActivity(signUpIntent);
 
                         }
@@ -109,8 +103,6 @@ public class MainActivity extends AppCompatActivity {
                 });
                 Snackbar.make(findViewById(R.id.main_layout), "Signed In.", Snackbar.LENGTH_SHORT).show();
                 try {
-                    displayBeers();
-                    setAddButtonFunc();
                 } catch (NullPointerException e) {
                     Snackbar.make(findViewById(R.id.main_layout), "Error Signing In.", Snackbar.LENGTH_SHORT).show();
                 }
@@ -132,81 +124,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private class AsyncGetUser extends AsyncTask<String, Void, User> {
-        private Context context;
+     private class AsyncGetUser extends AsyncTask<String, Void, User> {
+            private Context context;
 
-        public AsyncGetUser(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected User doInBackground(String... strings) {
-            User user;
-            AppDatabase database = AppDatabase.getAppDatabase(context);
-            UserDao userDao = database.userDao();
-            Log.d(TAG, "Async Task first arg: " + strings[0]);
-            user = userDao.findByID(strings[0]);
-            return user;
-        }
-
-        @Override
-        protected void onPostExecute(User user) {
-            Log.d(TAG, "Async Execution Finished");
-            ((TextView) findViewById(R.id.main_text)).setText(user.name);
-        }
-
-    }
-
-    private void displayBeers() {
-
-        beers = getBeers();
-        List<String> beerTitles = getBeerTitles();
-
-        ListAdapter adapter = new BeerAdapter(this, beerTitles, beers);
-
-        ListView lvBeers = (ListView) findViewById(R.id.lv_beers);
-
-        lvBeers.setAdapter(adapter);
-
-        lvBeers.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String beerSelected = "Beer selected: " +
-                        String.valueOf(adapterView.getItemAtPosition(position));
-
-                Toast.makeText(MainActivity.this, beerSelected, Toast.LENGTH_SHORT).show();
+            public AsyncGetUser(Context context) {
+                this.context = context;
             }
-        });
 
-    }
-
-    private void setAddButtonFunc() {
-        ImageButton addButton = (ImageButton) findViewById(R.id.button_add);
-        addButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "Clicked add button", Toast.LENGTH_LONG).show();
+            protected User doInBackground(String... strings) {
+                User user;
+                AppDatabase database = AppDatabase.getAppDatabase(context);
+                UserDao userDao = database.userDao();
+                Log.d(TAG, "Async Task first arg: " + strings[0]);
+                user = userDao.findByID(strings[0]);
+                return user;
             }
-        });
-    }
 
-    private List<Beer> getBeers() {
-        List<Beer> beers = new ArrayList<>();
+            @Override
+            protected void onPostExecute(User user) {
+                Log.d(TAG, "Async Execution Finished");
+                ((TextView) findViewById(R.id.main_text)).setText(user.name);
+            }
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123));
-
-        return beers;
-    }
-
-    private List<String> getBeerTitles() {
-        List<String> beerTitles = new ArrayList<>();
-        for (Beer beer : beers) {
-            beerTitles.add(beer.getTitle());
         }
-        return beerTitles;
-    }
 
-}
+    }
