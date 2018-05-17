@@ -61,10 +61,10 @@ public class Beer {
             this.hotness = 0;
 
             this.beerRating = this.beerUpvotes - this.beerDownvotes;
-            Log.e(LOG_TAG, String.valueOf(R.drawable.calsberg));
+            //Log.e(LOG_TAG, String.valueOf(R.drawable.calsberg));
 
         } else {
-            Log.e(LOG_TAG, "Beer: Failed to create, empty name");
+            //Log.e(LOG_TAG, "Beer: Failed to create, empty name");
         }
     }
 
