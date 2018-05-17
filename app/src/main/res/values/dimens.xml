@@ -4,4 +4,10 @@
     <dimen name="sign_up_field_margin">8dp</dimen>
     <dimen name="sign_up_button_margin">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="submit_button_margin">12</dimen>
+    <dimen name="country_spinner_margin">24</dimen>
+    <dimen name="beer_name_margin">12</dimen>
+    <dimen name="image_upload_button">16</dimen>
+    <dimen name="thumnail_width">100dp</dimen>
+    <dimen name="thumbnail_height">100dp</dimen>
 </resources>
