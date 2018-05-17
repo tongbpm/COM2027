@@ -61,6 +61,30 @@ public class BeersActivity extends AppCompatActivity {
             }
         });
 
+        mDrawerLayout.addDrawerListener(
+                new DrawerLayout.DrawerListener() {
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+                        // Responds when the position of the drawer changes
+                    }
+
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        // Responds when the drawer is opened
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+                        // Responds when the drawer is closed
+                    }
+
+                    @Override
+                    public void onDrawerStateChanged(int newState) {
+                        // Respond when the drawer motino stated changed
+                    }
+                }
+        );
+
         displayBeers();
     }
 
