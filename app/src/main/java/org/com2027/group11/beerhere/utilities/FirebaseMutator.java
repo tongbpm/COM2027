@@ -1,6 +1,7 @@
 package org.com2027.group11.beerhere.utilities;
 
-import java.util.Iterator;
+import org.com2027.group11.beerhere.beer.Beer;
+
 import java.util.List;
 
 public interface FirebaseMutator {

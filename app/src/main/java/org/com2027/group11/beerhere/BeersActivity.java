@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -16,14 +17,18 @@ import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
-    private List<Beer> beers = new ArrayList<Beer>();
+    private Vector<Beer> beers = new Vector<Beer>();
+
+    private static final String LOG_TAG = "BEER-HERE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +38,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         setSupportActionBar(toolbar);
 
         this.firebaseManager.registerCallbackWithManager(this);
+        //this.firebaseManager.getObjectsForTypeFromFirebase(null, SynchronisationManager.BELGIUM);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -57,8 +63,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     @Override
     public void callbackGetObjectsFromFirebase(List<Object> objects) {
+        Log.e(LOG_TAG, String.valueOf(objects.size()));
         for (Object object : objects) {
-            this.beers.add((Beer) object);
+            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).beerName);
+            if (!(this.beers.contains(object))) {
+                Log.e(LOG_TAG, String.valueOf(objects.size()));
+                this.beers.add((Beer) object);
+            }
         }
 
         this.adapter.notifyDataSetChanged();
@@ -77,13 +88,22 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     @Override
     public void callbackObjectChangedFromFirebase(Object object) {
+        Log.i(LOG_TAG, "BeersActivity: object received from Firebase!");
         Beer beer = (Beer) object;
+        Beer originalBeer = null;
 
+        // Find original beer in list
         for (Beer b : this.beers) {
             if (b.beerName.equals(beer.beerName)) {
-                this.beers.remove(b);
-                this.beers.add(beer);
+                originalBeer = b;
             }
+        }
+
+        if (originalBeer != null) {
+            this.beers.remove(originalBeer);
+            this.beers.add(beer);
+        } else {
+            Log.e(LOG_TAG, "Changed beer not found in array adapter?");
         }
 
         this.adapter.notifyDataSetChanged();
