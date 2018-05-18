@@ -144,7 +144,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(User user) {
                 Log.d(TAG, "Async Execution Finished");
-                ((TextView) findViewById(R.id.main_text)).setText(user.name);
             }
 
         }
