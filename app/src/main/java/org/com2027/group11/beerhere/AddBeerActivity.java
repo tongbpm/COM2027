@@ -16,10 +16,14 @@ import android.util.ArraySet;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import org.com2027.group11.beerhere.beer.Beer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +56,8 @@ public class AddBeerActivity extends AppCompatActivity {
     private Bitmap mBitmap = null;
     private ImageView mImageView;
     private String mCurrentPhotoPath;
+    private EditText mNameEditText;
+    private Button mSubmitButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,21 +69,39 @@ public class AddBeerActivity extends AppCompatActivity {
         ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, mCountryList);
         mCountry.setAdapter(countryAdapter);
         //Make default selection the same as the device default location
-        mCountry.setSelection(countryAdapter.getPosition(getResources().getConfiguration().locale.getDisplayCountry()));
 
         mImageButton = findViewById(R.id.image_button);
-
         mImageView = findViewById(R.id.image_thumbnail);
 
+
+        mNameEditText = findViewById(R.id.beer_name_edit_text);
         mDialog = buildDialog();
 
         mImageButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View view) {
                 mDialog.show();
             }
         });
+
+        mSubmitButton = findViewById(R.id.beer_submit);
+        mSubmitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCountry.getSelectedItem().toString().length() > 0 && mNameEditText.getText().toString().length() > 0){
+                    //If both compulsory fields have been filled out
+                    Beer beer = new Beer(mNameEditText.getText().toString());
+                    if(mBitmap != null){
+                        beer.setBeerImage(mBitmap);
+                    }
+                    Toast.makeText(AddBeerActivity.this, beer.beerName, Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+
     }
 
     private AlertDialog buildDialog(){
