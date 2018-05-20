@@ -20,6 +20,8 @@ public class Beer {
     private int beerRating;
     public int imageID;
     public long timeCreated;
+
+    //to be retrieved per user, other attributes are global
     public boolean favourite;
 
     public static final String LOG_TAG = "BEER-HERE";

@@ -1,5 +1,8 @@
 package org.com2027.group11.beerhere;
 
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,7 +32,6 @@ public class BeersActivity extends AppCompatActivity {
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
-    private int selectedIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +47,40 @@ public class BeersActivity extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
-                menuItem -> {
-                    //set item as selected to persist highlight
-                    menuItem.setChecked(true);
-                    //close drawer when item is tapped
-                    mDrawerLayout.closeDrawers();
-                    return false;
-                }
-        );
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                        //[REMOVE] these lines when done debugging, or heck they wont interfere
+                        //with merge
+
+                        if (menuItem.toString().equals("Countries")) {
+                            //intent to countries
+                        } else if (menuItem.toString().equals("Home")) {
+                            //this is current activity
+                        } else if (menuItem.toString().equals("Your Submissions")) {
+                            //intent to submissions
+                        } else if (menuItem.toString().equals("Favourites")) {
+                            Intent intent = new Intent(BeersActivity.this, FavoritesActivity.class);
+                            startActivity(intent);
+                        } else if (menuItem.toString().equals("Sign Out")) {
+                            //intent to home and erase local stuff
+                        }
+
+                        // set item as selected to persist highlight
+                        Log.i("whogivesashort", "onNavigationItemSelected: " + menuItem.toString());
+                        menuItem.setChecked(true);
+                        // close drawer when item is tapped
+
+
+                        // Add code here to update the UI based on the item selected
+                        // For example, swap UI fragments here
+                        mDrawerLayout.closeDrawers();
+
+                        return true;
+                    }
+                });
+
 
 
 

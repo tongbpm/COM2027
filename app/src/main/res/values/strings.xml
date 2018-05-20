@@ -16,6 +16,7 @@
     <string name="Home_country_spinner">Home Country</string>
     <string name="submit">Submit</string>
     <string name="title_activity_beers_page">BeersPage</string>
+    <string name="title_activity_favourites_page">FavsPage</string>
     <string name="nav_home">Home</string>
     <string name="nav_submissions">Your Submissions </string>
     <string name="nav_favourites">Favourites</string>

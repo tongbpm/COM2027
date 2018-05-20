@@ -2,9 +2,11 @@ package org.com2027.group11.beerhere;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +24,7 @@ import java.util.List;
 
 public class FavoritesActivity extends AppCompatActivity {
 
-    private ListView listview;
-    private RecyclerView rvBeers;
+    private RecyclerView rvFavBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
 
@@ -32,9 +33,30 @@ public class FavoritesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        rvFavBeers = (RecyclerView) findViewById(R.id.rvFav_beers);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         setSupportActionBar(toolbar);
 
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+
+        NavigationView navigationView = findViewById(R.id.fav_nav_view);
+        navigationView.setNavigationItemSelectedListener(
+                menuItem -> {
+                    //set item as selected to persist highlight
+                    menuItem.setChecked(true);
+                    //close drawer when item is tapped
+                    mDrawerLayout.closeDrawers();
+                    return false;
+                }
+        );
+
+
+
+        //Get the list of fav beers with intent
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -45,9 +67,26 @@ public class FavoritesActivity extends AppCompatActivity {
             }
         });
 
+        displayfavBeers();
 
-        //have a listview on click and get position, and therefore corresponding
-        //beer and pass as understandable param somehow
+    }
+
+    public void displayfavBeers(){
+        ViewGroup view = findViewById(android.R.id.content);
+        getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
+        rvFavBeers = findViewById(R.id.rvFav_beers);
+        adapter = new BeerListAdapter(this, getBeers());
+        rvFavBeers.setAdapter(adapter);
+        rvFavBeers.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private List<Beer> getBeers() {
+        List<Beer> beers = new ArrayList<>();
+
+        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0, true));
+        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0, true));
+
+        return beers;
     }
 
 }

@@ -33,6 +33,11 @@
             android:label="@string/title_activity_beers_page"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AddBeerActivity"></activity>
+
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favourites_page"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
