@@ -59,6 +59,11 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         return holder;
     }
 
+    public void removeBeerFromFav(int position) {
+        beers.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, beers.size());
+    }
 
     @Override
     public void onBindViewHolder(BeersViewHolder holder, int position) {
@@ -79,15 +84,32 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             @Override
             public void onClick(View v){
 
+                boolean removeBeer = false;
+
                 if (beer.favourite) {
                     Toast.makeText(v.getContext(), "You unfaved " + beer.beerName, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
+
+                    Log.i("randDebug", "onClick: " + v.getContext().toString().substring(0,10));
+
+                    if (v.getContext().toString().substring(0,2).equals("or")){
+                        removeBeer = true;
+                    }
+
+
                 }
                 else{
                     Toast.makeText(v.getContext(), "You faved " + beer.beerName, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.x45);
                 }
-                beers.get(position).favourite = !beer.favourite;
+                    if (removeBeer){
+                        removeBeerFromFav(position);
+                    }
+                    else {
+                        beers.get(position).favourite = !beer.favourite;
+                    }
+
+
 
                 //[FIREBASE] update beer fav status
 

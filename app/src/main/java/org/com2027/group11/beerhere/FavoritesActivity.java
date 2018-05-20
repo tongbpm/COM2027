@@ -82,6 +82,8 @@ public class FavoritesActivity extends AppCompatActivity {
         rvFavBeers.setLayoutManager(new LinearLayoutManager(this));
     }
 
+
+
     private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
