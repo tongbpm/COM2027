@@ -90,9 +90,8 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                     Toast.makeText(v.getContext(), "You unfaved " + beer.beerName, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
 
-                    Log.i("randDebug", "onClick: " + v.getContext().toString().substring(0,10));
-
-                    if (v.getContext().toString().substring(0,2).equals("or")){
+                    //context is : org.com2027.group11.beerhere.FavoritesActivity@fd74857
+                    if (v.getContext().toString().substring(29,32).equals("Fav")){
                         removeBeer = true;
                     }
 
@@ -102,6 +101,9 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                     Toast.makeText(v.getContext(), "You faved " + beer.beerName, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.x45);
                 }
+
+                //[FIREBASE] update beer fav status
+
                     if (removeBeer){
                         removeBeerFromFav(position);
                     }
@@ -111,7 +113,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
 
 
-                //[FIREBASE] update beer fav status
+
 
             }
         });
