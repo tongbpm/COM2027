@@ -2,9 +2,11 @@ package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +23,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
     private List<Beer> beers = Collections.emptyList();
 
+
     public BeerListAdapter(Context context, List<Beer> beers){
         inflater = LayoutInflater.from(context);
         this.beers = beers;
@@ -33,6 +36,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         TextView tvRating;
         ImageButton ibUpvote;
         ImageButton ibDownVote;
+        ImageButton favButton;
         public BeersViewHolder(View itemView){
             super(itemView);
             tvRank = itemView.findViewById(R.id.tv_rank);
@@ -41,8 +45,11 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             tvRating = itemView.findViewById(R.id.tv_rating);
             ibUpvote = itemView.findViewById(R.id.ib_thumbs_up);
             ibDownVote = itemView.findViewById(R.id.ib_thumbs_down);
+            favButton = itemView.findViewById(R.id.fav_button);
+            //set star resource here instead?
         }
     }
+
 
     @Override
     public BeersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -52,6 +59,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         return holder;
     }
 
+
     @Override
     public void onBindViewHolder(BeersViewHolder holder, int position) {
         Beer beer = beers.get(position);
@@ -60,6 +68,31 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         holder.imBeer.setImageResource(beer.imageID);
         holder.tvBeerTitle.setText(beer.beerName);
         holder.tvRating.setText(String.valueOf(beer.getBeerRating()));
+        if (beer.favourite) {
+            holder.favButton.setImageResource(R.drawable.x45);
+        }
+        else{
+            holder.favButton.setImageResource(R.drawable.star45);
+        }
+
+        holder.favButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+
+                if (beer.favourite) {
+                    Toast.makeText(v.getContext(), "You unfaved " + beer.beerName, Toast.LENGTH_SHORT).show();
+                    holder.favButton.setImageResource(R.drawable.star45);
+                }
+                else{
+                    Toast.makeText(v.getContext(), "You faved " + beer.beerName, Toast.LENGTH_SHORT).show();
+                    holder.favButton.setImageResource(R.drawable.x45);
+                }
+                beers.get(position).favourite = !beer.favourite;
+
+                //[FIREBASE] update beer fav status
+
+            }
+        });
 
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,8 +109,11 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         });
     }
 
+
+
     @Override
     public int getItemCount() {
         return beers.size();
     }
+
 }

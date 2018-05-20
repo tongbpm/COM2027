@@ -12,9 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
@@ -27,6 +29,7 @@ public class BeersActivity extends AppCompatActivity {
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
+    private int selectedIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +41,7 @@ public class BeersActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -110,12 +114,15 @@ public class BeersActivity extends AppCompatActivity {
     private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
+        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0, false));
+        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0, true));
+        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0, false));
+        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0, true));
 
         return beers;
     }
+
+
+
 
 }

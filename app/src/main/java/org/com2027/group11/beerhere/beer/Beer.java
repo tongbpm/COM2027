@@ -20,18 +20,19 @@ public class Beer {
     private int beerRating;
     public int imageID;
     public long timeCreated;
+    public boolean favourite;
 
     public static final String LOG_TAG = "BEER-HERE";
 
     public Beer() {}
 
-    public Beer(String name, @NonNull int imageID, @NonNull int upvotes, @NonNull int downvotes) {
+    public Beer(String name, @NonNull int imageID, @NonNull int upvotes, @NonNull int downvotes, @NonNull boolean favourite) {
         if (!(name.isEmpty())) {
             this.beerName = name;
             this.imageID = imageID;
             this.beerUpvotes = upvotes;
             this.beerDownvotes = downvotes;
-
+            this.favourite = favourite;
             this.timeCreated = System.currentTimeMillis() / 1000L;
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
