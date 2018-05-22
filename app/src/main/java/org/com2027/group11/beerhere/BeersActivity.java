@@ -136,10 +136,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     @Override
     public void callbackObjectRemovedFromFirebase(String id) {
-        for (Beer beer : this.beers) {
-            if (beer.name.equals(id)) {
-                this.beers.remove(beer);
+        // Find beer in list
+        Beer foundBeer = null;
+        for (Beer b : this.beers) {
+            if (b.name.equals(id)) {
+                foundBeer = b;
             }
+        }
+
+        if (foundBeer != null) {
+            this.beers.remove(foundBeer);
         }
 
         this.adapter.notifyDataSetChanged();
@@ -174,7 +180,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerName + " from Firebase!");
 
         for (Beer b : this.beers) {
-            if (b.beerName.equals(beerName)) {
+            if (b.name.equals(beerName)) {
                 b.setBeerImage(bitmap);
             }
         }
