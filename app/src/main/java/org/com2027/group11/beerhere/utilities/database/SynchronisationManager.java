@@ -336,7 +336,7 @@ public class SynchronisationManager {
                        Bitmap bitmap = BitmapFactory.decodeStream(bais);
 
                        for (FirebaseMutator mut : registeredCallbacks) {
-                           mut.callbackGetBitmapForBeerFromFirebase(bitmap);
+                           mut.callbackGetBitmapForBeerFromFirebase(splitString[1], bitmap);
                        }
                    }
                });

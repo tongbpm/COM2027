@@ -1,6 +1,7 @@
 package org.com2027.group11.beerhere;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -166,6 +167,19 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         this.adapter.notifyDataSetChanged();
 
         Collections.reverse(this.beers);
+    }
+
+    @Override
+    public void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap) {
+        Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerName + " from Firebase!");
+
+        for (Beer b : this.beers) {
+            if (b.beerName.equals(beerName)) {
+                b.setBeerImage(bitmap);
+            }
+        }
+
+        this.adapter.notifyDataSetChanged();
     }
 
 }
