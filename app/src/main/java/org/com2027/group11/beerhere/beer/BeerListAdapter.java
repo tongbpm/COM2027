@@ -58,7 +58,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
         holder.tvRank.setText(String.valueOf(position+1));
         if(beer.beerImageBmp != null) {
-            holder.imBeer.setImageResource(beer.imageID);
+            holder.imBeer.setImageBitmap(beer.beerImageBmp);
         }
         holder.tvBeerTitle.setText(beer.name);
         holder.tvRating.setText(String.valueOf(beer.getRating()));
