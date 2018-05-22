@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="org.com2027.group11.beerhere.SignUpActivity">
+
+    <TextView
+        android:id="@+id/date_of_birth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/date_of_birth"
+        android:textSize="@dimen/larger_text" />
+
+    <EditText
+        android:id="@+id/date_of_birth_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_field_margin"
+        android:hint="@string/date_of_birth_hint"
+        android:inputType="date"
+        android:onClick="showDatePicker"
+        android:textIsSelectable="false" />
+
+    <TextView
+        android:id="@+id/country"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/home_country"
+        android:textSize="@dimen/larger_text" />
+
+    <Spinner
+        android:id="@+id/country_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_field_margin" />
+
+    <Button
+        android:id="@+id/sign_up_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/sign_up_button_margin"
+        android:text="@string/submit" />
+
+
+</LinearLayout>
