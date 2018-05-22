@@ -142,10 +142,10 @@ public class BeersActivity extends AppCompatActivity {
     private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0, false));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0, true));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0, false));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0, true));
+        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0));
+        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
+        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0));
+        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
 
         return beers;
     }

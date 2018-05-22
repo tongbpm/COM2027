@@ -21,20 +21,16 @@ public class Beer {
     public int imageID;
     public long timeCreated;
 
-    //to be retrieved per user, other attributes are global
-    public boolean favourite;
-
     public static final String LOG_TAG = "BEER-HERE";
 
     public Beer() {}
 
-    public Beer(String name, @NonNull int imageID, @NonNull int upvotes, @NonNull int downvotes, @NonNull boolean favourite) {
+    public Beer(String name, @NonNull int imageID, @NonNull int upvotes, @NonNull int downvotes) {
         if (!(name.isEmpty())) {
             this.beerName = name;
             this.imageID = imageID;
             this.beerUpvotes = upvotes;
             this.beerDownvotes = downvotes;
-            this.favourite = favourite;
             this.timeCreated = System.currentTimeMillis() / 1000L;
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");

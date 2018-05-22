@@ -10,6 +10,7 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.com2027.group11.beerhere.utilities.database.TypeConverters.DateTypeConverter;
 
+import java.util.ArrayList;
 import java.util.Date;
 /**
  * A class that keeps track of users details, this is stored on the server and cached on the client so
@@ -30,15 +31,18 @@ public class User {
     public Date dateOfBirth;
     @ColumnInfo(name = "country")
     public String country;
+    @ColumnInfo(name = "favourites")
+    public ArrayList<String> favourites;
 
     public User() {
     }
 
-    public User(String uid, String name, String email, Date dateOfBirth, String country) {
+    public User(String uid, String name, String email, Date dateOfBirth, String country, ArrayList<String> favourites) {
         this.uid = uid;
         this.name = name;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.country = country;
+        this.favourites = favourites;
     }
 }

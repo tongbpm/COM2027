@@ -1,6 +1,7 @@
 package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +23,8 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
     private LayoutInflater inflater;
 
     private List<Beer> beers = Collections.emptyList();
+
+    private String countryName = ""; //[CHANGE] get this as extra from intent
 
 
     public BeerListAdapter(Context context, List<Beer> beers){
@@ -46,7 +49,6 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             ibUpvote = itemView.findViewById(R.id.ib_thumbs_up);
             ibDownVote = itemView.findViewById(R.id.ib_thumbs_down);
             favButton = itemView.findViewById(R.id.fav_button);
-            //set star resource here instead?
         }
     }
 
@@ -59,21 +61,25 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         return holder;
     }
 
-    public void removeBeerFromFav(int position) {
+    public void removeBeerFromFavListView(int position) {
         beers.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, beers.size());
     }
 
+
     @Override
-    public void onBindViewHolder(BeersViewHolder holder, int position) {
-        Beer beer = beers.get(position);
+    public void onBindViewHolder(final BeersViewHolder holder, final int position) {
+        final Beer beer = beers.get(position);
 
         holder.tvRank.setText(String.valueOf(position+1));
         holder.imBeer.setImageResource(beer.imageID);
         holder.tvBeerTitle.setText(beer.beerName);
         holder.tvRating.setText(String.valueOf(beer.getBeerRating()));
-        if (beer.favourite) {
+
+        final boolean isFavorite = true; //[CHANGE] actually look up if true or not in user favs array
+
+        if (isFavorite) {
             holder.favButton.setImageResource(R.drawable.x45);
         }
         else{
@@ -84,17 +90,17 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             @Override
             public void onClick(View v){
 
-                boolean removeBeer = false;
+                boolean removeBeerFromView = false;
 
-                if (beer.favourite) {
+                if (isFavorite) {
                     Toast.makeText(v.getContext(), "You unfaved " + beer.beerName, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
 
                     //context is : org.com2027.group11.beerhere.FavoritesActivity@fd74857
+                    //if the current activity is favourites
                     if (v.getContext().toString().substring(29,32).equals("Fav")){
-                        removeBeer = true;
+                        removeBeerFromView = true;
                     }
-
 
                 }
                 else{
@@ -103,16 +109,18 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 }
 
                 //[FIREBASE] update beer fav status
+                if (isFavorite){
+                    removeBeerFromUserFavs(position);
+                }
+                else{
+                    addBeerToUserFavs(position);
+                }
 
-                    if (removeBeer){
-                        removeBeerFromFav(position);
-                    }
-                    else {
-                        beers.get(position).favourite = !beer.favourite;
-                    }
-
-
-
+                //only true if unfaved beer while in favs view
+                if (removeBeerFromView){
+                        //removes the beer from the list
+                        removeBeerFromFavListView(position);
+                }
 
 
             }
@@ -121,6 +129,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 Toast.makeText(v.getContext(), "You upvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
             }
         });
@@ -131,6 +140,18 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 Toast.makeText(v.getContext(), "You downvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public void removeBeerFromUserFavs(int position){
+        String beerName = beers.get(position).beerName;
+        //add "country/beer" to arraylist in user favs  and in firebase favs
+        //[CHANGE]
+    }
+
+    public void addBeerToUserFavs(int position){
+        String beerName = beers.get(position).beerName;
+        //remove "country/beer" to arraylist in user favs  and in firebase favs
+        //[CHANGE]
     }
 
 
