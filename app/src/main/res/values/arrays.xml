@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="image_source_array">
+        <item>@string/camera</item>
+        <item>@string/gallery</item>
+    </string-array>
+</resources>

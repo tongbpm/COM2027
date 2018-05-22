@@ -16,6 +16,7 @@ import org.com2027.group11.beerhere.R;
 @IgnoreExtraProperties
 public class Beer {
 
+    private int beerHotness;
     public Bitmap beerImageBmp;
     public String beerName;
     public int beerUpvotes;
@@ -47,6 +48,21 @@ public class Beer {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
         }
     }
+
+
+    public Beer(String name) {
+        if (!(name.isEmpty())) {
+            this.beerName = name;
+            this.beerUpvotes = 1;
+            this.beerDownvotes = 0;
+
+            this.beerHotness = 24;
+            this.timeCreated = System.currentTimeMillis() / 1000L;
+        } else {
+            Log.e(LOG_TAG, "Beer: Failed to create, empty name");
+        }
+    }
+
 
     public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
                 @NonNull int downvotes) {
@@ -86,7 +102,5 @@ public class Beer {
     public long getTimeCreated() {
         return this.timeCreated;
     }
-
-
 
 }
