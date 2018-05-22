@@ -1,6 +1,7 @@
 package org.com2027.group11.beerhere;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -59,11 +60,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
         );
 
-
-
-        this.firebaseManager.registerCallbackWithManager(this);
-        //this.firebaseManager.getObjectsForTypeFromFirebase(null, SynchronisationManager.BELGIUM);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +97,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(LOG_TAG, "beers activity called onResume");
+        this.firebaseManager.registerCallbackWithManager(this);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
@@ -135,10 +138,17 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     @Override
     public void callbackObjectRemovedFromFirebase(String id) {
-        for (Beer beer : this.beers) {
-            if (beer.name.equals(id)) {
-                this.beers.remove(beer);
+        // Find beer in list
+        Beer foundBeer = null;
+        for (Beer b : this.beers) {
+            if (b.name.equals(id)) {
+                foundBeer = b;
             }
+        }
+
+        if (foundBeer != null) {
+            Log.e(LOG_TAG, "Removed: " + foundBeer.name);
+            this.beers.remove(foundBeer);
         }
 
         this.adapter.notifyDataSetChanged();
@@ -148,6 +158,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     public void callbackObjectChangedFromFirebase(Object object) {
         Log.i(LOG_TAG, "BeersActivity: object received from Firebase!");
         Beer beer = (Beer) object;
+        Log.e(LOG_TAG, "Beer changed: " + beer.name);
         Beer originalBeer = null;
 
         // Find original beer in list
@@ -166,6 +177,19 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         this.adapter.notifyDataSetChanged();
 
         Collections.reverse(this.beers);
+    }
+
+    @Override
+    public void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap) {
+        Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerName + " from Firebase!");
+
+        for (Beer b : this.beers) {
+            if (b.name.equals(beerName)) {
+                b.setBeerImage(bitmap);
+            }
+        }
+
+        this.adapter.notifyDataSetChanged();
     }
 
 }

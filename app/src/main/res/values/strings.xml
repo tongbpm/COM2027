@@ -33,4 +33,7 @@
     <string name="nav_submissions">Your Submissions </string>
     <string name="nav_favourites">Favourites</string>
     <string name="nav_countries">Countries</string>
+    <string name="uploading_image">Uploading...</string>
+    <string name="uploading_image_failed">Uploading content failed.</string>
+    <string name="uploading_image_success">Uploaded!</string>
 </resources>

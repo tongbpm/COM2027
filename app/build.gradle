@@ -40,6 +40,7 @@ dependencies {
     //Include firebase
     implementation 'com.google.firebase:firebase-core:11.4.2'
     implementation 'com.google.firebase:firebase-database:11.4.2'
+    implementation 'com.google.firebase:firebase-storage:11.4.2'
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
     // Include facebook log in
     implementation('com.facebook.android:facebook-android-sdk:4.27.0')
