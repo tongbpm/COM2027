@@ -123,7 +123,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     public void callbackGetObjectsFromFirebase(List<Object> objects) {
         Log.e(LOG_TAG, String.valueOf(objects.size()));
         for (Object object : objects) {
-            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).beerName);
+            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).name);
             if (!(this.beers.contains(object))) {
                 Log.e(LOG_TAG, String.valueOf(objects.size()));
                 this.beers.add((Beer) object);
@@ -136,7 +136,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     @Override
     public void callbackObjectRemovedFromFirebase(String id) {
         for (Beer beer : this.beers) {
-            if (beer.beerName.equals(id)) {
+            if (beer.name.equals(id)) {
                 this.beers.remove(beer);
             }
         }
@@ -152,7 +152,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         // Find original beer in list
         for (Beer b : this.beers) {
-            if (b.beerName.equals(beer.beerName)) {
+            if (b.name.equals(beer.name)) {
                 originalBeer = b;
             }
         }

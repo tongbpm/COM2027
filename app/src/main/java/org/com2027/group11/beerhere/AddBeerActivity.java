@@ -98,7 +98,7 @@ public class AddBeerActivity extends AppCompatActivity {
                         beer.setBeerImage(mBitmap);
                     }
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
-                    syncManager.saveBeerToFirebase(mCountry.getSelectedItem().toString(), beer.beerName, beer);
+                    syncManager.saveBeerToFirebase(mCountry.getSelectedItem().toString(), beer.name, beer);
                 }else{
                     Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
                 }

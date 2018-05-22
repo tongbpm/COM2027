@@ -60,20 +60,20 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         if(beer.beerImageBmp != null) {
             holder.imBeer.setImageResource(beer.imageID);
         }
-        holder.tvBeerTitle.setText(beer.beerName);
-        holder.tvRating.setText(String.valueOf(beer.getBeerRating()));
+        holder.tvBeerTitle.setText(beer.name);
+        holder.tvRating.setText(String.valueOf(beer.getRating()));
 
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You upvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "You upvoted " + beer.name, Toast.LENGTH_SHORT).show();
             }
         });
 
         holder.ibDownVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You downvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "You downvoted " + beer.name, Toast.LENGTH_SHORT).show();
             }
         });
     }
