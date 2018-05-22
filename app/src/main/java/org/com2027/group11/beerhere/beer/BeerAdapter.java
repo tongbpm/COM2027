@@ -40,7 +40,7 @@ public class BeerAdapter extends ArrayAdapter<String> {
         tvBeerTitle.setText(beerTitle);
 
         TextView tvRating = (TextView) view.findViewById(R.id.tv_rating);
-        tvRating.setText(String.valueOf(beers.get(position).beerUpvotes));
+        tvRating.setText(String.valueOf(beers.get(position).upvotes));
 
         ImageView ivBeer = (ImageView) view.findViewById(R.id.iv_beer);
         ivBeer.setImageBitmap(beers.get(position).beerImageBmp);

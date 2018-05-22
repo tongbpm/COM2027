@@ -16,12 +16,11 @@ import org.com2027.group11.beerhere.R;
 @IgnoreExtraProperties
 public class Beer {
 
-    private int beerHotness;
     public Bitmap beerImageBmp;
-    public String beerName;
-    public int beerUpvotes;
-    public int beerDownvotes;
-    private int beerRating;
+    public String name;
+    public int upvotes;
+    public int downvotes;
+    private int rating;
     public int imageID;
     public long timeCreated;
     public int hotness;
@@ -31,18 +30,18 @@ public class Beer {
     public Beer() {}
 
     public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
-                @NonNull int downvotes, @NonNull String timeCreated, @NonNull String hotness) {
+                @NonNull int downvotes, @NonNull String timeCreated, @NonNull int hotness, @NonNull int rating ) {
         if (!(name.isEmpty())) {
-            this.beerName = name;
+            this.name = name;
             this.imageID = imageID;
-            this.beerUpvotes = upvotes;
-            this.beerDownvotes = downvotes;
+            this.upvotes = upvotes;
+            this.downvotes = downvotes;
 
             this.timeCreated = Long.parseLong(timeCreated);
 
-            this.hotness = (int) Integer.parseInt(hotness);
+            this.hotness = hotness;
 
-            this.beerRating = this.beerUpvotes - this.beerDownvotes;
+            this.rating = rating;
 
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
@@ -52,11 +51,12 @@ public class Beer {
 
     public Beer(String name) {
         if (!(name.isEmpty())) {
-            this.beerName = name;
-            this.beerUpvotes = 1;
-            this.beerDownvotes = 0;
+            this.name = name;
+            this.upvotes = 1;
+            this.downvotes = 0;
 
-            this.beerHotness = 24;
+            this.hotness = 24;
+            this.rating = this.hotness*(this.upvotes - this.downvotes);
             this.timeCreated = System.currentTimeMillis() / 1000L;
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
@@ -67,16 +67,16 @@ public class Beer {
     public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
                 @NonNull int downvotes) {
         if (!(name.isEmpty())) {
-            this.beerName = name;
+            this.name = name;
             this.imageID = imageID;
-            this.beerUpvotes = upvotes;
-            this.beerDownvotes = downvotes;
+            this.upvotes = upvotes;
+            this.downvotes = downvotes;
 
             this.timeCreated = System.currentTimeMillis() / 1000L;
 
             this.hotness = 0;
 
-            this.beerRating = this.beerUpvotes - this.beerDownvotes;
+            this.rating = this.upvotes - this.downvotes;
             //Log.e(LOG_TAG, String.valueOf(R.drawable.calsberg));
 
         } else {
@@ -94,13 +94,12 @@ public class Beer {
         }
     }
 
-    public int getBeerRating() {
+    public int getRating() {
         // Basic implementation, change
-        return this.beerRating;
+        return this.rating;
     }
 
     public long getTimeCreated() {
         return this.timeCreated;
     }
-
 }

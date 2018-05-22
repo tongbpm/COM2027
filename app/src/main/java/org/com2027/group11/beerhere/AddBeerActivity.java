@@ -23,7 +23,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -48,6 +51,7 @@ public class AddBeerActivity extends AppCompatActivity {
     private static final int REQUEST_GALLERY = 20;
     private static final String TAG = "Add_Beer_Activity" ;
 
+    private static final SynchronisationManager syncManager = SynchronisationManager.getInstance();
 
     private Spinner mCountry = null;
     private ArrayList<String> mCountryList;
@@ -63,6 +67,7 @@ public class AddBeerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_beer);
+
 
         mCountry = findViewById(R.id.country_spinner);
         populateCountryLists();
@@ -94,7 +99,8 @@ public class AddBeerActivity extends AppCompatActivity {
                     if(mBitmap != null){
                         beer.setBeerImage(mBitmap);
                     }
-                    Toast.makeText(AddBeerActivity.this, beer.beerName, Toast.LENGTH_LONG).show();
+                    Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
+                    syncManager.saveBeerToFirebase(mCountry.getSelectedItem().toString(), beer.name, beer);
                 }else{
                     Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
                 }
@@ -225,7 +231,8 @@ public class AddBeerActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_"+timeStamp+"_";
+        String imageFileName = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
+        Toast.makeText(AddBeerActivity.this, imageFileName, Toast.LENGTH_SHORT).show();
         File storageDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
         Log.d(TAG, storageDir.getPath());
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
