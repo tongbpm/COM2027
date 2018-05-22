@@ -16,7 +16,6 @@ import org.com2027.group11.beerhere.R;
 @IgnoreExtraProperties
 public class Beer {
 
-    private int beerHotness;
     public Bitmap beerImageBmp;
     public String beerName;
     public int beerUpvotes;
@@ -31,7 +30,7 @@ public class Beer {
     public Beer() {}
 
     public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
-                @NonNull int downvotes, @NonNull String timeCreated, @NonNull String hotness) {
+                @NonNull int downvotes, @NonNull String timeCreated, @NonNull int hotness, @NonNull int rating ) {
         if (!(name.isEmpty())) {
             this.beerName = name;
             this.imageID = imageID;
@@ -40,9 +39,9 @@ public class Beer {
 
             this.timeCreated = Long.parseLong(timeCreated);
 
-            this.hotness = (int) Integer.parseInt(hotness);
+            this.hotness = hotness;
 
-            this.beerRating = this.beerUpvotes - this.beerDownvotes;
+            this.beerRating = rating;
 
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
@@ -56,7 +55,7 @@ public class Beer {
             this.beerUpvotes = 1;
             this.beerDownvotes = 0;
 
-            this.beerHotness = 24;
+            this.hotness = 24;
             this.timeCreated = System.currentTimeMillis() / 1000L;
         } else {
             Log.e(LOG_TAG, "Beer: Failed to create, empty name");
@@ -102,5 +101,4 @@ public class Beer {
     public long getTimeCreated() {
         return this.timeCreated;
     }
-
 }

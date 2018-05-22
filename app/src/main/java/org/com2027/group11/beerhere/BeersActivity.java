@@ -22,6 +22,7 @@ import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -162,8 +163,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         } else {
             Log.e(LOG_TAG, "Changed beer not found in array adapter?");
         }
-
         this.adapter.notifyDataSetChanged();
+
+        Collections.reverse(this.beers);
     }
 
 }

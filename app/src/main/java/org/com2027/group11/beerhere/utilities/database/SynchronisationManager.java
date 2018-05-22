@@ -11,7 +11,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
@@ -112,7 +111,6 @@ public class SynchronisationManager {
 
     protected SynchronisationManager() {
         Iterator iter = this.firebasePaths.entrySet().iterator();
-
         this.registeredCallbacks = new ArrayList<FirebaseMutator>();
 
         while (iter.hasNext()) {
@@ -225,7 +223,7 @@ public class SynchronisationManager {
 
         DatabaseReference ref = this.database.getReference().child(path).child("beers");
         Log.e(LOG_TAG, ref.getKey());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(LOG_TAG, dataSnapshot.getKey());
@@ -267,7 +265,7 @@ public class SynchronisationManager {
     }
 
     private Beer createBeerFromFirebaseMap(@NonNull HashMap<String, Object> inMap, @NonNull String mapName) {
-        int upvotes;
+        int upvotes = 0;
         try {
             upvotes = ( (Long) inMap.get("upvotes")).intValue();
         } catch (NullPointerException e) {
@@ -288,11 +286,11 @@ public class SynchronisationManager {
             downvotes = 0;
         }
 
-        String hotness;
+        int hotness;
         try {
-            hotness = Long.toString((Long) inMap.get("hotness"));
+            hotness = ((Long) inMap.get("hotness")).intValue();
         } catch (NullPointerException e) {
-            hotness = "0";
+            hotness = 0;
         }
 
         int image_id;
@@ -302,7 +300,14 @@ public class SynchronisationManager {
             image_id = 0;
         }
 
-        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness);
+        int rating;
+        try{
+            rating = ((Long)inMap.get("rating")).intValue();
+        }catch (NullPointerException e){
+            rating = 0;
+        }
+
+        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating);
         return beer;
     }
 
