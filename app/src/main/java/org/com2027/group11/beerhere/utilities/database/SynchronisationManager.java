@@ -293,11 +293,11 @@ public class SynchronisationManager {
             hotness = 0;
         }
 
-        int image_id;
+        String image_id;
         try {
-            image_id = ( (Long) inMap.get("image_id")).intValue();
+            image_id =  (String)inMap.get("image_id");
         } catch (NullPointerException e) {
-            image_id = 0;
+            image_id = "";
         }
 
         int rating;
