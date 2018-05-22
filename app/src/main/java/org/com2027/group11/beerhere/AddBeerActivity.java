@@ -49,6 +49,7 @@ public class AddBeerActivity extends AppCompatActivity {
     private static final int LOAD_IMAGE = 2;
     private static final int REQUEST_CAMERA =  10;
     private static final int REQUEST_GALLERY = 20;
+    private static final String[] COUNTRIES = {"Austria",  "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary", "Ireland", "Italy", "Latvia", "Lithuania", "Luxembourg", "Malta", "Netherlands", "Poland", "Portugal", "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "United Kingdom"};
     private static final String TAG = "Add_Beer_Activity" ;
 
     private static final SynchronisationManager syncManager = SynchronisationManager.getInstance();
@@ -194,12 +195,9 @@ public class AddBeerActivity extends AppCompatActivity {
     private void populateCountryLists() {
         //Use a set so duplicate countries do not get added
         Set countrySet = new ArraySet<>();
-        Locale[] locales = Locale.getAvailableLocales();
 
         //Add all countries to the list
-        String country;
-        for (Locale locale : locales) {
-            country = locale.getDisplayCountry();
+        for (String country : COUNTRIES) {
             if (country.length() > 0) {
                 countrySet.add(country);
             }
