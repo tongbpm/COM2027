@@ -195,13 +195,13 @@ public class SynchronisationManager {
         return null;
     }
 
-    public  void saveBeerToFirebase(@Path String country, String beerName, Beer savedObject) throws NullPointerException {
+    public void saveBeerToFirebase(@Path String country, String beerName, Beer savedObject) throws NullPointerException {
         String path = this.searchForFirebasePath(country);
         if (path == null) {
             throw new NullPointerException("Firebase country path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference().getRoot().child(country);
+        DatabaseReference ref = this.database.getReference().child("countries").child(country).child("beers");
         DatabaseReference newObjectRef = ref.child(beerName);
 
         newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
@@ -267,11 +267,40 @@ public class SynchronisationManager {
     }
 
     private Beer createBeerFromFirebaseMap(@NonNull HashMap<String, Object> inMap, @NonNull String mapName) {
-        int upvotes = ( (Long) inMap.get("upvotes")).intValue();
-        String time_created = Long.toString((Long) inMap.get("time_created"));
-        int downvotes = ( (Long) inMap.get("downvotes")).intValue();
-        String hotness = Long.toString((Long) inMap.get("hotness"));
-        int image_id = ( (Long) inMap.get("image_id")).intValue();
+        int upvotes;
+        try {
+            upvotes = ( (Long) inMap.get("upvotes")).intValue();
+        } catch (NullPointerException e) {
+            upvotes = 0;
+        }
+
+        String time_created;
+        try {
+            time_created = Long.toString((Long) inMap.get("time_created"));
+        } catch (NullPointerException e) {
+            time_created = "0";
+        }
+
+        int downvotes;
+        try {
+            downvotes = ( (Long) inMap.get("downvotes")).intValue();
+        } catch (NullPointerException e) {
+            downvotes = 0;
+        }
+
+        String hotness;
+        try {
+            hotness = Long.toString((Long) inMap.get("hotness"));
+        } catch (NullPointerException e) {
+            hotness = "0";
+        }
+
+        int image_id;
+        try {
+            image_id = ( (Long) inMap.get("image_id")).intValue();
+        } catch (NullPointerException e) {
+            image_id = 0;
+        }
 
         Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness);
         return beer;
