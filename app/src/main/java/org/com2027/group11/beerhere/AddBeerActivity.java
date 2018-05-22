@@ -23,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
@@ -229,7 +231,8 @@ public class AddBeerActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_"+timeStamp+"_";
+        String imageFileName = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
+        Toast.makeText(AddBeerActivity.this, imageFileName, Toast.LENGTH_SHORT).show();
         File storageDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
         Log.d(TAG, storageDir.getPath());
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
