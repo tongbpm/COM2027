@@ -1,19 +1,35 @@
 package org.com2027.group11.beerhere.utilities.database;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.View;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -21,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by apotter on 23/04/18.
@@ -31,9 +48,13 @@ public class SynchronisationManager {
 
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final FirebaseStorage storage = FirebaseStorage.getInstance();
     private List<FirebaseMutator> registeredCallbacks;
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
+    private List<String> images = new ArrayList<>();
+
+    private final int IMAGE_REQUEST = 71;
 
     // Path enumerations for adding data to Firebase storage
     // Android doesn't like Enum structures, so use this for better performance
@@ -254,6 +275,77 @@ public class SynchronisationManager {
         });
     }
 
+    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String beerName, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        StorageReference storageReference = this.storage.getReference().child("images");
+        String imgStorageString = type + "-" + beerName + "-" + UUID.randomUUID() + ".jpg";
+        StorageReference imageReference = storageReference.child(imgStorageString);
+
+        // Show a notification to the user
+        final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
+        sbarStart.show();
+
+        UploadTask task = imageReference.putBytes(data);
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                sbarStart.setText(R.string.uploading_image_failed);
+                sbarStart.show();
+            }
+        });
+        task.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                sbarStart.setText(R.string.uploading_image_success);
+                sbarStart.show();
+                images.add(imgStorageString);
+            }
+        });
+
+    }
+
+    public void getBitmapForBeerFromFirebase(@NonNull @Path String type, @NonNull String beerName) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        StorageReference storageReference = this.storage.getReference().child("images");
+        final long ONE_MB = 1024 * 1024;
+
+        // Search for correct URI to download
+        for (String imgPath : this.images) {
+            String[] splitString = imgPath.split("-");
+
+            // Beer name should be the second value
+            if (splitString[1].equals(beerName)) {
+               StorageReference imageRef = storageReference.child(imgPath);
+
+               imageRef.getBytes(ONE_MB).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                   @Override
+                   public void onSuccess(byte[] bytes) {
+                       ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                       Bitmap bitmap = BitmapFactory.decodeStream(bais);
+
+                       for (FirebaseMutator mut : registeredCallbacks) {
+                           mut.callbackGetBitmapForBeerFromFirebase(bitmap);
+                       }
+                   }
+               });
+            }
+        }
+
+
+    }
+
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
@@ -331,5 +423,4 @@ public class SynchronisationManager {
             this.registeredCallbacks.remove(mutatorContext);
         }
     }
-
 }
