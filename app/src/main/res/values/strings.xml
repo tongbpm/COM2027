@@ -29,4 +29,8 @@
     <string name="write_permission">External storage is needed to use the camera.</string>
     <string name="permission_not_granted">Permission was not granted.</string>
     <string name="fill_required_fields">Please fill out all required fields</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_submissions">Your Submissions </string>
+    <string name="nav_favourites">Favourites</string>
+    <string name="nav_countries">Countries</string>
 </resources>
