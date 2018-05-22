@@ -47,13 +47,15 @@ public class FavoritesActivity extends AppCompatActivity {
 
         NavigationView navigationView = findViewById(R.id.fav_nav_view);
         navigationView.setNavigationItemSelectedListener(
-                menuItem -> {
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
                     //set item as selected to persist highlight
                     menuItem.setChecked(true);
                     //close drawer when item is tapped
                     mDrawerLayout.closeDrawers();
                     return false;
-                }
+                }}
         );
 
 
