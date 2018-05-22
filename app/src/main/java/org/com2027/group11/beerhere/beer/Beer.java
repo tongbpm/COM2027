@@ -63,7 +63,8 @@ public class Beer {
         }
     }
 
-    public Beer(String name, int imageID, @NonNull int upvotes,
+
+    public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
                 @NonNull int downvotes) {
         if (!(name.isEmpty())) {
             this.beerName = name;
@@ -101,7 +102,5 @@ public class Beer {
     public long getTimeCreated() {
         return this.timeCreated;
     }
-
-
 
 }
