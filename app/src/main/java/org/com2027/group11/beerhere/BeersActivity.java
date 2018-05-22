@@ -60,11 +60,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
         );
 
-
-
-        this.firebaseManager.registerCallbackWithManager(this);
-        //this.firebaseManager.getObjectsForTypeFromFirebase(null, SynchronisationManager.BELGIUM);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +94,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         );
 
         displayBeers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(LOG_TAG, "beers activity called onResume");
+        this.firebaseManager.registerCallbackWithManager(this);
     }
 
     @Override
@@ -145,6 +147,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         }
 
         if (foundBeer != null) {
+            Log.e(LOG_TAG, "Removed: " + foundBeer.name);
             this.beers.remove(foundBeer);
         }
 
@@ -155,6 +158,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     public void callbackObjectChangedFromFirebase(Object object) {
         Log.i(LOG_TAG, "BeersActivity: object received from Firebase!");
         Beer beer = (Beer) object;
+        Log.e(LOG_TAG, "Beer changed: " + beer.name);
         Beer originalBeer = null;
 
         // Find original beer in list

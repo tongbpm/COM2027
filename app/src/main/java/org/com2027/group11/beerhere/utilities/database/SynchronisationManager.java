@@ -146,7 +146,7 @@ public class SynchronisationManager {
 
                     List<Object> returnedObjects = new ArrayList<Object>();
 
-                    Log.e(LOG_TAG, dataSnapshot.getKey());
+                    Log.e(LOG_TAG, "added: " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
@@ -162,6 +162,7 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
+                        Log.e(LOG_TAG, "OBJECT CHANGED");
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
@@ -170,6 +171,7 @@ public class SynchronisationManager {
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     for (FirebaseMutator mut : registeredCallbacks) {
                         mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
+                        Log.e(LOG_TAG, "OBJECT REMOVED");
                     }
                 }
 
@@ -409,7 +411,10 @@ public class SynchronisationManager {
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
     public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
-        if (!this.registeredCallbacks.contains(mutatorContext)) {
+        if (this.registeredCallbacks.contains(mutatorContext)) {
+            Log.i(LOG_TAG, "Mutator context already exists in callback");
+        } else {
+            Log.i(LOG_TAG, "Mutator context registered with SyncManager");
             this.registeredCallbacks.add(mutatorContext);
         }
     }
@@ -420,6 +425,7 @@ public class SynchronisationManager {
      */
     public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
         if (this.registeredCallbacks.contains(mutatorContext)) {
+            Log.i(LOG_TAG, "Mutator context deregistered with SyncManager");
             this.registeredCallbacks.remove(mutatorContext);
         }
     }
