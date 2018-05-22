@@ -1,6 +1,8 @@
 package org.com2027.group11.beerhere;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -12,12 +14,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
+import org.com2027.group11.beerhere.user.User;
+import org.com2027.group11.beerhere.user.UserDao;
+import org.com2027.group11.beerhere.utilities.database.AppDatabase;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,17 +38,25 @@ public class BeersActivity extends AppCompatActivity {
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
+    private static final String TAG = "MAIN_ACTIVITY";
+    //private Context mContext;
+    //private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    TextView username;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
         mDrawerLayout = findViewById(R.id.drawer_layout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -80,12 +99,15 @@ public class BeersActivity extends AppCompatActivity {
 
                     @Override
                     public void onDrawerStateChanged(int newState) {
-                        // Respond when the drawer motino stated changed
+                        // Respond when the drawer motion stated changed
                     }
                 }
         );
 
         displayBeers();
+        userthread.start();
+
+
     }
 
     @Override
@@ -97,6 +119,29 @@ public class BeersActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public User getUser(){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String uid = mAuth.getCurrentUser().getUid();
+        Log.e("Beer uid", uid);
+        UserDao userDao = AppDatabase.getAppDatabase(this).userDao();
+        User user = userDao.findByID(uid);
+        Log.e("user", user.name);
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View view = layoutInflater.inflate(R.layout.nav_header, null );
+        String username = user.name.toString();
+        Log.e("username", username);
+        final TextView textView = (TextView) view.findViewById(R.id.userName);
+        textView.setText(username);
+        return user;
+    }
+    Thread userthread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            getUser();
+        }
+    });
+
 
     private void displayBeers(){
         ViewGroup view = findViewById(android.R.id.content);
