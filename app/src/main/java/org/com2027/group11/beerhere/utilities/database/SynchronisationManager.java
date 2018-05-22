@@ -195,14 +195,14 @@ public class SynchronisationManager {
         return null;
     }
 
-    public <T> void saveObjectToFirebase(@Path String type, String id, T savedObject) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
+    public  void saveBeerToFirebase(@Path String country, String beerName, Beer savedObject) throws NullPointerException {
+        String path = this.searchForFirebasePath(country);
         if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
+            throw new NullPointerException("Firebase country path does not exist.");
         }
 
-        DatabaseReference ref = this.database.getReference().getRoot().child(type);
-        DatabaseReference newObjectRef = ref.child(id);
+        DatabaseReference ref = this.database.getReference().getRoot().child(country);
+        DatabaseReference newObjectRef = ref.child(beerName);
 
         newObjectRef.setValue(savedObject, new DatabaseReference.CompletionListener() {
             @Override
