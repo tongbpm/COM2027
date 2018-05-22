@@ -62,6 +62,7 @@ public class AddBeerActivity extends AppCompatActivity {
     private String mCurrentPhotoPath;
     private EditText mNameEditText;
     private Button mSubmitButton;
+    private  String mImageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +96,16 @@ public class AddBeerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (mCountry.getSelectedItem().toString().length() > 0 && mNameEditText.getText().toString().length() > 0){
                     //If both compulsory fields have been filled out
-                    Beer beer = new Beer(mNameEditText.getText().toString());
+                    String countryName = mCountry.getSelectedItem().toString();
+                    countryName.replace(' ', '_');
+                    Beer beer = new Beer(mNameEditText.getText().toString(), mImageId);
                     if(mBitmap != null){
                         beer.setBeerImage(mBitmap);
                     }
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
                     syncManager.saveBeerToFirebase(mCountry.getSelectedItem().toString(), beer.name, beer);
+                    Intent intent = new Intent(AddBeerActivity.this, BeersActivity.class);
+                    startActivity(intent);
                 }else{
                     Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
                 }
@@ -231,11 +236,10 @@ public class AddBeerActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException{
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
-        Toast.makeText(AddBeerActivity.this, imageFileName, Toast.LENGTH_SHORT).show();
+        mImageId = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
         File storageDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
         Log.d(TAG, storageDir.getPath());
-        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
+        File image = File.createTempFile(mImageId, ".jpg", storageDir);
 
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;

@@ -21,7 +21,7 @@ public class Beer {
     public int upvotes;
     public int downvotes;
     private int rating;
-    public int imageID;
+    public String imageID;
     public long timeCreated;
     public int hotness;
 
@@ -29,7 +29,7 @@ public class Beer {
 
     public Beer() {}
 
-    public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
+    public Beer(String name, @NonNull String imageID, @NonNull int upvotes,
                 @NonNull int downvotes, @NonNull String timeCreated, @NonNull int hotness, @NonNull int rating ) {
         if (!(name.isEmpty())) {
             this.name = name;
@@ -48,12 +48,13 @@ public class Beer {
         }
     }
 
-
-    public Beer(String name) {
+    public Beer(String name, String imageId) {
         if (!(name.isEmpty())) {
             this.name = name;
             this.upvotes = 1;
             this.downvotes = 0;
+
+            this.imageID = imageId;
 
             this.hotness = 24;
             this.rating = this.hotness*(this.upvotes - this.downvotes);
@@ -64,7 +65,7 @@ public class Beer {
     }
 
 
-    public Beer(String name, @NonNull int imageID, @NonNull int upvotes,
+    public Beer(String name, @NonNull String imageID, @NonNull int upvotes,
                 @NonNull int downvotes) {
         if (!(name.isEmpty())) {
             this.name = name;
