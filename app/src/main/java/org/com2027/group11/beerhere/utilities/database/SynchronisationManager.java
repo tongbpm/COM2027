@@ -50,7 +50,6 @@ public class SynchronisationManager {
     private List<FirebaseMutator> registeredCallbacks;
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
-    private List<String> images = new ArrayList<>();
 
     private Gson gson = new Gson();
 
@@ -134,9 +133,6 @@ public class SynchronisationManager {
         Iterator iter = this.firebasePaths.entrySet().iterator();
         this.registeredCallbacks = new ArrayList<FirebaseMutator>();
 
-        // Update images
-        this.getImageReferenceArray();
-
         while (iter.hasNext()) {
             Map.Entry pair = (Map.Entry) iter.next();
             this.references.add(this.database.getReference(pair.getValue().toString()));
@@ -147,12 +143,9 @@ public class SynchronisationManager {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                    // Update images
-                    getImageReferenceArray();
-
                     List<Object> returnedObjects = new ArrayList<Object>();
 
-                    Log.e(LOG_TAG, "added: " + dataSnapshot.getKey());
+                    Log.e(LOG_TAG, "child added to Firebase: " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
@@ -161,14 +154,11 @@ public class SynchronisationManager {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
                     }
 
-                    getBitmapForBeerFromFirebase(beer.name);
+                    getBitmapForBeerFromFirebase(beer.imageID);
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    // Update images
-                    getImageReferenceArray();
 
                     for (FirebaseMutator mut : registeredCallbacks) {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
@@ -176,7 +166,7 @@ public class SynchronisationManager {
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                         Log.e(LOG_TAG, "OBJECT CHANGED");
 
-                        getBitmapForBeerFromFirebase(beer.name);
+                        getBitmapForBeerFromFirebase(beer.imageID);
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
@@ -267,7 +257,7 @@ public class SynchronisationManager {
                 Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
 
                 List<Object> returnedObjects = new ArrayList<Object>();
-                getImageReferenceArray();
+                //getImageReferenceArray();
 
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
@@ -294,7 +284,7 @@ public class SynchronisationManager {
         });
     }
 
-    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String beerName, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
+    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
@@ -305,8 +295,7 @@ public class SynchronisationManager {
         byte[] data = baos.toByteArray();
 
         StorageReference storageReference = this.storage.getReference().child("images");
-        String imgStorageString = type + "-" + beerName + "-" + imageID + ".jpg";
-        StorageReference imageReference = storageReference.child(imgStorageString);
+        StorageReference imageReference = storageReference.child(imageID + ".jpg");
 
         // Show a notification to the user
         final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
@@ -323,43 +312,36 @@ public class SynchronisationManager {
             Log.d(LOG_TAG, "Upload Successful");
             sbarStart.setText(R.string.uploading_image_success);
             sbarStart.show();
-            images.add(imgStorageString);
-            saveImageReferenceArrayFirebase();
         });
 
     }
 
-    public void getBitmapForBeerFromFirebase(@NonNull String beerName) {
+    public void getBitmapForBeerFromFirebase(@NonNull String imageID) {
         Log.i(LOG_TAG, "BitmapForBeer method called!");
 
         StorageReference storageReference = this.storage.getReference().child("images");
         final long SIZE = 1024 * 1024 * 2;
 
-        // Search for correct URI to download
-        for (String imgPath : this.images) {
-            String[] splitString = imgPath.split("-");
-            Log.i(LOG_TAG, "getBitmapForBeer: Found image for beer: " + beerName);
 
-            // Beer name should be the second value
-            if (splitString[1].equals(beerName)) {
-               StorageReference imageRef = storageReference.child(imgPath);
+        Log.i(LOG_TAG, "getBitmapForBeer: Attempting to query for beer ID: " + imageID);
 
-               imageRef.getBytes(SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                   @Override
-                   public void onSuccess(byte[] bytes) {
-                       ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                       Bitmap bitmap = BitmapFactory.decodeStream(bais);
-                       Log.i(LOG_TAG, "Bitmap value is : " + bitmap.toString());
+        // Beer name should be the second value
+        StorageReference imageRef = storageReference.child(imageID + ".jpg");
+        Log.i(LOG_TAG, "ImageRef : " + imageRef.getPath());
 
-                       for (FirebaseMutator mut : registeredCallbacks) {
-                           mut.callbackGetBitmapForBeerFromFirebase(splitString[1], bitmap);
-                       }
-                   }
-               });
-            }
-        }
+        imageRef.getBytes(SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+           @Override
+           public void onSuccess(byte[] bytes) {
+               ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+               Bitmap bitmap = BitmapFactory.decodeStream(bais);
+               Log.i(LOG_TAG, "Image bitmap received for path: " + imageRef);
 
+               for (FirebaseMutator mut : registeredCallbacks) {
+                   mut.callbackGetBitmapForBeerFromFirebase(imageID, bitmap);
 
+               }
+           }
+        });
     }
 
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
@@ -403,7 +385,7 @@ public class SynchronisationManager {
 
         String image_id;
         try {
-            image_id =  (String)inMap.get("image_id");
+            image_id =  (String) inMap.get("imageID");
         } catch (NullPointerException e) {
             image_id = "";
         }
@@ -417,41 +399,6 @@ public class SynchronisationManager {
 
         Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating);
         return beer;
-    }
-
-    private void saveImageReferenceArrayFirebase() {
-        DatabaseReference ref = this.database.getReference().child("image_paths");
-
-        ref.setValue(this.gson.toJson(this.images), new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                Log.i(LOG_TAG, "Image references saved successfully!");
-            }
-        });
-    }
-
-    private void getImageReferenceArray() {
-        DatabaseReference ref = this.database.getReference().child("image_paths");
-
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String json = (String) dataSnapshot.getValue();
-                Log.i(LOG_TAG, "raw path: " + json);
-                images = gson.fromJson(json, List.class);
-
-                if (images == null) {
-                    images = new ArrayList<String>();
-                }
-
-                Log.i(LOG_TAG, "Images updated!");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, "Firebase Image reference reading failed");
-            }
-        });
     }
 
     /**
