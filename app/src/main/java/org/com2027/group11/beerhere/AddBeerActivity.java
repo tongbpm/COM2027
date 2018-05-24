@@ -68,6 +68,9 @@ public class AddBeerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        generateImageId();
+
         setContentView(R.layout.activity_add_beer);
 
 
@@ -236,8 +239,6 @@ public class AddBeerActivity extends AppCompatActivity {
     }
 
     private File createImageFile() throws IOException{
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        mImageId = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
         File storageDir = getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
         Log.d(TAG, storageDir.getPath());
         File image = File.createTempFile(mImageId, ".jpg", storageDir);
@@ -254,5 +255,10 @@ public class AddBeerActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    private void generateImageId(){
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        mImageId = FirebaseAuth.getInstance().getUid()+"_"+timeStamp;
     }
 }

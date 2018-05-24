@@ -2,6 +2,7 @@ package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         Beer beer = beers.get(position);
 
         holder.tvRank.setText(String.valueOf(position+1));
+        Log.i("beer-here", "attempting to set beer adapter value bitmap");
         if(beer.beerImageBmp != null) {
             holder.imBeer.setImageBitmap(beer.beerImageBmp);
         }

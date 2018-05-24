@@ -225,6 +225,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             }
         }
 
+        for (Beer b : this.beers) {
+            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
+        }
+
         this.adapter.notifyDataSetChanged();
     }
 
@@ -266,6 +270,11 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         } else {
             Log.e(LOG_TAG, "Changed beer not found in array adapter?");
         }
+
+        for (Beer b : this.beers) {
+            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
+        }
+
         this.adapter.notifyDataSetChanged();
 
         Collections.reverse(this.beers);
@@ -278,6 +287,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         for (Beer b : this.beers) {
             if (b.name.equals(beerName)) {
                 b.setBeerImage(bitmap);
+                Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
             }
         }
 
