@@ -295,21 +295,18 @@ public class SynchronisationManager {
         final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
         sbarStart.show();
 
+        Log.d(LOG_TAG, "Uploading Image");
         UploadTask task = imageReference.putBytes(data);
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                sbarStart.setText(R.string.uploading_image_failed);
-                sbarStart.show();
-            }
+        task.addOnFailureListener(e -> {
+            e.printStackTrace();
+            sbarStart.setText(R.string.uploading_image_failed);
+            sbarStart.show();
         });
-        task.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                sbarStart.setText(R.string.uploading_image_success);
-                sbarStart.show();
-                images.add(imgStorageString);
-            }
+        task.addOnSuccessListener(taskSnapshot -> {
+            Log.d(LOG_TAG, "Upload Successful");
+            sbarStart.setText(R.string.uploading_image_success);
+            sbarStart.show();
+            images.add(imgStorageString);
         });
 
     }
