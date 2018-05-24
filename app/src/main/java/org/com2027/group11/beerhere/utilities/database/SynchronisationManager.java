@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
 import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.beer.Beer;
@@ -53,6 +54,8 @@ public class SynchronisationManager {
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
     private List<String> images = new ArrayList<>();
+
+    private Gson gson = new Gson();
 
     private final int IMAGE_REQUEST = 71;
 
@@ -307,6 +310,7 @@ public class SynchronisationManager {
             sbarStart.setText(R.string.uploading_image_success);
             sbarStart.show();
             images.add(imgStorageString);
+            saveImageReferenceArrayFirebase();
         });
 
     }
@@ -315,6 +319,9 @@ public class SynchronisationManager {
 
         StorageReference storageReference = this.storage.getReference().child("images");
         final long ONE_MB = 1024 * 1024;
+
+        // Update images
+        this.getImageReferenceArray();
 
         // Search for correct URI to download
         for (String imgPath : this.images) {
@@ -398,6 +405,34 @@ public class SynchronisationManager {
         return beer;
     }
 
+    private void saveImageReferenceArrayFirebase() {
+        DatabaseReference ref = this.database.getReference().child("image_paths");
+
+        ref.setValue(this.gson.toJson(this.images), new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                Log.i(LOG_TAG, "Image references saved successfully!");
+            }
+        });
+    }
+
+    private void getImageReferenceArray() {
+        DatabaseReference ref = this.database.getReference().child("image_paths");
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String json = (String) dataSnapshot.getValue();
+                images = gson.fromJson(json, List.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG, "Firebase Image reference reading failed");
+            }
+        });
+    }
+
     /**
      * Call this before using the manager so it can keep track of where to send updated objects,
      * as it operates asynchronously.
@@ -422,4 +457,5 @@ public class SynchronisationManager {
             this.registeredCallbacks.remove(mutatorContext);
         }
     }
+
 }
