@@ -7,10 +7,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.com2027.group11.beerhere.R;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -33,6 +35,8 @@ public class Beer {
     public String imageID;
     public long timeCreated;
     public int hotness;
+    @Exclude
+    public DatabaseReference ref;
     @Exclude
     public Set<String> upvoters = new HashSet<>();
     @Exclude
@@ -103,6 +107,10 @@ public class Beer {
         }
     }
 
+    private void updateFirebase(){
+        SynchronisationManager.getInstance().updateBeer(this.ref, this);
+    }
+
     public void upvote(String uid, Context context){
         if(upvoters.contains(uid)){
             //user already upvoted
@@ -115,6 +123,7 @@ public class Beer {
                 downvotes--;
             }
         }
+        updateFirebase();
     }
 
     public  void downvote(String uid, Context context){
@@ -129,6 +138,7 @@ public class Beer {
                 upvotes--;
             }
         }
+        updateFirebase();
     }
 
     @Exclude

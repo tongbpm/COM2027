@@ -77,6 +77,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 beer.upvote(FirebaseAuth.getInstance().getCurrentUser().getUid(), BeerListAdapter.this.context);
                 Log.d(TAG, "Upvotes: " + beer.upvotes);
                 Log.d(TAG, "Downvotes: " + beer.downvotes);
+                Log.d(TAG, beer.ref.toString());
             }
         });
 

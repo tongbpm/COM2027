@@ -156,6 +156,8 @@ public class SynchronisationManager {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
                     }
 
+                    beer.ref = databaseReference.child("beers").child(beer.name);
+
                     getBitmapForBeerFromFirebase(beer.imageID);
                 }
 
@@ -166,7 +168,9 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
+                        beer.ref = dataSnapshot.getRef();
                         Log.e(LOG_TAG, "OBJECT CHANGED");
+                        Log.d(LOG_TAG, "REF: "+beer.ref.toString());
 
                         getBitmapForBeerFromFirebase(beer.imageID);
                         mut.callbackObjectChangedFromFirebase(beer);
@@ -415,6 +419,10 @@ public class SynchronisationManager {
 
         Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating, upvoters, downvoters);
         return beer;
+    }
+
+    public void updateBeer(DatabaseReference ref, Beer beer){
+        ref.setValue(beer);
     }
 
     /**
