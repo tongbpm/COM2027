@@ -2,8 +2,7 @@ package org.com2027.group11.beerhere.utilities.database;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.AsyncTask;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
@@ -11,7 +10,6 @@ import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +36,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by apotter on 23/04/18.
@@ -137,6 +134,9 @@ public class SynchronisationManager {
         Iterator iter = this.firebasePaths.entrySet().iterator();
         this.registeredCallbacks = new ArrayList<FirebaseMutator>();
 
+        // Update images
+        this.getImageReferenceArray();
+
         while (iter.hasNext()) {
             Map.Entry pair = (Map.Entry) iter.next();
             this.references.add(this.database.getReference(pair.getValue().toString()));
@@ -147,12 +147,17 @@ public class SynchronisationManager {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                    // Update images
+                    getImageReferenceArray();
+
                     List<Object> returnedObjects = new ArrayList<Object>();
 
                     Log.e(LOG_TAG, "added: " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
+
+                    getBitmapForBeerFromFirebase(beer.name);
 
                     for (FirebaseMutator mut : registeredCallbacks) {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
@@ -161,11 +166,17 @@ public class SynchronisationManager {
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                    // Update images
+                    getImageReferenceArray();
+
                     for (FirebaseMutator mut : registeredCallbacks) {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                         Log.e(LOG_TAG, "OBJECT CHANGED");
+
+                        getBitmapForBeerFromFirebase(beer.name);
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
@@ -260,6 +271,7 @@ public class SynchronisationManager {
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
+                    getBitmapForBeerFromFirebase(beer.name);
                     returnedObjects.add(beer);
                 }
 
@@ -287,7 +299,7 @@ public class SynchronisationManager {
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
         byte[] data = baos.toByteArray();
 
         StorageReference storageReference = this.storage.getReference().child("images");
@@ -316,26 +328,26 @@ public class SynchronisationManager {
     }
 
     public void getBitmapForBeerFromFirebase(@NonNull String beerName) {
+        Log.i(LOG_TAG, "BitmapForBeer method called!");
 
         StorageReference storageReference = this.storage.getReference().child("images");
-        final long ONE_MB = 1024 * 1024;
-
-        // Update images
-        this.getImageReferenceArray();
+        final long SIZE = 1024 * 1024 * 12;
 
         // Search for correct URI to download
         for (String imgPath : this.images) {
             String[] splitString = imgPath.split("-");
+            Log.i(LOG_TAG, "getBitmapForBeer: Found image for beer: " + beerName);
 
             // Beer name should be the second value
             if (splitString[1].equals(beerName)) {
                StorageReference imageRef = storageReference.child(imgPath);
 
-               imageRef.getBytes(ONE_MB).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+               imageRef.getBytes(SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                    @Override
                    public void onSuccess(byte[] bytes) {
                        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
                        Bitmap bitmap = BitmapFactory.decodeStream(bais);
+                       Log.i(LOG_TAG, "Bitmap value is : " + bitmap.toString());
 
                        for (FirebaseMutator mut : registeredCallbacks) {
                            mut.callbackGetBitmapForBeerFromFirebase(splitString[1], bitmap);
@@ -423,7 +435,14 @@ public class SynchronisationManager {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String json = (String) dataSnapshot.getValue();
+                Log.i(LOG_TAG, "raw path: " + json);
                 images = gson.fromJson(json, List.class);
+
+                if (images == null) {
+                    images = new ArrayList<String>();
+                }
+
+                Log.i(LOG_TAG, "Images updated!");
             }
 
             @Override
