@@ -38,6 +38,7 @@ public class BeersActivity extends AppCompatActivity {
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
+    private NavigationView headerLayout;
     private static final String TAG = "MAIN_ACTIVITY";
     //private Context mContext;
     //private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -49,6 +50,7 @@ public class BeersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
         mDrawerLayout = findViewById(R.id.drawer_layout);
+        headerLayout = findViewById(R.id.nav_view);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -120,25 +122,31 @@ public class BeersActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public User getUser(){
+    public User getUserInfo(){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String uid = mAuth.getCurrentUser().getUid();
-        Log.e("Beer uid", uid);
         UserDao userDao = AppDatabase.getAppDatabase(this).userDao();
         User user = userDao.findByID(uid);
-        Log.e("user", user.name);
         LayoutInflater layoutInflater = getLayoutInflater();
-        View view = layoutInflater.inflate(R.layout.nav_header, null );
-        String username = user.name.toString();
-        Log.e("username", username);
-        final TextView textView = (TextView) view.findViewById(R.id.userName);
-        textView.setText(username);
+        View view = layoutInflater.inflate(R.layout.nav_header, headerLayout );
+        if (user.name == null){
+        }
+        else {
+            TextView name = (TextView) view.findViewById(R.id.userName);
+            name.setText(user.name);
+        }
+        if (user.email == null) {
+        }
+        else {
+            TextView email = view.findViewById(R.id.email);
+            email.setText(user.email);
+        }
         return user;
     }
     Thread userthread = new Thread(new Runnable() {
         @Override
         public void run() {
-            getUser();
+            getUserInfo();
         }
     });
 
