@@ -48,9 +48,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
     private Vector<Beer> beers = new Vector<Beer>();
-
     private DrawerLayout mDrawerLayout;
-
     private static final String LOG_TAG = "BEER-HERE";
     private FusedLocationProviderClient mFusedLocationClient;
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -120,49 +118,38 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             requestUsersLocationPermission();
         }
 
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if(userPermitedLocation()){
             Log.i(LOG_TAG, "User has allowed Beer Here to use device's location");
+            findUsersCountryAndShowIt();
+        }
+        else{
+            Log.i(LOG_TAG, "User has NOT allowed Beer Here to use device's location");
+        }
+
+        displayBeers();
+    }
+
+    private void findUsersCountryAndShowIt(){
+        try{
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-
                             if (location != null) {
                                 updateCountryShown(location);
                             }
                         }
                     });
+        }catch(SecurityException se){
+            se.printStackTrace();
         }
-        else {
-            Log.i(LOG_TAG, "User has NOT allowed Beer Here to use device's location");
-        }
-
-
-//
-//        if (userPermitedLocation()){
-//
-//        }
-
-        displayBeers();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if(userPermitedLocation()){
-            Log.i(LOG_TAG, "User has allowed Beer Here to use device's location");
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-
-                            if (location != null) {
-                                updateCountryShown(location);
-                            }
-                        }
-                    });
+            findUsersCountryAndShowIt();
         }else{
             Log.i(LOG_TAG, "User has NOT allowed Beer Here to use device's location");
         }
@@ -200,14 +187,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             return false;
         }
     }
-
-//
-//    private void requestUsersLocationPermission(){
-//        ActivityCompat.requestPermissions(this,
-//                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                MY_PERMISSIONS_REQUEST_FINE_LOCATION);
-//    }
-
 
     @Override
     protected void onResume() {
@@ -304,7 +283,4 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         this.adapter.notifyDataSetChanged();
     }
-
-
-
 }
