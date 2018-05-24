@@ -1,14 +1,25 @@
 package org.com2027.group11.beerhere;
 
+<<<<<<< HEAD
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 
+=======
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+>>>>>>> dev
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -23,7 +34,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+<<<<<<< HEAD
 import com.google.firebase.auth.FirebaseAuth;
+=======
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+>>>>>>> dev
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
@@ -36,8 +53,11 @@ import org.w3c.dom.Text;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
+import java.io.IOException;
+import java.security.Security;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Vector;
 
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
@@ -46,13 +66,18 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
     private Vector<Beer> beers = new Vector<Beer>();
-
     private DrawerLayout mDrawerLayout;
+<<<<<<< HEAD
     private NavigationView headerLayout;
     private static final String TAG = "MAIN_ACTIVITY";
 
 
+=======
+>>>>>>> dev
     private static final String LOG_TAG = "BEER-HERE";
+    private FusedLocationProviderClient mFusedLocationClient;
+    private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
+    private TextView country;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,14 +141,93 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
         );
 
+        // creates an instance of the fused location provider
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        country = (TextView) findViewById(R.id.country);
+
+        if (!userPermitedLocation()){
+            requestUsersLocationPermission();
+        }
+
+        if(userPermitedLocation()){
+            Log.i(LOG_TAG, "User has allowed Beer Here to use device's location");
+            findUsersCountryAndShowIt();
+        }
+        else{
+            Log.i(LOG_TAG, "User has NOT allowed Beer Here to use device's location");
+        }
+
         displayBeers();
         userthread.start();
 
 
     }
 
+<<<<<<< HEAD
     //opens the drawer when the navigation drawer "hamburger" button is tapped
     //handles click navigation events to start other fragments
+=======
+    private void findUsersCountryAndShowIt(){
+        try{
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                updateCountryShown(location);
+                            }
+                        }
+                    });
+        }catch(SecurityException se){
+            se.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(userPermitedLocation()){
+            findUsersCountryAndShowIt();
+        }else{
+            Log.i(LOG_TAG, "User has NOT allowed Beer Here to use device's location");
+        }
+    }
+
+    private void updateCountryShown(Location location){
+        double lat = (double) (location.getLatitude());
+        double lng = (double) (location.getLongitude());
+
+        final Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        List<Address> address = null;
+
+        try {
+            address = geocoder.getFromLocation(lat, lng, 5);
+            if(address.size()>0){
+                country.setText("Country: " +  address.get(0).getCountryName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void requestUsersLocationPermission(){
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+    }
+
+    private Boolean userPermitedLocation(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+>>>>>>> dev
     @Override
     protected void onResume() {
         super.onResume();
@@ -296,5 +400,4 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         this.adapter.notifyDataSetChanged();
     }
-
 }
