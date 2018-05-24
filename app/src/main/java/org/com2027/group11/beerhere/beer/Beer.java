@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import org.com2027.group11.beerhere.R;
@@ -16,7 +17,9 @@ import org.com2027.group11.beerhere.R;
 @IgnoreExtraProperties
 public class Beer {
 
+    @Exclude
     public Bitmap beerImageBmp;
+
     public String name;
     public int upvotes;
     public int downvotes;
@@ -85,6 +88,7 @@ public class Beer {
         }
     }
 
+    @Exclude
     public boolean setBeerImage(Bitmap bmp) {
         if (bmp != null) {
             this.beerImageBmp = bmp;
