@@ -157,11 +157,11 @@ public class SynchronisationManager {
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
 
-                    getBitmapForBeerFromFirebase(beer.name);
-
                     for (FirebaseMutator mut : registeredCallbacks) {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
                     }
+
+                    getBitmapForBeerFromFirebase(beer.name);
                 }
 
                 @Override
@@ -267,11 +267,13 @@ public class SynchronisationManager {
                 Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
 
                 List<Object> returnedObjects = new ArrayList<Object>();
+                getImageReferenceArray();
 
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
-                    getBitmapForBeerFromFirebase(beer.name);
+
+
                     returnedObjects.add(beer);
                 }
 
@@ -299,7 +301,7 @@ public class SynchronisationManager {
         }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
         byte[] data = baos.toByteArray();
 
         StorageReference storageReference = this.storage.getReference().child("images");
