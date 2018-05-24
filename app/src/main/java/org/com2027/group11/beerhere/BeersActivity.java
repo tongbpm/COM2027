@@ -1,6 +1,9 @@
 package org.com2027.group11.beerhere;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
+
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,12 +17,22 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
+
+import org.com2027.group11.beerhere.user.User;
+import org.com2027.group11.beerhere.user.UserDao;
+import org.com2027.group11.beerhere.utilities.database.AppDatabase;
+import org.w3c.dom.Text;
+
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
@@ -35,6 +48,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private Vector<Beer> beers = new Vector<Beer>();
 
     private DrawerLayout mDrawerLayout;
+    private NavigationView headerLayout;
+    private static final String TAG = "MAIN_ACTIVITY";
+
 
     private static final String LOG_TAG = "BEER-HERE";
 
@@ -43,11 +59,18 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
         mDrawerLayout = findViewById(R.id.drawer_layout);
+        headerLayout = findViewById(R.id.nav_view);
+
+        //sets the toolbar as the action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //adds the navigation drawer "hamburger" button
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -88,14 +111,19 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
                     @Override
                     public void onDrawerStateChanged(int newState) {
-                        // Respond when the drawer motino stated changed
+                        // Respond when the drawer motion stated changed
                     }
                 }
         );
 
         displayBeers();
+        userthread.start();
+
+
     }
 
+    //opens the drawer when the navigation drawer "hamburger" button is tapped
+    //handles click navigation events to start other fragments
     @Override
     protected void onResume() {
         super.onResume();
@@ -109,9 +137,76 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 return true;
+
+            case R.id.nav_home:
+                return super.onOptionsItemSelected(item);
+
+            case R.id.nav_submissions:
+
+                return true;
+
+            case R.id.nav_favourites:
+
+                return true;
+
+            case R.id.nav_signout:
+
+                return true;
+
+
         }
+
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+
+
+
+
+    //method to obtain user info and display it on their profile on the header of the navigation drawer
+    public User getUserInfo(){
+        //Firebase authentication and user checking, and gets User ID
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String uid = mAuth.getCurrentUser().getUid();
+
+        //Access database to find the User by his ID
+        UserDao userDao = AppDatabase.getAppDatabase(this).userDao();
+        User user = userDao.findByID(uid);
+
+        //Inflate the header of the navigation drawer
+        LayoutInflater layoutInflater = getLayoutInflater();
+        View view = layoutInflater.inflate(R.layout.nav_header, headerLayout, true );
+
+        //check whether the user name and email are null and leave the default strings if they are null
+        if (user.name == null){
+        }
+        else {
+            //sets the name into the username textView
+            TextView name = view.findViewById(R.id.userName);
+            name.setText(user.name);
+        }
+        if (user.email == null) {
+        }
+        else {
+            //sets the email into the email textView
+            TextView email = view.findViewById(R.id.email);
+            email.setText(user.email);
+        }
+        return user;
+    }
+
+    //Runs the getUserInfo() method on another thread to not cause conflict or freezing on the main thread
+    Thread userthread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            getUserInfo();
+        }
+    });
+
 
     private void displayBeers(){
         ViewGroup view = findViewById(android.R.id.content);
