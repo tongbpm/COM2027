@@ -277,7 +277,7 @@ public class SynchronisationManager {
         });
     }
 
-    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String beerName, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
+    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String beerName, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
@@ -288,7 +288,7 @@ public class SynchronisationManager {
         byte[] data = baos.toByteArray();
 
         StorageReference storageReference = this.storage.getReference().child("images");
-        String imgStorageString = type + "-" + beerName + "-" + UUID.randomUUID() + ".jpg";
+        String imgStorageString = type + "-" + beerName + "-" + imageID + ".jpg";
         StorageReference imageReference = storageReference.child(imgStorageString);
 
         // Show a notification to the user
@@ -311,11 +311,7 @@ public class SynchronisationManager {
 
     }
 
-    public void getBitmapForBeerFromFirebase(@NonNull @Path String type, @NonNull String beerName) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
-        if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
-        }
+    public void getBitmapForBeerFromFirebase(@NonNull String beerName) {
 
         StorageReference storageReference = this.storage.getReference().child("images");
         final long ONE_MB = 1024 * 1024;
