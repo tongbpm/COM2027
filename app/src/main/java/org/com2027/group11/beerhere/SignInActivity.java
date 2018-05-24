@@ -9,8 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.widget.TextView;
-
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,7 +21,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.com2027.group11.beerhere.beer.Beer;
-import org.com2027.group11.beerhere.beer.BeerAdapter;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;

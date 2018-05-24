@@ -33,9 +33,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by apotter on 23/04/18.
@@ -415,7 +417,21 @@ public class SynchronisationManager {
             rating = 0;
         }
 
-        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating);
+        Set<String> upvoters;
+        try{
+            upvoters = new HashSet<String>((ArrayList<String>)inMap.get("upvoters"));
+        }catch (NullPointerException e){
+            upvoters = new HashSet<>();
+        }
+
+        Set<String> downvoters;
+        try{
+            downvoters = new HashSet<String>((ArrayList<String>)inMap.get("downvoters"));
+        }catch(NullPointerException e){
+            downvoters = new HashSet<>();
+        }
+
+        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating, upvoters, downvoters);
         return beer;
     }
 

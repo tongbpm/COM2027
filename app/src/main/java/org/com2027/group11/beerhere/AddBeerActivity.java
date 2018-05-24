@@ -101,16 +101,16 @@ public class AddBeerActivity extends AppCompatActivity {
                 if (mCountry.getSelectedItem().toString().length() > 0 && mNameEditText.getText().toString().length() > 0){
                     //If both compulsory fields have been filled out
                     String countryName = mCountry.getSelectedItem().toString();
-                    countryName.replace(' ', '_');
-                    Beer beer = new Beer(mNameEditText.getText().toString(), mImageId);
+                    countryName = countryName.replace(' ', '_');
+                    Beer beer = new Beer(mNameEditText.getText().toString(), mImageId, FirebaseAuth.getInstance().getUid());
                     if(mBitmap != null){
                         beer.setBeerImage(mBitmap);
                         beer.imageID = mImageId;
                     }
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
-                    syncManager.saveBeerToFirebase(mCountry.getSelectedItem().toString(), beer.name, beer);
+                    syncManager.saveBeerToFirebase(countryName, beer.name, beer);
                     if(mBitmap != null) {
-                        syncManager.saveBitmapForBeerToFirebase(mCountry.getSelectedItem().toString(), beer.name, mImageId, mBitmap, mSubmitButton);
+                        syncManager.saveBitmapForBeerToFirebase(countryName, beer.name, mImageId, mBitmap, mSubmitButton);
                     }
                     finish();
                 }else{
