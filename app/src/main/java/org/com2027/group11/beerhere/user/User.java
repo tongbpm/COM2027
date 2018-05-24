@@ -41,4 +41,5 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.country = country;
     }
+
 }
