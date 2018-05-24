@@ -2,6 +2,7 @@ package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,21 +58,24 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         Beer beer = beers.get(position);
 
         holder.tvRank.setText(String.valueOf(position+1));
-        holder.imBeer.setImageResource(beer.imageID);
-        holder.tvBeerTitle.setText(beer.beerName);
-        holder.tvRating.setText(String.valueOf(beer.getBeerRating()));
+        Log.i("beer-here", "attempting to set beer adapter value bitmap");
+        if(beer.beerImageBmp != null) {
+            holder.imBeer.setImageBitmap(beer.beerImageBmp);
+        }
+        holder.tvBeerTitle.setText(beer.name);
+        holder.tvRating.setText(String.valueOf(beer.getRating()));
 
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You upvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "You upvoted " + beer.name, Toast.LENGTH_SHORT).show();
             }
         });
 
         holder.ibDownVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You downvoted " + beer.beerName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), "You downvoted " + beer.name, Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -23,6 +23,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.beer.BeerAdapter;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
@@ -49,6 +50,8 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         setContentView(R.layout.activity_main);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mContext = this.getApplicationContext();
@@ -58,13 +61,18 @@ public class SignInActivity extends AppCompatActivity {
                 new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                 new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
 
-        startActivityForResult(AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setLogo(R.drawable.ic_beer)
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false)
-                        .build(),
-                RC_SIGN_IN);
+        if(mAuth.getCurrentUser() == null) {
+            startActivityForResult(AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setLogo(R.drawable.ic_beer)
+                            .setAvailableProviders(providers)
+                            .setIsSmartLockEnabled(true)
+                            .build(),
+                    RC_SIGN_IN);
+        }else{
+            Intent intent = new Intent(this, BeersActivity.class);
+            startActivity(intent);
+        }
 
     }
 
@@ -144,7 +152,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(User user) {
                 Log.d(TAG, "Async Execution Finished");
-                ((TextView) findViewById(R.id.main_text)).setText(user.name);
             }
 
         }

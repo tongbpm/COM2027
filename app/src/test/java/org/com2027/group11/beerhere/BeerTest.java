@@ -21,15 +21,14 @@ public class BeerTest {
     @Test
     public void parameterisedConstructorTest() {
         String name = "beer 1";
-        int imageid = 1234;
+        String imageid = "1234";
         int upvotes = 350;
         int downvotes = 0;
         Beer beer = new Beer(name, imageid, upvotes, downvotes);
-        assertEquals(beer.beerName, name);
+        assertEquals(beer.name, name);
         assertEquals(beer.imageID, imageid);
-        assertEquals(beer.beerUpvotes,  upvotes);
-        assertEquals(beer.beerDownvotes, downvotes);
-        assertEquals(beer.getBeerRating(), upvotes);
+        assertEquals(beer.upvotes,  upvotes);
+        assertEquals(beer.downvotes, downvotes);
     }
 
 }

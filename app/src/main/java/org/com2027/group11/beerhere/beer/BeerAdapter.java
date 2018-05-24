@@ -1,4 +1,4 @@
-package org.com2027.group11.beerhere;
+package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.com2027.group11.beerhere.beer.Beer;
+
+import org.com2027.group11.beerhere.R;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class BeerAdapter extends ArrayAdapter<String> {
         tvBeerTitle.setText(beerTitle);
 
         TextView tvRating = (TextView) view.findViewById(R.id.tv_rating);
-        tvRating.setText(String.valueOf(beers.get(position).beerUpvotes));
+        tvRating.setText(String.valueOf(beers.get(position).upvotes));
 
         ImageView ivBeer = (ImageView) view.findViewById(R.id.iv_beer);
         ivBeer.setImageBitmap(beers.get(position).beerImageBmp);

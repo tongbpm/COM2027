@@ -16,8 +16,24 @@
     <string name="Home_country_spinner">Home Country</string>
     <string name="submit">Submit</string>
     <string name="title_activity_beers_page">BeersPage</string>
+    <string name="add_beer">Add a new Beer</string>
+    <string name="beer_name">Beer Name:</string>
+    <string name="country">Country of Origin:</string>
+    <string name="beer_name_hint">Name of Beer</string>
+    <string name="upload_image">Upload Image</string>
+    <string name="dialog_message">Message</string>
+    <string name="dialog_title">Title</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="camera_permission">Camera Permission is needed to use the camera.</string>
+    <string name="write_permission">External storage is needed to use the camera.</string>
+    <string name="permission_not_granted">Permission was not granted.</string>
+    <string name="fill_required_fields">Please fill out all required fields</string>
     <string name="nav_home">Home</string>
     <string name="nav_submissions">Your Submissions </string>
     <string name="nav_favourites">Favourites</string>
     <string name="nav_countries">Countries</string>
+    <string name="uploading_image">Uploading...</string>
+    <string name="uploading_image_failed">Uploading content failed.</string>
+    <string name="uploading_image_success">Uploaded!</string>
 </resources>

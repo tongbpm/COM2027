@@ -2,7 +2,11 @@ package org.com2027.group11.beerhere;
 
 import android.content.Context;
 import android.content.Intent;
+<<<<<<< HEAD
 import android.os.AsyncTask;
+=======
+import android.graphics.Bitmap;
+>>>>>>> dev
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +19,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+<<<<<<< HEAD
 import android.view.LayoutInflater;
+=======
+>>>>>>> dev
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,22 +32,33 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
+<<<<<<< HEAD
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 import org.w3c.dom.Text;
+=======
+import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
+>>>>>>> dev
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
 
-public class BeersActivity extends AppCompatActivity {
+public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
+    private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
+    private Vector<Beer> beers = new Vector<Beer>();
+
     private DrawerLayout mDrawerLayout;
     private NavigationView headerLayout;
     private static final String TAG = "MAIN_ACTIVITY";
 
+
+    private static final String LOG_TAG = "BEER-HERE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +88,6 @@ public class BeersActivity extends AppCompatActivity {
                     return false;
                 }
         );
-
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +130,13 @@ public class BeersActivity extends AppCompatActivity {
 
     //opens the drawer when the navigation drawer "hamburger" button is tapped
     //handles click navigation events to start other fragments
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.e(LOG_TAG, "beers activity called onResume");
+        this.firebaseManager.registerCallbackWithManager(this);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -195,20 +218,89 @@ public class BeersActivity extends AppCompatActivity {
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvBeers = findViewById(R.id.rv_beers);
-        adapter = new BeerListAdapter(this, getBeers());
+        adapter = new BeerListAdapter(this, this.beers);
         rvBeers.setAdapter(adapter);
         rvBeers.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private List<Beer> getBeers() {
-        List<Beer> beers = new ArrayList<>();
+    @Override
+    public void callbackGetObjectsFromFirebase(List<Object> objects) {
+        Log.e(LOG_TAG, String.valueOf(objects.size()));
+        for (Object object : objects) {
+            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).name);
+            if (!(this.beers.contains(object))) {
+                Log.e(LOG_TAG, String.valueOf(objects.size()));
+                this.beers.add((Beer) object);
+            }
+        }
 
-        beers.add(new Beer("Kalnapilis", R.drawable.kalnapilis, 351, 0));
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
-        beers.add(new Beer("Utenos", R.drawable.utenos, 291, 0));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
+        for (Beer b : this.beers) {
+            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
+        }
 
-        return beers;
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackObjectRemovedFromFirebase(String id) {
+        // Find beer in list
+        Beer foundBeer = null;
+        for (Beer b : this.beers) {
+            if (b.name.equals(id)) {
+                foundBeer = b;
+            }
+        }
+
+        if (foundBeer != null) {
+            Log.e(LOG_TAG, "Removed: " + foundBeer.name);
+            this.beers.remove(foundBeer);
+        }
+
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackObjectChangedFromFirebase(Object object) {
+        Log.i(LOG_TAG, "BeersActivity: object received from Firebase!");
+        Beer beer = (Beer) object;
+        Log.e(LOG_TAG, "Beer changed: " + beer.name);
+        Beer originalBeer = null;
+
+        // Find original beer in list
+        for (Beer b : this.beers) {
+            if (b.name.equals(beer.name)) {
+                originalBeer = b;
+            }
+        }
+
+        if (originalBeer != null) {
+            this.beers.remove(originalBeer);
+            this.beers.add(beer);
+        } else {
+            Log.e(LOG_TAG, "Changed beer not found in array adapter?");
+        }
+
+        for (Beer b : this.beers) {
+            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
+        }
+
+        this.adapter.notifyDataSetChanged();
+
+        Collections.reverse(this.beers);
+    }
+
+    @Override
+    public void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap) {
+        Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerName + " from Firebase!");
+
+        for (Beer b : this.beers) {
+            if (b.name.equals(beerName)) {
+                b.setBeerImage(bitmap);
+                Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
+            }
+        }
+
+        this.adapter.notifyDataSetChanged();
     }
 
 }
