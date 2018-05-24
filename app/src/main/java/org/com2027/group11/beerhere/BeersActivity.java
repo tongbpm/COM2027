@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseUser;
 
 
 import org.com2027.group11.beerhere.beer.Beer;
@@ -64,6 +65,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private Vector<Beer> beers = new Vector<Beer>();
     private DrawerLayout mDrawerLayout;
     private NavigationView headerLayout;
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
 
 
 
@@ -90,6 +93,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
 
 
+
+
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
                 menuItem -> {
@@ -99,7 +104,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                     mDrawerLayout.closeDrawers();
                     return false;
                 }
+
         );
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -228,6 +235,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         this.firebaseManager.registerCallbackWithManager(this);
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -247,8 +256,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 return true;
 
             case R.id.nav_signout:
-
-                return true;
+                mAuth.signOut();
+                break;
 
 
         }
@@ -265,35 +274,30 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
 
     //method to obtain user info and display it on their profile on the header of the navigation drawer
-    public User getUserInfo(){
-        //Firebase authentication and user checking, and gets User ID
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        String uid = mAuth.getCurrentUser().getUid();
+    private void getUserInfo() {
 
-        //Access database to find the User by his ID
-        UserDao userDao = AppDatabase.getAppDatabase(this).userDao();
-        User user = userDao.findByID(uid);
+        //Firebase authentication and user checking, and gets User ID
+        FirebaseUser user = mAuth.getCurrentUser();
 
         //Inflate the header of the navigation drawer
         LayoutInflater layoutInflater = getLayoutInflater();
-        View view = layoutInflater.inflate(R.layout.nav_header, headerLayout, true );
+        View view = layoutInflater.inflate(R.layout.nav_header, headerLayout, true);
 
         //check whether the user name and email are null and leave the default strings if they are null
-        if (user.name == null){
-        }
-        else {
+        if (user.getDisplayName() == null) {
+        } else {
             //sets the name into the username textView
             TextView name = view.findViewById(R.id.userName);
-            name.setText(user.name);
+            name.setText(user.getDisplayName());
         }
-        if (user.email == null) {
-        }
-        else {
+
+
+        if (user.getEmail() == null) {
+        } else {
             //sets the email into the email textView
             TextView email = view.findViewById(R.id.email);
-            email.setText(user.email);
+            email.setText(user.getEmail());
         }
-        return user;
     }
 
     //Runs the getUserInfo() method on another thread to not cause conflict or freezing on the main thread
