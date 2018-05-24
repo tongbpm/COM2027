@@ -331,7 +331,7 @@ public class SynchronisationManager {
         Log.i(LOG_TAG, "BitmapForBeer method called!");
 
         StorageReference storageReference = this.storage.getReference().child("images");
-        final long SIZE = 1024 * 1024 * 12;
+        final long SIZE = 1024 * 1024 * 2;
 
         // Search for correct URI to download
         for (String imgPath : this.images) {
