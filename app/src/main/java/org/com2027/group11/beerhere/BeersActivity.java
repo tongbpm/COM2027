@@ -401,7 +401,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         for (Beer b : this.beers) {
             if (b.imageID.equals(beerImageID)) {
-                b.setBeerImage(bitmap);
+                if (b.beerImageBmp == null) {
+                    b.setBeerImage(bitmap);
+                }
                 Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
             }
         }
