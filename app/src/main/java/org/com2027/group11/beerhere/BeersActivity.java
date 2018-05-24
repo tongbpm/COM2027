@@ -95,10 +95,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
-
-
-
-
+        
+        this.firebaseManager.registerCallbackWithManager(this);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -244,7 +242,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     protected void onResume() {
         super.onResume();
         Log.e(LOG_TAG, "beers activity called onResume");
-        this.firebaseManager.registerCallbackWithManager(this);
     }
 
 
