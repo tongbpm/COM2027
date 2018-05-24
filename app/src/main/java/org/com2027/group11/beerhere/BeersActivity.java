@@ -1,15 +1,11 @@
 package org.com2027.group11.beerhere;
 
-<<<<<<< HEAD
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-
-=======
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
->>>>>>> dev
 import android.graphics.Bitmap;
 import android.location.Address;
 import android.location.Geocoder;
@@ -34,13 +30,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-<<<<<<< HEAD
+
 import com.google.firebase.auth.FirebaseAuth;
-=======
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
->>>>>>> dev
+
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
@@ -67,13 +63,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
     private Vector<Beer> beers = new Vector<Beer>();
     private DrawerLayout mDrawerLayout;
-<<<<<<< HEAD
     private NavigationView headerLayout;
-    private static final String TAG = "MAIN_ACTIVITY";
 
 
-=======
->>>>>>> dev
+
     private static final String LOG_TAG = "BEER-HERE";
     private FusedLocationProviderClient mFusedLocationClient;
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
@@ -164,10 +157,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     }
 
-<<<<<<< HEAD
+
     //opens the drawer when the navigation drawer "hamburger" button is tapped
     //handles click navigation events to start other fragments
-=======
+
     private void findUsersCountryAndShowIt(){
         try{
             mFusedLocationClient.getLastLocation()
@@ -227,7 +220,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         }
     }
 
->>>>>>> dev
+
     @Override
     protected void onResume() {
         super.onResume();
