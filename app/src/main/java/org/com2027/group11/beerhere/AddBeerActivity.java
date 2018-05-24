@@ -106,11 +106,12 @@ public class AddBeerActivity extends AppCompatActivity {
                     if(mBitmap != null){
                         beer.setBeerImage(mBitmap);
                         beer.imageID = mImageId;
+                        Log.i(TAG, "AddBeerActivity: Setting beer imageID as " + beer.imageID);
                     }
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
                     syncManager.saveBeerToFirebase(countryName, beer.name, beer);
                     if(mBitmap != null) {
-                        syncManager.saveBitmapForBeerToFirebase(countryName, beer.name, mImageId, mBitmap, mSubmitButton);
+                        syncManager.saveBitmapForBeerToFirebase(countryName, mImageId, mBitmap, mSubmitButton);
                     }
                     finish();
                 }else{

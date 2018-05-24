@@ -231,11 +231,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             if (!(this.beers.contains(object))) {
                 Log.e(LOG_TAG, String.valueOf(objects.size()));
                 this.beers.add((Beer) object);
-            }
-        }
 
-        for (Beer b : this.beers) {
-            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
+                if (((Beer) object).imageID != null) {
+                    this.firebaseManager.getBitmapForBeerFromFirebase(((Beer) object).imageID);
+                } else {
+                    Log.e(LOG_TAG, "Beer Image ID is null!");
+                }
+            }
         }
 
         this.adapter.notifyDataSetChanged();
@@ -276,12 +278,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         if (originalBeer != null) {
             this.beers.remove(originalBeer);
             this.beers.add(beer);
+            if (beer.imageID != null) {
+                this.firebaseManager.getBitmapForBeerFromFirebase(beer.imageID);
+            } else {
+                Log.e(LOG_TAG, "Beer Image ID is null!");
+            }
         } else {
             Log.e(LOG_TAG, "Changed beer not found in array adapter?");
-        }
-
-        for (Beer b : this.beers) {
-            this.firebaseManager.getBitmapForBeerFromFirebase(b.name);
         }
 
         this.adapter.notifyDataSetChanged();
@@ -290,11 +293,11 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     }
 
     @Override
-    public void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap) {
-        Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerName + " from Firebase!");
+    public void callbackGetBitmapForBeerFromFirebase(String beerImageID, Bitmap bitmap) {
+        Log.i(LOG_TAG, "BeersActivity: got bitmap for " + beerImageID + " from Firebase!");
 
         for (Beer b : this.beers) {
-            if (b.name.equals(beerName)) {
+            if (b.imageID.equals(beerImageID)) {
                 b.setBeerImage(bitmap);
                 Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
             }
