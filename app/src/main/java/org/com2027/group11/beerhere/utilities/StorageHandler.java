@@ -45,7 +45,7 @@ public  class StorageHandler {
     public static void saveBitmapForBeerToFirebase(String imageID, Bitmap bitmap) throws NullPointerException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
         byte[] data = baos.toByteArray();
 
         StorageReference imageReference = IMAGES_REF.child(imageID + ".jpg");
