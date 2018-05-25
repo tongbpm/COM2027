@@ -59,6 +59,7 @@ import java.util.Vector;
 
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
+    private static final String TAG = "BEER-HERE";
     private RecyclerView rvBeers;
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
@@ -74,6 +75,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private FusedLocationProviderClient mFusedLocationClient;
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private TextView country;
+    private String mCountry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +171,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     //handles click navigation events to start other fragments
 
     private void findUsersCountryAndShowIt(){
+        Log.d(TAG, "Finding location");
         try{
             mFusedLocationClient.getLastLocation()
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -196,7 +199,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
     private void updateCountryShown(Location location){
         double lat = (double) (location.getLatitude());
+        Log.d(TAG, "Lat: " + lat);
         double lng = (double) (location.getLongitude());
+        Log.d(TAG, "Long:  " + lng);
+
 
         final Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         List<Address> address = null;
@@ -205,6 +211,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             address = geocoder.getFromLocation(lat, lng, 5);
             if(address.size()>0){
                 country.setText("Country: " +  address.get(0).getCountryName());
+                mCountry = address.get(0).getCountryName();
+                mCountry = mCountry.replace(' ', '_');
+                Log.d(TAG, mCountry);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -334,7 +343,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
             }
         }
-
         this.adapter.notifyDataSetChanged();
     }
 

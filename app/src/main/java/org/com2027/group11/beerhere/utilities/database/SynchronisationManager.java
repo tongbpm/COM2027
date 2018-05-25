@@ -33,9 +33,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by apotter on 23/04/18.
@@ -154,6 +156,8 @@ public class SynchronisationManager {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
                     }
 
+                    beer.ref = databaseReference.child("beers").child(beer.name);
+
                     getBitmapForBeerFromFirebase(beer.imageID);
                 }
 
@@ -164,7 +168,9 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
+                        beer.ref = dataSnapshot.getRef();
                         Log.e(LOG_TAG, "OBJECT CHANGED");
+                        Log.d(LOG_TAG, "REF: "+beer.ref.toString());
 
                         getBitmapForBeerFromFirebase(beer.imageID);
                         mut.callbackObjectChangedFromFirebase(beer);
@@ -397,8 +403,26 @@ public class SynchronisationManager {
             rating = 0;
         }
 
-        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating);
+        Set<String> upvoters;
+        try{
+            upvoters = new HashSet<String>((ArrayList<String>)inMap.get("upvoters"));
+        }catch (NullPointerException e){
+            upvoters = new HashSet<>();
+        }
+
+        Set<String> downvoters;
+        try{
+            downvoters = new HashSet<String>((ArrayList<String>)inMap.get("downvoters"));
+        }catch(NullPointerException e){
+            downvoters = new HashSet<>();
+        }
+
+        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating, upvoters, downvoters);
         return beer;
+    }
+
+    public void updateBeer(DatabaseReference ref, Beer beer){
+        ref.setValue(beer);
     }
 
     /**

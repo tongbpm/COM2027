@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.com2027.group11.beerhere.R;
 
 import java.util.Collections;
@@ -18,12 +20,16 @@ import java.util.List;
 
 public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersViewHolder> {
 
+    private static final String TAG = "BEER-HERE" ;
     private LayoutInflater inflater;
 
     private List<Beer> beers = Collections.emptyList();
 
+    private Context context;
+
     public BeerListAdapter(Context context, List<Beer> beers){
         inflater = LayoutInflater.from(context);
+        this.context = context;
         this.beers = beers;
     }
 
@@ -68,14 +74,19 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You upvoted " + beer.name, Toast.LENGTH_SHORT).show();
+                beer.upvote(FirebaseAuth.getInstance().getCurrentUser().getUid(), BeerListAdapter.this.context);
+                Log.d(TAG, "Upvotes: " + beer.upvotes);
+                Log.d(TAG, "Downvotes: " + beer.downvotes);
+                Log.d(TAG, beer.ref.toString());
             }
         });
 
         holder.ibDownVote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(v.getContext(), "You downvoted " + beer.name, Toast.LENGTH_SHORT).show();
+                beer.downvote(FirebaseAuth.getInstance().getCurrentUser().getUid(), BeerListAdapter.this.context);
+                Log.d(TAG, "Upvotes: " + beer.upvotes);
+                Log.d(TAG, "Downvotes: " + beer.downvotes);
             }
         });
     }
