@@ -83,8 +83,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
 
-        this.firebaseManager.registerCallbackWithManager(this);
-
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
 
@@ -99,9 +97,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-
-
-
+        //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -218,8 +214,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             if(address.size()>0){
                 country.setText("Country: " +  address.get(0).getCountryName());
                 mCountry = address.get(0).getCountryName();
-                mCountry = mCountry.replace(' ', '_');
-                Log.d(TAG, mCountry);
+                
+                // If the user denies location permissions, just load beers of a default country
+                if (mCountry == null) {
+                    this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
+                } else {
+                    mCountry = mCountry.replace(' ', '_');
+                    this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                }
+
+                Log.d(TAG, "BeersActivity | updateCountryShown | Country = " + mCountry);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -343,6 +347,22 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     }
 
     @Override
+    public void callbackGetObjectsForCountryFromFirebase(List<Object> objects) {
+        Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
+
+        // For now, simply wipe the Beers list and populate it again with the revised list
+        this.beers = new Vector<>();
+
+        // Have to convert every Object into Beer separately; can't downcast the entire list
+        for (Object object : objects) {
+            Beer beer = (Beer) object;
+            this.beers.add(beer);
+        }
+
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void callbackObjectRemovedFromFirebase(String id) {
         // Find beer in list
         Beer foundBeer = null;
@@ -397,7 +417,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         for (Beer b : this.beers) {
             if (b.imageID.equals(beerImageID)) {
-                b.setBeerImage(bitmap);
+                if (b.beerImageBmp == null) {
+                    b.setBeerImage(bitmap);
+                }
                 Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
             }
         }

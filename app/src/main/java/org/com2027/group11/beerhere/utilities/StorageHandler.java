@@ -20,12 +20,12 @@ import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 import java.io.ByteArrayOutputStream;
 
 
-public  class StorageHandler {
+public class StorageHandler {
 
     private static final StorageReference IMAGES_REF = FirebaseStorage.getInstance().getReference().child("images");
     private static final String LOG_TAG = "Storage Handler";
 
-    public static void setImageFromFirebase(String imageID, SimpleDraweeView view){
+    public static void setImageFromFirebase(String imageID, SimpleDraweeView view) {
         StorageReference imageRef = IMAGES_REF.child(imageID+".jpg");
         Log.d("Storage Reference: ", imageRef.toString());
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
