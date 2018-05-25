@@ -89,8 +89,7 @@ public class FavoritesActivity extends AppCompatActivity {
     private List<Beer> getBeers() {
         List<Beer> beers = new ArrayList<>();
 
-        beers.add(new Beer("Svyturys", R.drawable.svyturys, 363, 0));
-        beers.add(new Beer("Calsberg", R.drawable.calsberg, 123, 0));
+
 
         return beers;
     }
