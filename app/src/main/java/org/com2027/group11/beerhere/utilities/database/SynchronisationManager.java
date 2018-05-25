@@ -245,8 +245,8 @@ public class SynchronisationManager {
         });
     }
 
-    public void getBeersForCountryFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
+    public void getBeersForCountryFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String country) throws NullPointerException {
+        String path = this.searchForFirebasePath(country);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
         }
@@ -260,12 +260,10 @@ public class SynchronisationManager {
                 Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
 
                 List<Object> returnedObjects = new ArrayList<Object>();
-                //getImageReferenceArray();
 
                 for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
                     HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
-
 
                     returnedObjects.add(beer);
                 }
@@ -275,7 +273,7 @@ public class SynchronisationManager {
                 } else {
                     // Send callback message to all registered clients
                     for (FirebaseMutator mut : registeredCallbacks) {
-                        mut.callbackGetObjectsFromFirebase(returnedObjects);
+                        mut.callbackGetObjectsForCountryFromFirebase(returnedObjects);
                     }
                 }
             }

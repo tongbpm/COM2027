@@ -97,6 +97,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
         
         this.firebaseManager.registerCallbackWithManager(this);
+        this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -343,6 +344,22 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
             }
         }
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackGetObjectsForCountryFromFirebase(List<Object> objects) {
+        Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
+
+        // For now, simply wipe the Beers list and populate it again with the revised list
+        this.beers = new Vector<>();
+
+        // Have to convert every Object into Beer separately; can't downcast the entire list
+        for (Object object : objects) {
+            Beer beer = (Beer) object;
+            this.beers.add(beer);
+        }
+
         this.adapter.notifyDataSetChanged();
     }
 
