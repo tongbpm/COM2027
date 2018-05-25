@@ -95,9 +95,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
-        
-        this.firebaseManager.registerCallbackWithManager(this);
-        this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
+
+        //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -214,8 +213,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             if(address.size()>0){
                 country.setText("Country: " +  address.get(0).getCountryName());
                 mCountry = address.get(0).getCountryName();
-                mCountry = mCountry.replace(' ', '_');
-                Log.d(TAG, mCountry);
+                
+                // If the user denies location permissions, just load beers of a default country
+                if (mCountry == null) {
+                    this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
+                } else {
+                    mCountry = mCountry.replace(' ', '_');
+                    this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                }
+
+                Log.d(TAG, "BeersActivity | updateCountryShown | Country = " + mCountry);
             }
         } catch (IOException e) {
             e.printStackTrace();
