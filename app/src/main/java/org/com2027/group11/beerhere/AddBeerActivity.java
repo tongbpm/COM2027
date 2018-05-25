@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.utilities.StorageHandler;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.File;
@@ -111,7 +112,7 @@ public class AddBeerActivity extends AppCompatActivity {
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
                     syncManager.saveBeerToFirebase(countryName, beer.name, beer);
                     if(mBitmap != null) {
-                        syncManager.saveBitmapForBeerToFirebase(countryName, mImageId, mBitmap, mSubmitButton);
+                        StorageHandler.saveBitmapForBeerToFirebase(mImageId, mBitmap);
                     }
                     finish();
                 }else{

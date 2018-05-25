@@ -287,39 +287,6 @@ public class SynchronisationManager {
         });
     }
 
-    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
-        if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
-        }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
-
-        StorageReference storageReference = this.storage.getReference().child("images");
-        StorageReference imageReference = storageReference.child(imageID + ".jpg");
-
-        // Show a notification to the user
-        final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
-        sbarStart.show();
-
-        Log.d(LOG_TAG, "Uploading Image");
-        UploadTask task = imageReference.putBytes(data);
-        task.addOnFailureListener(e -> {
-            e.printStackTrace();
-            sbarStart.setText(R.string.uploading_image_failed);
-            sbarStart.show();
-        });
-        task.addOnSuccessListener(taskSnapshot -> {
-            Log.d(LOG_TAG, "Upload Successful");
-            sbarStart.setText(R.string.uploading_image_success);
-            sbarStart.show();
-        });
-
-    }
-
-
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {

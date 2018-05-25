@@ -82,6 +82,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
+
+        this.firebaseManager.registerCallbackWithManager(this);
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
 
@@ -238,16 +241,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             return false;
         }
     }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e(LOG_TAG, "beers activity called onResume");
-        this.firebaseManager.registerCallbackWithManager(this);
-    }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
