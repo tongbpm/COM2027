@@ -237,7 +237,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             return false;
         }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

@@ -49,7 +49,9 @@ public class SynchronisationManager {
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private final FirebaseStorage storage = FirebaseStorage.getInstance();
-    private List<FirebaseMutator> registeredCallbacks;
+
+    // Associate a listener with a country
+    private Map<FirebaseMutator, String> registeredCallbacks;
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
 
@@ -133,7 +135,7 @@ public class SynchronisationManager {
 
     protected SynchronisationManager() {
         Iterator iter = this.firebasePaths.entrySet().iterator();
-        this.registeredCallbacks = new ArrayList<FirebaseMutator>();
+        this.registeredCallbacks = new HashMap<FirebaseMutator, String>();
 
         while (iter.hasNext()) {
             Map.Entry pair = (Map.Entry) iter.next();
@@ -152,7 +154,7 @@ public class SynchronisationManager {
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
 
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
                     }
 
@@ -162,7 +164,7 @@ public class SynchronisationManager {
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
@@ -175,7 +177,7 @@ public class SynchronisationManager {
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
                         Log.i(LOG_TAG, "SyncManager | CEListener | Child removed from Firebase with key " + dataSnapshot.getKey());
                     }
@@ -270,7 +272,7 @@ public class SynchronisationManager {
                     firebaseAccessorContext.callbackGetObjectsFromFirebase(returnedObjects);
                 } else {
                     // Send callback message to all registered clients
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         mut.callbackGetObjectsForCountryFromFirebase(returnedObjects);
                     }
                 }
@@ -282,7 +284,7 @@ public class SynchronisationManager {
             }
         });
     }
-
+    
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
@@ -363,11 +365,11 @@ public class SynchronisationManager {
      * as it operates asynchronously.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
-        if (this.registeredCallbacks.contains(mutatorContext)) {
+    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Path String country) {
+        if (this.registeredCallbacks.containsKey(mutatorContext)) {
             Log.w(LOG_TAG, "SyncManager | registerCallback | Mutator context already exists in callback");
         } else {
-            this.registeredCallbacks.add(mutatorContext);
+            this.registeredCallbacks.put(mutatorContext, country);
             Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context registered successfully.");
         }
     }
@@ -377,7 +379,7 @@ public class SynchronisationManager {
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
     public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
-        if (this.registeredCallbacks.contains(mutatorContext)) {
+        if (this.registeredCallbacks.containsKey(mutatorContext)) {
             this.registeredCallbacks.remove(mutatorContext);
             Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context successfully deregistered.");
         }
