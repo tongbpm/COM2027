@@ -1,6 +1,7 @@
 package org.com2027.group11.beerhere.beer;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,9 +12,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.R;
+import org.com2027.group11.beerhere.utilities.StorageHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +38,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
     class BeersViewHolder extends RecyclerView.ViewHolder{
         TextView tvRank;
-        ImageView imBeer;
+        SimpleDraweeView imBeer;
         TextView tvBeerTitle;
         TextView tvRating;
         ImageButton ibUpvote;
@@ -70,6 +73,9 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         }
         holder.tvBeerTitle.setText(beer.name);
         holder.tvRating.setText(String.valueOf(beer.getRating()));
+
+        StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
+
 
         holder.ibUpvote.setOnClickListener(new View.OnClickListener() {
             @Override

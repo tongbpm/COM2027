@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -83,6 +84,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         setContentView(R.layout.activity_beers_page);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
+
+        Fresco.initialize(this);
 
         //sets the toolbar as the action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -337,7 +340,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 this.beers.add((Beer) object);
 
                 if (((Beer) object).imageID != null) {
-                    this.firebaseManager.getBitmapForBeerFromFirebase(((Beer) object).imageID);
+                    //this.firebaseManager.getBitmapForBeerFromFirebase(((Beer) object).imageID);
                 } else {
                     Log.e(LOG_TAG, "Beer Image ID is null!");
                 }
@@ -382,7 +385,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             this.beers.remove(originalBeer);
             this.beers.add(beer);
             if (beer.imageID != null) {
-                this.firebaseManager.getBitmapForBeerFromFirebase(beer.imageID);
+                //this.firebaseManager.getBitmapForBeerFromFirebase(beer.imageID);
             } else {
                 Log.e(LOG_TAG, "Beer Image ID is null!");
             }

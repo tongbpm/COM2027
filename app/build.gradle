@@ -46,6 +46,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-auth:3.1.0'
     // Include facebook log in
     implementation('com.facebook.android:facebook-android-sdk:4.27.0')
+    implementation 'com.facebook.fresco:fresco:1.9.0'
     //Include Google's Room Persistence Library
     implementation 'android.arch.persistence.room:runtime:1.0.0'
     implementation 'com.google.android.gms:play-services:11.4.2'
