@@ -157,8 +157,6 @@ public class SynchronisationManager {
                     }
 
                     beer.ref = databaseReference.child("beers").child(beer.name);
-
-                    getBitmapForBeerFromFirebase(beer.imageID);
                 }
 
                 @Override
@@ -172,7 +170,6 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, "OBJECT CHANGED");
                         Log.d(LOG_TAG, "REF: "+beer.ref.toString());
 
-                        getBitmapForBeerFromFirebase(beer.imageID);
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
@@ -322,33 +319,6 @@ public class SynchronisationManager {
 
     }
 
-    public void getBitmapForBeerFromFirebase(@NonNull String imageID) {
-        Log.i(LOG_TAG, "BitmapForBeer method called!");
-
-        StorageReference storageReference = this.storage.getReference().child("images");
-        final long SIZE = 1024 * 1024 * 2;
-
-
-        Log.i(LOG_TAG, "getBitmapForBeer: Attempting to query for beer ID: " + imageID);
-
-        // Beer name should be the second value
-        StorageReference imageRef = storageReference.child(imageID + ".jpg");
-        Log.i(LOG_TAG, "ImageRef : " + imageRef.getPath());
-
-        imageRef.getBytes(SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-           @Override
-           public void onSuccess(byte[] bytes) {
-               ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-               Bitmap bitmap = BitmapFactory.decodeStream(bais);
-               Log.i(LOG_TAG, "Image bitmap received for path: " + imageRef);
-
-               for (FirebaseMutator mut : registeredCallbacks) {
-                   mut.callbackGetBitmapForBeerFromFirebase(imageID, bitmap);
-
-               }
-           }
-        });
-    }
 
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
