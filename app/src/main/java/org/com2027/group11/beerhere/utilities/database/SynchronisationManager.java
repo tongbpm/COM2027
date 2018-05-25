@@ -245,7 +245,7 @@ public class SynchronisationManager {
         });
     }
 
-    public void getObjectsForTypeFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
+    public void getBeersForCountryFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
             throw new NullPointerException("Firebase database path does not exist.");
