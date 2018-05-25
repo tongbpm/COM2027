@@ -166,10 +166,8 @@ public class SynchronisationManager {
                 for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                     mut.callbackGetObjectsFromFirebase(returnedObjects);
                 }
+                beer.ref = reference.child(countryPath).child("beers").child(beer.name);
 
-                beer.ref = reference.child("beers").child(beer.name);
-
-                //getBitmapForBeerFromFirebase(beer.imageID);
             }
 
             @Override
@@ -181,7 +179,8 @@ public class SynchronisationManager {
 
                     Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
 
-                    //getBitmapForBeerFromFirebase(beer.imageID);
+                    beer.ref = reference.child(countryPath).child("beers").child(beer.name);
+
                     mut.callbackObjectChangedFromFirebase(beer);
                 }
             }

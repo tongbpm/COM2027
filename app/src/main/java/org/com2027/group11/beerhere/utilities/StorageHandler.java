@@ -10,12 +10,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-public  class StorageHandler {
+public class StorageHandler {
 
     private static final StorageReference IMAGES_REF = FirebaseStorage.getInstance().getReference().child("images");
 
 
-    public static void setImageFromFirebase(String imageID, SimpleDraweeView view){
+    public static void setImageFromFirebase(String imageID, SimpleDraweeView view) {
         StorageReference imageRef = IMAGES_REF.child(imageID+".jpg");
         Log.d("Storage Reference: ", imageRef.toString());
         imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
