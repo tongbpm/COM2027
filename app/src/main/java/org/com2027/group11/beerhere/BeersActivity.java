@@ -28,6 +28,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -53,6 +56,7 @@ import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.IOException;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +81,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private TextView country;
     private String mCountry;
+    ArrayList<String> countriesList = new ArrayList<String>();
+    ArrayAdapter<String> countriesSpinnerAddapter;
+    Spinner countriesSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +151,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
         );
 
+        displayCountriesSpinner();
+
         // creates an instance of the fused location provider
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -164,12 +173,32 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         displayBeers();
         userthread.start();
 
-
     }
 
+    private void displayCountriesSpinner(){
+        populateCountriesList();
+        countriesSpinnerAddapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countriesList);
+        countriesSpinner = (Spinner) findViewById(R.id.spinner_countries);
+        countriesSpinner.setAdapter(countriesSpinnerAddapter);
+        countriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mCountry = countriesSpinner.getItemAtPosition(position).toString();
+                mCountry = mCountry.replace(' ', '_');
 
-    //opens the drawer when the navigation drawer "hamburger" button is tapped
-    //handles click navigation events to start other fragments
+                // Add code for firebase etc here.
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void populateCountriesList(){
+        countriesList.add("Austria");countriesList.add("Belgium");countriesList.add("Bulgaria");countriesList.add("Croatia");countriesList.add("Cyprus");countriesList.add("Czech Republic");countriesList.add("Denmark");countriesList.add("Estonia");countriesList.add("Finland");countriesList.add("France");countriesList.add("Germany");countriesList.add("Greece");countriesList.add("Hungary");countriesList.add("Ireland");countriesList.add("Italy");countriesList.add("Latvia");countriesList.add("Lithuania");countriesList.add("Luxembourg");countriesList.add("Malta");countriesList.add("Netherlands");countriesList.add("Poland");countriesList.add("Portugal");countriesList.add("Romania");countriesList.add("Slovakia");countriesList.add("Slovenia");countriesList.add("Spain");countriesList.add("Sweden");countriesList.add("United Kingdom");
+    }
 
     private void findUsersCountryAndShowIt(){
         Log.d(TAG, "Finding location");
@@ -211,13 +240,14 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         try {
             address = geocoder.getFromLocation(lat, lng, 5);
             if(address.size()>0){
-                country.setText("Country: " +  address.get(0).getCountryName());
                 mCountry = address.get(0).getCountryName();
-                
+
                 // If the user denies location permissions, just load beers of a default country
                 if (mCountry == null) {
                     this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
                 } else {
+                    int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
+                    countriesSpinner.setSelection(spinnerCountryPosition);
                     mCountry = mCountry.replace(' ', '_');
                     this.firebaseManager.registerCallbackWithManager(this, mCountry);
                 }

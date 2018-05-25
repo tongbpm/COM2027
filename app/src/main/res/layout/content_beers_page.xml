@@ -13,16 +13,31 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/country"
+            android:orientation="horizontal"
             android:layout_marginLeft="20dip"
-            android:layout_marginTop="20dp"
-            android:textSize="20dip"
-            android:text="Country: "
-            >
-        </TextView>
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/country"
+                android:textSize="20dip"
+                android:text="Country: "
+                >
+            </TextView>
+
+            <Spinner
+                android:id="@+id/spinner_countries"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dip"/>
+
+        </LinearLayout>
+
+
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
