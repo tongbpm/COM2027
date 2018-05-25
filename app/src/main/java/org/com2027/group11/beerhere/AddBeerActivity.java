@@ -196,9 +196,11 @@ public class AddBeerActivity extends AppCompatActivity {
         }else if(requestCode == LOAD_IMAGE && resultCode == RESULT_OK) {
             mphotoURI =  data.getData();
         }
-        mDraweeView.setImageURI(mphotoURI);
-        mDraweeView.setVisibility(View.VISIBLE);
-        getBitmapFromDrawee();
+        if(mphotoURI != null) {
+            mDraweeView.setImageURI(mphotoURI);
+            mDraweeView.setVisibility(View.VISIBLE);
+            getBitmapFromDrawee();
+        }
     }
 
     private void getBitmapFromDrawee() {
