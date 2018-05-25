@@ -147,7 +147,7 @@ public class SynchronisationManager {
 
                     List<Object> returnedObjects = new ArrayList<Object>();
 
-                    Log.e(LOG_TAG, "child added to Firebase: " + dataSnapshot.getKey());
+                    Log.i(LOG_TAG, "SyncManager | CEListener | New child added to Firebase with key " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
@@ -166,9 +166,8 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
-                        beer.ref = dataSnapshot.getRef();
-                        Log.e(LOG_TAG, "OBJECT CHANGED");
-                        Log.d(LOG_TAG, "REF: "+beer.ref.toString());
+                        
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
 
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
@@ -178,7 +177,7 @@ public class SynchronisationManager {
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
                     for (FirebaseMutator mut : registeredCallbacks) {
                         mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
-                        Log.e(LOG_TAG, "OBJECT REMOVED");
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Child removed from Firebase with key " + dataSnapshot.getKey());
                     }
                 }
 
@@ -189,7 +188,7 @@ public class SynchronisationManager {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.e(LOG_TAG, "Error: Firebase access event cancelled!");
+                    Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
                 }
             });
         }
@@ -248,16 +247,15 @@ public class SynchronisationManager {
     public void getBeersForCountryFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String country) throws NullPointerException {
         String path = this.searchForFirebasePath(country);
         if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
+            throw new NullPointerException("SyncManager | getBeersForCountry | Firebase database path does not exist.");
         }
 
         DatabaseReference ref = this.database.getReference().child(path).child("beers");
-        Log.e(LOG_TAG, ref.getKey());
+        Log.i(LOG_TAG, "SyncManager | getBeersForCountry | obtaining Firebase RDB child " + ref.getParent());
         ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(LOG_TAG, dataSnapshot.getKey());
-                Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
+                Log.d(LOG_TAG, "SyncManager | getBeersForCountry | Firebase returned child object count of " + dataSnapshot.getChildrenCount());
 
                 List<Object> returnedObjects = new ArrayList<Object>();
 
@@ -280,48 +278,15 @@ public class SynchronisationManager {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, "Read cancelled!");
+                Log.wtf(LOG_TAG, "SyncManager | getBeersForCountry | Firebase read cancelled!");
             }
         });
     }
 
-    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
-        if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
-        }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
-
-        StorageReference storageReference = this.storage.getReference().child("images");
-        StorageReference imageReference = storageReference.child(imageID + ".jpg");
-
-        // Show a notification to the user
-        final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
-        sbarStart.show();
-
-        Log.d(LOG_TAG, "Uploading Image");
-        UploadTask task = imageReference.putBytes(data);
-        task.addOnFailureListener(e -> {
-            e.printStackTrace();
-            sbarStart.setText(R.string.uploading_image_failed);
-            sbarStart.show();
-        });
-        task.addOnSuccessListener(taskSnapshot -> {
-            Log.d(LOG_TAG, "Upload Successful");
-            sbarStart.setText(R.string.uploading_image_success);
-            sbarStart.show();
-        });
-
-    }
-
-
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
+            throw new NullPointerException("SyncManager | deleteObjectById | Firebase database path does not exist.");
         }
 
         DatabaseReference ref = this.database.getReference().getRoot().child(path);
@@ -400,10 +365,10 @@ public class SynchronisationManager {
      */
     public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
         if (this.registeredCallbacks.contains(mutatorContext)) {
-            Log.i(LOG_TAG, "Mutator context already exists in callback");
+            Log.w(LOG_TAG, "SyncManager | registerCallback | Mutator context already exists in callback");
         } else {
-            Log.i(LOG_TAG, "Mutator context registered with SyncManager");
             this.registeredCallbacks.add(mutatorContext);
+            Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context registered successfully.");
         }
     }
 
@@ -413,8 +378,8 @@ public class SynchronisationManager {
      */
     public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
         if (this.registeredCallbacks.contains(mutatorContext)) {
-            Log.i(LOG_TAG, "Mutator context deregistered with SyncManager");
             this.registeredCallbacks.remove(mutatorContext);
+            Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context successfully deregistered.");
         }
     }
 
