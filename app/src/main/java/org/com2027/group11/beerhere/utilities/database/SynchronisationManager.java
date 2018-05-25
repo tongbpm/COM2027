@@ -166,7 +166,7 @@ public class SynchronisationManager {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
-                        
+
                         Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
 
                         mut.callbackObjectChangedFromFirebase(beer);

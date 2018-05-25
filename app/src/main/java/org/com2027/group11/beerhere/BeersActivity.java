@@ -237,16 +237,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             return false;
         }
     }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e(LOG_TAG, "beers activity called onResume");
-    }
-
-
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
