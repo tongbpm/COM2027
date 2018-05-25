@@ -259,45 +259,6 @@ public class SynchronisationManager {
         });
     }
 
-    public void getBeersForCountryFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String country) throws NullPointerException {
-        String path = this.searchForFirebasePath(country);
-        if (path == null) {
-            throw new NullPointerException("SyncManager | getBeersForCountry | Firebase database path does not exist.");
-        }
-
-        DatabaseReference ref = this.database.getReference().child(path).child("beers");
-        Log.i(LOG_TAG, "SyncManager | getBeersForCountry | obtaining Firebase RDB child " + ref.getParent());
-        ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(LOG_TAG, "SyncManager | getBeersForCountry | Firebase returned child object count of " + dataSnapshot.getChildrenCount());
-
-                List<Object> returnedObjects = new ArrayList<Object>();
-
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
-                    Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
-
-                    returnedObjects.add(beer);
-                }
-
-                if (firebaseAccessorContext != null) {
-                    firebaseAccessorContext.callbackGetObjectsFromFirebase(returnedObjects);
-                } else {
-                    // Send callback message to all registered clients
-                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
-                        mut.callbackGetObjectsForCountryFromFirebase(returnedObjects);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.wtf(LOG_TAG, "SyncManager | getBeersForCountry | Firebase read cancelled!");
-            }
-        });
-    }
-
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
