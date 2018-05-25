@@ -259,6 +259,48 @@ public class SynchronisationManager {
         });
     }
 
+    public void getObjectsForTypeFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        DatabaseReference ref = this.database.getReference().child(path).child("beers");
+        Log.e(LOG_TAG, ref.getKey());
+        ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(LOG_TAG, dataSnapshot.getKey());
+                Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
+
+                List<Object> returnedObjects = new ArrayList<Object>();
+                //getImageReferenceArray();
+
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
+                    Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
+
+
+                    returnedObjects.add(beer);
+                }
+
+                if (firebaseAccessorContext != null) {
+                    firebaseAccessorContext.callbackGetObjectsFromFirebase(returnedObjects);
+                } else {
+                    // Send callback message to all registered clients
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
+                        mut.callbackGetObjectsFromFirebase(returnedObjects);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG, "Read cancelled!");
+            }
+        });
+    }
+
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {

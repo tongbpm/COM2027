@@ -89,6 +89,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
 

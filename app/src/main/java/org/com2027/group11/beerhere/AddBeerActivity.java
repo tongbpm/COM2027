@@ -2,13 +2,19 @@ package org.com2027.group11.beerhere;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.DrawableWrapper;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,9 +29,26 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.facebook.common.executors.CallerThreadExecutor;
+import com.facebook.common.executors.UiThreadImmediateExecutorService;
+import com.facebook.common.references.CloseableReference;
+import com.facebook.datasource.BaseDataSubscriber;
+import com.facebook.datasource.DataSource;
+import com.facebook.datasource.DataSubscriber;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.Priority;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.core.ImagePipeline;
+import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber;
+import com.facebook.imagepipeline.image.CloseableBitmap;
+import com.facebook.imagepipeline.image.CloseableImage;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
+import com.facebook.imagepipeline.request.ImageRequest;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.utilities.StorageHandler;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.File;
@@ -59,11 +82,12 @@ public class AddBeerActivity extends AppCompatActivity {
     private ImageButton mImageButton;
     private AlertDialog mDialog;
     private Bitmap mBitmap = null;
-    private ImageView mImageView;
+    private SimpleDraweeView mDraweeView;
     private String mCurrentPhotoPath;
     private EditText mNameEditText;
     private Button mSubmitButton;
     private  String mImageId;
+    private Uri mphotoURI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +105,7 @@ public class AddBeerActivity extends AppCompatActivity {
         //Make default selection the same as the device default location
 
         mImageButton = findViewById(R.id.image_button);
-        mImageView = findViewById(R.id.image_thumbnail);
+        mDraweeView = findViewById(R.id.image_thumbnail);
 
 
         mNameEditText = findViewById(R.id.beer_name_edit_text);
@@ -103,13 +127,12 @@ public class AddBeerActivity extends AppCompatActivity {
                     String countryName = mCountry.getSelectedItem().toString();
                     countryName = countryName.replace(' ', '_');
                     Beer beer = new Beer(mNameEditText.getText().toString(), mImageId, FirebaseAuth.getInstance().getUid());
-                    if(mBitmap != null){
-                        beer.setBeerImage(mBitmap);
-                        beer.imageID = mImageId;
-                        Log.i(TAG, "AddBeerActivity: Setting beer imageID as " + beer.imageID);
-                    }
+                    beer.imageID = mImageId;
                     Toast.makeText(AddBeerActivity.this, "Beer Saved", Toast.LENGTH_LONG).show();
                     syncManager.saveBeerToFirebase(countryName, beer.name, beer);
+                    if(mBitmap != null) {
+                        StorageHandler.saveBitmapForBeerToFirebase(mImageId, mBitmap);
+                    }
                     finish();
                 }else{
                     Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
@@ -159,8 +182,8 @@ public class AddBeerActivity extends AppCompatActivity {
                 Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
             }
             if(photoFile!=null){
-                Uri photoURI = FileProvider.getUriForFile(this, "org.com2027.group11.beerhere.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                 mphotoURI = FileProvider.getUriForFile(this, "org.com2027.group11.beerhere.fileprovider", photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mphotoURI);
                 startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
             }
         }
@@ -169,24 +192,64 @@ public class AddBeerActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         if(requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK){
-            mBitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
-            mImageView.setImageBitmap(mBitmap);
-            mImageView.setVisibility(View.VISIBLE);
             galleryAddPic();
-        }else if(requestCode == LOAD_IMAGE && resultCode == RESULT_OK){
-                    try{
-                        final Uri imageUri = data.getData();
-                        final InputStream imageStream = getContentResolver().openInputStream(imageUri);
-                        mBitmap = BitmapFactory.decodeStream(imageStream);
-                        mImageView.setImageBitmap(mBitmap);
-                        mImageView.setVisibility(View.VISIBLE );
-                        Log.d(TAG, "Setting Image");
-                    }catch (FileNotFoundException e){
-                        e.printStackTrace();
-                        Toast.makeText(AddBeerActivity.this, R.string.error, Toast.LENGTH_SHORT).show();
-                    }
+        }else if(requestCode == LOAD_IMAGE && resultCode == RESULT_OK) {
+            mphotoURI =  data.getData();
         }
+        mDraweeView.setImageURI(mphotoURI);
+        mDraweeView.setVisibility(View.VISIBLE);
+        getBitmapFromDrawee();
     }
+
+    private void getBitmapFromDrawee() {
+
+        DataSubscriber dataSubscriber = new BaseDataSubscriber<CloseableReference<CloseableBitmap>>() {
+            @Override
+            public void onNewResultImpl(
+                    DataSource<CloseableReference<CloseableBitmap>> dataSource) {
+                if (!dataSource.isFinished()) {
+                    return;
+                }
+                CloseableReference<CloseableBitmap> imageReference = dataSource.getResult();
+                if (imageReference != null) {
+                    final CloseableReference<CloseableBitmap> closeableReference = imageReference.clone();
+                    try {
+                        CloseableBitmap closeableBitmap = closeableReference.get();
+                        Bitmap bitmap  = closeableBitmap.getUnderlyingBitmap();
+                        if(bitmap != null && !bitmap.isRecycled()) {
+                            Log.d(TAG, "Got bitmap");
+                            mBitmap = bitmap;
+                        }
+                    } finally {
+                        imageReference.close();
+                        closeableReference.close();
+                    }
+                }
+            }
+            @Override
+            public void onFailureImpl(DataSource dataSource) {
+                Throwable throwable = dataSource.getFailureCause();
+                // handle failure
+            }
+        };
+        getBitmap(this, mphotoURI, 200, 200, dataSubscriber);
+
+    }
+
+
+    public void getBitmap(Context context, Uri uri, int width, int height, DataSubscriber dataSubscriber){
+        ImagePipeline imagePipeline = Fresco.getImagePipeline();
+        ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri);
+        if(width > 0 && height > 0){
+            builder.setResizeOptions(new ResizeOptions(width, height));
+        }
+        ImageRequest request = builder.build();
+        DataSource<CloseableReference<CloseableImage>>
+                dataSource = imagePipeline.fetchDecodedImage(request, context);
+        dataSource.subscribe(dataSubscriber, UiThreadImmediateExecutorService.getInstance());
+    }
+
+
 
     private  void galleryAddPic() {
         Log.d(TAG, "Writing to Gallery");
