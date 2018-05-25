@@ -49,6 +49,7 @@ import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
+import org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView;
 import org.w3c.dom.Text;
 
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
@@ -65,7 +66,7 @@ import java.util.Vector;
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
     private static final String TAG = "BEER-HERE";
-    private RecyclerView rvBeers;
+    private EmptyRecyclerView rvBeers;
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
     private Vector<Beer> beers = new Vector<Beer>();
@@ -352,6 +353,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvBeers = findViewById(R.id.rv_beers);
+        rvBeers.setEmptyView(findViewById(R.id.no_beer_text));
         adapter = new BeerListAdapter(this, this.beers);
         rvBeers.setAdapter(adapter);
         rvBeers.setLayoutManager(new LinearLayoutManager(this));

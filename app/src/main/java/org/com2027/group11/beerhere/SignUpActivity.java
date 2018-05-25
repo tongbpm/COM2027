@@ -22,7 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.com2027.group11.beerhere.user.User;
-import org.com2027.group11.beerhere.utilities.DatePickerFragment;
+import org.com2027.group11.beerhere.utilities.views.DatePickerFragment;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.ArrayList;
