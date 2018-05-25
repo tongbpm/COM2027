@@ -9,8 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.widget.TextView;
-
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -49,6 +47,8 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         setContentView(R.layout.activity_main);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mContext = this.getApplicationContext();
@@ -58,13 +58,18 @@ public class SignInActivity extends AppCompatActivity {
                 new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(),
                 new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build());
 
-        startActivityForResult(AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setLogo(R.drawable.ic_beer)
-                        .setAvailableProviders(providers)
-                        .setIsSmartLockEnabled(false)
-                        .build(),
-                RC_SIGN_IN);
+        if(mAuth.getCurrentUser() == null) {
+            startActivityForResult(AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setLogo(R.drawable.ic_beer)
+                            .setAvailableProviders(providers)
+                            .setIsSmartLockEnabled(true)
+                            .build(),
+                    RC_SIGN_IN);
+        }else{
+            Intent intent = new Intent(this, BeersActivity.class);
+            startActivity(intent);
+        }
 
     }
 
@@ -144,7 +149,6 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(User user) {
                 Log.d(TAG, "Async Execution Finished");
-                ((TextView) findViewById(R.id.main_text)).setText(user.name);
             }
 
         }
