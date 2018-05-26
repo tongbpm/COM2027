@@ -21,6 +21,7 @@ import android.support.v4.content.IntentCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -118,13 +119,32 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
+
+        //Navigation for Navigation Drawer
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
+
                 menuItem -> {
                     //set item as selected to persist highlight
                     menuItem.setChecked(true);
                     //close drawer when item is tapped
                     mDrawerLayout.closeDrawers();
+                    //update the UI based on menuItem chosen
+                    switch (menuItem.getItemId()) {
+                        case R.id.nav_home:
+                            return true;
+
+
+                        case R.id.nav_favourites:
+
+                            return true;
+
+                        case R.id.nav_signout:
+                            signOut();
+                            return true;
+
+
+                    }
                     return false;
                 }
 
@@ -235,9 +255,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        //Snackbar.make(findViewById(R.id.main_layout), "Logged out.s", Snackbar.LENGTH_SHORT).show();
                         Toast.makeText(BeersActivity.this, "You have been signed out", Toast.LENGTH_SHORT).show();
-
                         Intent signOut = new Intent(BeersActivity.this, SignInActivity.class);
                         signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -311,16 +329,15 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         switch (item.getItemId()) {
             case android.R.id.home:
                 mDrawerLayout.openDrawer(GravityCompat.START);
+                //Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show(); Testing if icon works
                 return true;
 
             case R.id.nav_home:
                 return super.onOptionsItemSelected(item);
 
-          //  case R.id.nav_submissions:
-
-         //       return true;
 
             case R.id.nav_favourites:
+                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
 
                 return true;
 
@@ -334,15 +351,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
-
-
-
-
-
-    //method to obtain user info and display it on their profile on the header of the navigation drawer
+        //method to obtain user info and display it on their profile on the header of the navigation drawer
     private void getUserInfo() {
 
         //Firebase authentication and user checking, and gets User ID
