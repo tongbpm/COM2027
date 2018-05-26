@@ -90,6 +90,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         Fresco.initialize(this);
 
+        firebaseManager.getLoggedInUser();
+
         //sets the toolbar as the action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -345,6 +347,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 return true;
 
             case R.id.nav_signout:
+                SynchronisationManager.getInstance().loggedInUser = null;
                 signOut();
                 break;
 

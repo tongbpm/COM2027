@@ -16,6 +16,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
 import java.lang.annotation.Retention;
@@ -50,6 +51,7 @@ public class SynchronisationManager {
     private final int IMAGE_REQUEST = 71;
 
     private int userAge = 0;
+    public User loggedInUser =  null;
 
     // Path enumerations for adding data to Firebase storage
     // Android doesn't like Enum structures, so use this for better performance
@@ -133,6 +135,23 @@ public class SynchronisationManager {
         populateAges();
         this.registeredCallbacks = new HashMap<FirebaseMutator, String>();
         this.childListeners = new HashMap<FirebaseMutator, ChildEventListener>();
+    }
+
+    public void getLoggedInUser() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/"+uid);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                loggedInUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG, databaseError.getDetails());
+            }
+        });
+
     }
 
     public static SynchronisationManager getInstance() {
