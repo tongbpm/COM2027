@@ -72,7 +72,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             holder.imBeer.setImageBitmap(beer.beerImageBmp);
         }
         holder.tvBeerTitle.setText(beer.name);
-        holder.tvRating.setText(String.valueOf(beer.getRating()));
+        holder.tvRating.setText(String.valueOf(beer.upvotes - beer.downvotes));
 
         StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
 
