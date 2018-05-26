@@ -143,14 +143,15 @@ public class SynchronisationManager {
     }
 
     private void populateAges(){
-        final int[] age = {-1};
         for( Map.Entry<String, String> refPath : this.firebasePaths.entrySet()){
                 if(refPath.getValue().contains("countries")){
                     DatabaseReference reference = this.database.getReference(refPath.getValue()).child("age");
                     reference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            age[0] = (int) dataSnapshot.getValue();
+                            Log.d(LOG_TAG, reference.toString());
+                            Log.d("DRINKING AGE:", (dataSnapshot.getValue(Integer.class).toString()));
+                            drinkingAges.put(refPath.getKey(), dataSnapshot.getValue(Integer.class));
                         }
 
                         @Override
@@ -158,18 +159,17 @@ public class SynchronisationManager {
                             Log.e(LOG_TAG,databaseError.getDetails());
                         }
                     });
-                    drinkingAges.put(refPath.getKey(), age[0]);
                 }
         }
     }
 
     private void getUserAgeFromDatabase() {
         String uid = FirebaseAuth.getInstance().getUid();
-        DatabaseReference ref = this.database.getReference("users/"+uid+"/age/dateOfBirth");
+        DatabaseReference ref = this.database.getReference("users/"+uid+"/dateOfBirth");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Date dateOfBirth = (Date) dataSnapshot.getValue();
+                Date dateOfBirth = dataSnapshot.getValue(Date.class);
 
                 Calendar dob = Calendar.getInstance();
                 dob.setTime(dateOfBirth);
@@ -191,8 +191,8 @@ public class SynchronisationManager {
                         if (dobDay > currDay) {
                             years--;
                         }
-                        SynchronisationManager.this.userAge = years;
                     }
+                    SynchronisationManager.this.userAge = years;
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -459,6 +459,8 @@ public class SynchronisationManager {
     }
 
     public boolean checkIfUserOldEnough(String country) {
+        Log.d("User age: ", ((Integer)userAge).toString());
+        Log.d("Country age: ", (drinkingAges.get(country).toString()));
         return !(userAge < drinkingAges.get(country));
     }
 

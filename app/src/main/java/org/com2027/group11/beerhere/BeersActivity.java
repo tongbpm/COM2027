@@ -199,16 +199,28 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-
                 firebaseManager.deregisterCallbackWithManager(BeersActivity.this, mCountry);
                 beers.clear();
 
-                Log.d("Previous Country: " ,mCountry);
                 mCountry = countriesSpinner.getItemAtPosition(position).toString();
                 mCountry = mCountry.replace(' ', '_');
-                Log.d("New Country: " ,mCountry);
 
-                firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+                if(firebaseManager.checkIfUserOldEnough(mCountry)) {
+                    Log.d(TAG, "User is old enough");
+                    TextView textView = findViewById(R.id.no_beer_text);
+                    textView.setText(R.string.no_beer);
+                    rvBeers.setEmptyView(textView);
+
+                    Log.d("New Country: ", mCountry);
+
+                    firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+                }else{
+                    Log.d(TAG, "User is not old enough");
+
+                    TextView textView = findViewById(R.id.no_beer_text);
+                    textView.setText(R.string.underage);
+                    rvBeers.setEmptyView(textView);
+                }
 
             }
 
