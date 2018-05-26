@@ -116,6 +116,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         //Now user is signed up send them to beers page
         Intent beerIntent = new Intent(SignUpActivity.this, BeersActivity.class);
         startActivity(beerIntent);
+        finish();
     }
 
 

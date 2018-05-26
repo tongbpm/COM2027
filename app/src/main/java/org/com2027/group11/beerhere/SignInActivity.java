@@ -90,11 +90,11 @@ public class SignInActivity extends AppCompatActivity {
                             Log.d(TAG, "User has logged in before");
                             Intent beerIntent = new Intent(SignInActivity.this, BeersActivity.class);
                             startActivity(beerIntent);
+                            finish();
                         } else {
                             //Sends user to activity with sign up form
                             Intent signUpIntent = new Intent(SignInActivity.this, SignUpActivity.class);
                             startActivity(signUpIntent);
-
                         }
                     }
 
