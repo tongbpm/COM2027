@@ -164,7 +164,7 @@ public class SynchronisationManager {
                 returnedObjects.add(beer);
 
                 for (FirebaseMutator mut : registeredCallbacks.keySet()) {
-                    mut.callbackGetObjectsForCountryFromFirebase(returnedObjects);
+                    mut.callbackGetObjectsFromFirebase(returnedObjects);
                     Log.d(LOG_TAG, "Callback got objects for country");
                 }
                 beer.ref = reference.child(countryPath).child("beers").child(beer.name);

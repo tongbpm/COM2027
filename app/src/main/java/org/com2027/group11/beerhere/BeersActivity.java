@@ -394,34 +394,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     public void callbackGetObjectsFromFirebase(List<Object> objects) {
         Log.e(LOG_TAG, String.valueOf(objects.size()));
         for (Object object : objects) {
-            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).name);
+            Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
             if (!(this.beers.contains(object))) {
                 Log.e(LOG_TAG, String.valueOf(objects.size()));
                 this.beers.add((Beer) object);
 
-                if (((Beer) object).imageID != null) {
-                    //this.firebaseManager.getBitmapForBeerFromFirebase(((Beer) object).imageID);
-                } else {
+                if (((Beer) object).imageID == null) {
                     Log.e(LOG_TAG, "Beer Image ID is null!");
                 }
             }
         }
-        this.adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void callbackGetObjectsForCountryFromFirebase(List<Object> objects) {
-        Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
-
-        // For now, simply wipe the Beers list and populate it again with the revised list
-        this.beers = new Vector<>();
-
-        // Have to convert every Object into Beer separately; can't downcast the entire list
-        for (Object object : objects) {
-            Beer beer = (Beer) object;
-            this.beers.add(beer);
-        }
-
         this.adapter.notifyDataSetChanged();
     }
 
