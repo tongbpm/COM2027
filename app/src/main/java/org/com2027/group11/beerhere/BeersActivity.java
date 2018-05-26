@@ -63,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Vector;
 
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
@@ -498,5 +499,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     @Override
     public void callbackNoChildrenForFirebasePath() {
         rvBeers.setEmptyView(findViewById(R.id.no_beer_text));
+    }
+
+    @Override
+    public void callbackGetBeersForReferenceList(Set<Beer> beers) {
+        Log.i(LOG_TAG, "GETTING BEERS FOR REF LIST");
+        for (Beer beer : beers) {
+            Log.i(LOG_TAG, beer.name);
+        }
     }
 }

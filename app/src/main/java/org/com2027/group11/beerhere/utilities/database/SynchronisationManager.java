@@ -378,9 +378,7 @@ public class SynchronisationManager {
             });
         }
 
-        new Thread() {
-            @Override
-            public void run() {
+        new Thread(() -> {
                while (beers.size() != references.size()) {
                    try {
                        wait();
@@ -393,7 +391,7 @@ public class SynchronisationManager {
                    mutator.callbackGetBeersForReferenceList(beers);
                }
             }
-        }.start();
+        ).start();
     }
 
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
