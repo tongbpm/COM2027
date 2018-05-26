@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import com.google.firebase.storage.FirebaseStorage;
 
 import org.com2027.group11.beerhere.beer.Beer;
@@ -140,7 +139,7 @@ public class SynchronisationManager {
     public void getLoggedInUser() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/"+uid);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 loggedInUser = dataSnapshot.getValue(User.class);
