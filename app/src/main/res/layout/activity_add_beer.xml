@@ -2,6 +2,7 @@
 <LinearLayout
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -41,11 +42,14 @@
         android:layout_height="wrap_content"
         android:text="@string/upload_image"/>
 
-    <ImageView
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/image_thumbnail"
-        android:layout_width="@dimen/thumnail_width"
-        android:layout_height="@dimen/thumbnail_height"
-        android:visibility="gone"/>
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_margin="15dp"
+        fresco:placeholderImage="@drawable/ic_beer"
+        android:visibility="gone"
+        />
 
     <ImageButton
         android:id="@+id/image_button"

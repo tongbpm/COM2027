@@ -26,7 +26,6 @@
             android:screenOrientation="sensorPortrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -40,6 +39,7 @@
         <activity
             android:name=".BeersActivity"
             android:label="@string/title_activity_beers_page"
+            android:screenOrientation="sensorPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AddBeerActivity"></activity>
 
@@ -47,6 +47,7 @@
             android:name=".FavoritesActivity"
             android:label="@string/title_activity_favourites_page"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="org.com2027.group11.beerhere.fileprovider"

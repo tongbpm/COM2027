@@ -165,6 +165,7 @@ public class SynchronisationManager {
 
                 for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                     mut.callbackGetObjectsFromFirebase(returnedObjects);
+                    Log.d(LOG_TAG, "Callback got objects for country");
                 }
                 beer.ref = reference.child(countryPath).child("beers").child(beer.name);
 
@@ -203,7 +204,27 @@ public class SynchronisationManager {
                 Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
             }
         };
+
+        // Adding another listener to detect if there's no children, and trigger a callback
+        ValueEventListener valueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChildren()) {
+                    // No children
+                    for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                        mutator.callbackNoChildrenForFirebasePath();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
         reference.child(countryPath).child("beers").addChildEventListener(listener);
+        reference.child(countryPath).child("beers").addValueEventListener(valueListener);
         this.childListeners.put(mutatorContext, listener);
     }
 
@@ -255,6 +276,48 @@ public class SynchronisationManager {
                 } else {
                     Log.e(LOG_TAG, "Data saved successfully.");
                 }
+            }
+        });
+    }
+
+    public void getObjectsForTypeFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
+        String path = this.searchForFirebasePath(type);
+        if (path == null) {
+            throw new NullPointerException("Firebase database path does not exist.");
+        }
+
+        DatabaseReference ref = this.database.getReference().child(path).child("beers");
+        Log.e(LOG_TAG, ref.getKey());
+        ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(LOG_TAG, dataSnapshot.getKey());
+                Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
+
+                List<Object> returnedObjects = new ArrayList<Object>();
+                //getImageReferenceArray();
+
+                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
+                    HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
+                    Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
+
+
+                    returnedObjects.add(beer);
+                }
+
+                if (firebaseAccessorContext != null) {
+                    firebaseAccessorContext.callbackGetObjectsFromFirebase(returnedObjects);
+                } else {
+                    // Send callback message to all registered clients
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
+                        mut.callbackGetObjectsFromFirebase(returnedObjects);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG, "Read cancelled!");
             }
         });
     }
@@ -360,5 +423,6 @@ public class SynchronisationManager {
             Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context successfully deregistered.");
         }
     }
+
 
 }
