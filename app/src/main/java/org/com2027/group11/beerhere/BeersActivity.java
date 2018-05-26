@@ -30,6 +30,9 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +57,7 @@ import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.user.UserDao;
 import org.com2027.group11.beerhere.utilities.database.AppDatabase;
+import org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView;
 import org.w3c.dom.Text;
 
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
@@ -61,6 +65,7 @@ import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.IOException;
 import java.security.Security;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -69,7 +74,7 @@ import java.util.Vector;
 public class BeersActivity extends AppCompatActivity implements FirebaseMutator {
 
     private static final String TAG = "BEER-HERE";
-    private RecyclerView rvBeers;
+    private EmptyRecyclerView rvBeers;
     private BeerListAdapter adapter;
     private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
     private Vector<Beer> beers = new Vector<Beer>();
@@ -87,11 +92,15 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
     private TextView country;
     private String mCountry;
+    ArrayList<String> countriesList = new ArrayList<String>();
+    ArrayAdapter<String> countriesSpinnerAddapter;
+    Spinner countriesSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beers_page);
+
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
         mAuth = FirebaseAuth.getInstance();
@@ -107,9 +116,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-
-
-
+        //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -157,6 +164,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
         );
 
+        displayCountriesSpinner();
+
         // creates an instance of the fused location provider
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -177,12 +186,32 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         displayBeers();
         userthread.start();
 
-
     }
 
+    private void displayCountriesSpinner(){
+        populateCountriesList();
+        countriesSpinnerAddapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countriesList);
+        countriesSpinner = (Spinner) findViewById(R.id.spinner_countries);
+        countriesSpinner.setAdapter(countriesSpinnerAddapter);
+        countriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                mCountry = countriesSpinner.getItemAtPosition(position).toString();
+                mCountry = mCountry.replace(' ', '_');
 
-    //opens the drawer when the navigation drawer "hamburger" button is tapped
-    //handles click navigation events to start other fragments
+                // Add code for firebase etc here.
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+    }
+
+    private void populateCountriesList(){
+        countriesList.add("Austria");countriesList.add("Belgium");countriesList.add("Bulgaria");countriesList.add("Croatia");countriesList.add("Cyprus");countriesList.add("Czech Republic");countriesList.add("Denmark");countriesList.add("Estonia");countriesList.add("Finland");countriesList.add("France");countriesList.add("Germany");countriesList.add("Greece");countriesList.add("Hungary");countriesList.add("Ireland");countriesList.add("Italy");countriesList.add("Latvia");countriesList.add("Lithuania");countriesList.add("Luxembourg");countriesList.add("Malta");countriesList.add("Netherlands");countriesList.add("Poland");countriesList.add("Portugal");countriesList.add("Romania");countriesList.add("Slovakia");countriesList.add("Slovenia");countriesList.add("Spain");countriesList.add("Sweden");countriesList.add("United Kingdom");
+    }
 
     private void findUsersCountryAndShowIt(){
         Log.d(TAG, "Finding location");
@@ -242,10 +271,19 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         try {
             address = geocoder.getFromLocation(lat, lng, 5);
             if(address.size()>0){
-                country.setText("Country: " +  address.get(0).getCountryName());
                 mCountry = address.get(0).getCountryName();
-                mCountry = mCountry.replace(' ', '_');
-                Log.d(TAG, mCountry);
+
+                // If the user denies location permissions, just load beers of a default country
+                if (mCountry == null) {
+                    this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
+                } else {
+                    int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
+                    countriesSpinner.setSelection(spinnerCountryPosition);
+                    mCountry = mCountry.replace(' ', '_');
+                    this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                }
+
+                Log.d(TAG, "BeersActivity | updateCountryShown | Country = " + mCountry);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -267,16 +305,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             return false;
         }
     }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e(LOG_TAG, "beers activity called onResume");
-        this.firebaseManager.registerCallbackWithManager(this);
-    }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -354,6 +382,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvBeers = findViewById(R.id.rv_beers);
+        rvBeers.setEmptyView(findViewById(R.id.no_beer_text));
         adapter = new BeerListAdapter(this, this.beers);
         rvBeers.setAdapter(adapter);
         rvBeers.setLayoutManager(new LinearLayoutManager(this));
@@ -375,6 +404,22 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 }
             }
         }
+        this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackGetObjectsForCountryFromFirebase(List<Object> objects) {
+        Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
+
+        // For now, simply wipe the Beers list and populate it again with the revised list
+        this.beers = new Vector<>();
+
+        // Have to convert every Object into Beer separately; can't downcast the entire list
+        for (Object object : objects) {
+            Beer beer = (Beer) object;
+            this.beers.add(beer);
+        }
+
         this.adapter.notifyDataSetChanged();
     }
 
@@ -433,7 +478,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         for (Beer b : this.beers) {
             if (b.imageID.equals(beerImageID)) {
-                b.setBeerImage(bitmap);
+                if (b.beerImageBmp == null) {
+                    b.setBeerImage(bitmap);
+                }
                 Log.i(LOG_TAG, "beer bitmap: " + b.beerImageBmp.toString());
             }
         }
