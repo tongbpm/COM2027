@@ -424,5 +424,15 @@ public class SynchronisationManager {
         }
     }
 
+    /**
+     * CAll this to get favorites from user with set UID
+     * @param uid
+     */
+
+    public Set<String> getFavoritesFromUser(String uid){
+        DatabaseReference ref = this.database.getReference().child("beer-here-aacfb").child("users").child(uid).child("favourites");
+
+        return null;
+    }
 
 }

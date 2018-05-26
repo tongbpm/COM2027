@@ -214,7 +214,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 firebaseManager.deregisterCallbackWithManager(BeersActivity.this, mCountry);
                 beers.clear();
 
-                Log.d("Previous Country: " ,mCountry);
+                Log.d("Previous Country: " ,"" +mCountry);
                 mCountry = countriesSpinner.getItemAtPosition(position).toString();
                 mCountry = mCountry.replace(' ', '_');
                 Log.d("New Country: " ,mCountry);

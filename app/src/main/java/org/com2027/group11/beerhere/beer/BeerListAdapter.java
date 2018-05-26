@@ -16,17 +16,23 @@ import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.com2027.group11.beerhere.R;
+import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.StorageHandler;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersViewHolder> {
 
     private static final String TAG = "BEER-HERE" ;
     private LayoutInflater inflater;
+    private FirebaseAuth mAuth; //[REMOVE?]
+
 
     private List<Beer> beers = Collections.emptyList();
 
@@ -38,6 +44,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         inflater = LayoutInflater.from(context);
         this.context = context;
         this.beers = beers;
+        mAuth = FirebaseAuth.getInstance(); //[REMOVE?]
     }
 
     class BeersViewHolder extends RecyclerView.ViewHolder{
@@ -79,6 +86,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
     @Override
     public void onBindViewHolder(final BeersViewHolder holder, final int position) {
         final Beer beer = beers.get(position);
+        final boolean isFavourite;
 
         holder.tvRank.setText(String.valueOf(position+1));
         Log.i("beer-here", "attempting to set beer adapter value bitmap");
@@ -90,10 +98,21 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
         StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
 
+        FirebaseUser user = mAuth.getCurrentUser(); //change to make this current user [CHANGE]
 
-        final boolean isFavorite = true; //[CHANGE] actually look up if true or not in user favs array
+        String s = user.getUid();
 
-        if (isFavorite) {
+
+
+        if (user.favourites.contains(beer.ref)){
+           isFavourite = true;
+        }
+        else {
+            isFavourite = false;
+        }
+
+
+        if (isFavourite) {
             holder.favButton.setImageResource(R.drawable.x45);
         }
         else{
@@ -106,7 +125,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
                 boolean removeBeerFromView = false;
 
-                if (isFavorite) {
+                if (isFavourite) {
                     Toast.makeText(v.getContext(), "You unfaved " + beer.name, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
 
@@ -125,7 +144,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 //[FIREBASE] update beer fav status
                 //add to favs if is remove if isnt
 
-                if (isFavorite){
+                if (isFavourite){
                     removeBeerFromUserFavs(position);
                 }
                 else{
