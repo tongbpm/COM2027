@@ -484,8 +484,6 @@ public class SynchronisationManager {
 
 
     public boolean checkIfUserOldEnough(String country) {
-        Log.d("User age: ", ((Integer)userAge).toString());
-        Log.d("Country age: ", (drinkingAges.get(country).toString()));
         return !(userAge < drinkingAges.get(country));
     }
 
@@ -516,5 +514,13 @@ public class SynchronisationManager {
             Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context successfully deregistered.");
         }
     }
+
+    public void updateUserFavourites(final User user) {
+        Log.d(LOG_TAG, "SyncManager | updateUser | Writing user data to database");
+        //Write User to external database
+        this.database.getReference().child("users").child(user.uid).setValue(user);
+    }
+
+
 
 }

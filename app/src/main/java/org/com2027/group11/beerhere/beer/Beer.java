@@ -1,22 +1,27 @@
 package org.com2027.group11.beerhere.beer;
 
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.database.IgnoreExtraProperties;
-
-import org.com2027.group11.beerhere.R;
-import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+
+        import android.content.Context;
+        import android.graphics.Bitmap;
+        import android.support.annotation.NonNull;
+        import android.support.annotation.Nullable;
+        import android.util.Log;
+        import android.widget.Toast;
+
+        import com.google.firebase.database.DatabaseReference;
+        import com.google.firebase.database.Exclude;
+        import com.google.firebase.database.IgnoreExtraProperties;
+
+        import org.com2027.group11.beerhere.R;
+        import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
+
+        import java.util.ArrayList;
+        import java.util.HashSet;
+        import java.util.Set;
 
 /**
  * Created by alexpotter1 on 27/02/2018.

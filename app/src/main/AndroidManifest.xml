@@ -43,7 +43,10 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".AddBeerActivity"></activity>
 
-
+        <activity
+            android:name=".FavoritesActivity"
+            android:label="@string/title_activity_favourites_page"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

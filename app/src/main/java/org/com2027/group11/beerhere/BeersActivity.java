@@ -1,5 +1,8 @@
 package org.com2027.group11.beerhere;
 
+import android.support.design.widget.NavigationView;
+import android.app.Activity;
+import android.app.Fragment;
 
 import android.content.Intent;
 import android.Manifest;
@@ -21,6 +24,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +49,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
-
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
@@ -101,6 +107,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
+
+        //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
         //this.firebaseManager.getBeersForCountryFromFirebase(this, SynchronisationManager.UNITED_KINGDOM);
 
 
@@ -130,9 +138,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
                     }
                     return false;
-                }
+                });
 
-        );
+
 
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -207,21 +215,23 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 mCountry = countriesSpinner.getItemAtPosition(position).toString();
                 mCountry = mCountry.replace(' ', '_');
 
-                if(firebaseManager.checkIfUserOldEnough(mCountry)) {
-                    Log.d(TAG, "User is old enough");
-                    TextView textView = findViewById(R.id.no_beer_text);
-                    textView.setText(R.string.no_beer);
-                    rvBeers.setEmptyView(textView);
+                if(mCountry != null) {
+                    if (firebaseManager.checkIfUserOldEnough(mCountry)) {
+                        Log.d(TAG, "User is old enough");
+                        TextView textView = findViewById(R.id.no_beer_text);
+                        textView.setText(R.string.no_beer);
+                        rvBeers.setEmptyView(textView);
 
-                    Log.d("New Country: ", mCountry);
+                        Log.d("New Country: ", mCountry);
 
-                    firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
-                }else{
-                    Log.d(TAG, "User is not old enough");
+                        firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+                    } else {
+                        Log.d(TAG, "User is not old enough");
 
-                    TextView textView = findViewById(R.id.no_beer_text);
-                    textView.setText(R.string.underage);
-                    rvBeers.setEmptyView(textView);
+                        TextView textView = findViewById(R.id.no_beer_text);
+                        textView.setText(R.string.underage);
+                        rvBeers.setEmptyView(textView);
+                    }
                 }
 
             }

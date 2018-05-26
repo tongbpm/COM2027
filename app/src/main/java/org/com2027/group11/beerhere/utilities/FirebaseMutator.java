@@ -13,6 +13,4 @@ public interface FirebaseMutator {
     void callbackObjectRemovedFromFirebase(String id);
     void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap);
     void callbackNoChildrenForFirebasePath();
-    void callbackGetUserFromFirebase(User user)
-
 }

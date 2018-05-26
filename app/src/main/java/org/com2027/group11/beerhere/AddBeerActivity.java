@@ -46,6 +46,7 @@ import com.facebook.imagepipeline.image.CloseableImage;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.utilities.StorageHandler;
@@ -133,6 +134,7 @@ public class AddBeerActivity extends AppCompatActivity {
                     if(mBitmap != null) {
                         StorageHandler.saveBitmapForBeerToFirebase(mImageId, mBitmap);
                     }
+                    syncManager.loggedInUser.addSubmission(FirebaseDatabase.getInstance().getReference("countries/"+countryName+"/beers/"+beer.name));
                     finish();
                 }else{
                     Toast.makeText(AddBeerActivity.this, R.string.fill_required_fields, Toast.LENGTH_LONG).show();
