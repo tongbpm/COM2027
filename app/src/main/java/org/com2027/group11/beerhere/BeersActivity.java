@@ -471,4 +471,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         this.adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void callbackNoChildrenForFirebasePath() {
+        rvBeers.setEmptyView(findViewById(R.id.no_beer_text));
+    }
 }

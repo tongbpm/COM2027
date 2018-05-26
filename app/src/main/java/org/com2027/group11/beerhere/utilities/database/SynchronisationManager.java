@@ -204,7 +204,27 @@ public class SynchronisationManager {
                 Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
             }
         };
+
+        // Adding another listener to detect if there's no children, and trigger a callback
+        ValueEventListener valueListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChildren()) {
+                    // No children
+                    for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                        mutator.callbackNoChildrenForFirebasePath();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
         reference.child(countryPath).child("beers").addChildEventListener(listener);
+        reference.child(countryPath).child("beers").addValueEventListener(valueListener);
         this.childListeners.put(mutatorContext, listener);
     }
 
