@@ -476,6 +476,13 @@ public class SynchronisationManager {
         ref.setValue(beer);
     }
 
+    public void updateUser(final User user) {
+        Log.d(LOG_TAG, "SyncManager | updateUser | Writing user data to database");
+        //Write User to external database
+        this.database.getReference().child("users").child(user.uid).setValue(user);
+    }
+
+
     public boolean checkIfUserOldEnough(String country) {
         Log.d("User age: ", ((Integer)userAge).toString());
         Log.d("Country age: ", (drinkingAges.get(country).toString()));
