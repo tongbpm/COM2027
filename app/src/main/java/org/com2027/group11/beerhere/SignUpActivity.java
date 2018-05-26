@@ -23,7 +23,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.views.DatePickerFragment;
-import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -124,11 +123,6 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         Log.d(TAG, "Writing user data to database");
         //Write User to external database
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).setValue(user);
-        //Write user to local database
-        new Thread(() -> {
-            Log.d(TAG, "Writing to local DB. UID:" + user.uid);
-            AppDatabase.getAppDatabase(getApplicationContext()).userDao().insertUser(user);
-        }).start();
     }
 
 }
