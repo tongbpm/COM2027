@@ -1,9 +1,7 @@
 package org.com2027.group11.beerhere;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -21,7 +19,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,17 +43,12 @@ import com.google.firebase.auth.FirebaseUser;
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
 
-import org.com2027.group11.beerhere.user.User;
-import org.com2027.group11.beerhere.user.UserDao;
-import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 import org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView;
-import org.w3c.dom.Text;
 
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.io.IOException;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

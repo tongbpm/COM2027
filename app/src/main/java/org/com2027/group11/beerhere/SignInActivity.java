@@ -22,8 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.user.User;
-import org.com2027.group11.beerhere.user.UserDao;
-import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -90,7 +88,6 @@ public class SignInActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
                             Log.d(TAG, "User has logged in before");
-                            new AsyncGetUser(mContext).execute(mAuth.getCurrentUser().getUid());
                             Intent beerIntent = new Intent(SignInActivity.this, BeersActivity.class);
                             startActivity(beerIntent);
                         } else {
@@ -127,30 +124,4 @@ public class SignInActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
-     private class AsyncGetUser extends AsyncTask<String, Void, User> {
-            private Context context;
-
-            public AsyncGetUser(Context context) {
-                this.context = context;
-            }
-
-            @Override
-            protected User doInBackground(String... strings) {
-                User user;
-                AppDatabase database = AppDatabase.getAppDatabase(context);
-                UserDao userDao = database.userDao();
-                Log.d(TAG, "Async Task first arg: " + strings[0]);
-                user = userDao.findByID(strings[0]);
-                return user;
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                Log.d(TAG, "Async Execution Finished");
-            }
-
-        }
-
-    }
+}
