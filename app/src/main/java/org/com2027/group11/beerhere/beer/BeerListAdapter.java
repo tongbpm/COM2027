@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.StorageHandler;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -99,8 +100,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
         StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
 
-        User user = null; //change to make this current user [CHANGE]
-
+       User user = SynchronisationManager.getInstance().loggedInUser;
 
         if (user.favourites.contains(beer.ref)){
            isFavourite = true;

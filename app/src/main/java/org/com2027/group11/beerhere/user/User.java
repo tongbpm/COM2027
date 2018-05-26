@@ -33,6 +33,7 @@ public class User {
     public Date dateOfBirth;
     public String country;
 
+    public Set<DatabaseReference> submissions = new HashSet<>();
     public Set<DatabaseReference> favourites = new HashSet<>();
 
     @Exclude
@@ -48,6 +49,11 @@ public class User {
         this.dateOfBirth = dateOfBirth;
         this.country = country;
         this.favourites = favourites;
+    }
+
+    public void addSubmission(DatabaseReference dbRef){
+        submissions.add(dbRef);
+        updateFirebase();
     }
 
     /**
@@ -70,7 +76,7 @@ public class User {
     }
 
     private void updateFirebase(){
-        SynchronisationManager.getInstance().updateUserFavourites(this.ref, this.uid, this.favourites);
+        SynchronisationManager.getInstance().updateUserFavourites(this);
     }
 
 }

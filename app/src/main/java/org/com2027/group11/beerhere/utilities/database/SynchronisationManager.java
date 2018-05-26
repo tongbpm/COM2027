@@ -511,10 +511,10 @@ public class SynchronisationManager {
         }
     }
 
-    public void updateUserFavourites(DatabaseReference ref, String uid, Set<DatabaseReference> favourites ){
-        //make sure path is correct so it doesnt fuck shit up
-        ref.child("favourites").setValue(favourites);
-
+    public void updateUserFavourites(final User user) {
+        Log.d(LOG_TAG, "SyncManager | updateUser | Writing user data to database");
+        //Write User to external database
+        this.database.getReference().child("users").child(user.uid).setValue(user);
     }
 
 
