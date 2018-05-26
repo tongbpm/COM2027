@@ -316,9 +316,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             case R.id.nav_home:
                 return super.onOptionsItemSelected(item);
 
-            case R.id.nav_submissions:
+          //  case R.id.nav_submissions:
 
-                return true;
+         //       return true;
 
             case R.id.nav_favourites:
 
