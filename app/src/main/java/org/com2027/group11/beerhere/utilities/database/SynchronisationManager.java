@@ -137,19 +137,25 @@ public class SynchronisationManager {
     }
 
     public void getLoggedInUser() {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/"+uid);
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                loggedInUser = dataSnapshot.getValue(User.class);
-            }
+        Log.d(LOG_TAG, "SyncManager | getLoggedInUser | getting user uid");
+        try {
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/"+ uid);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    loggedInUser = dataSnapshot.getValue(User.class);
+                    Log.i(LOG_TAG, "SyncManager | getLoggedInUser | got user!");
+                }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, databaseError.getDetails());
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(LOG_TAG, databaseError.getDetails());
+                }
+            });
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Firebase user UID is null!");
+        }
 
     }
 
@@ -359,39 +365,48 @@ public class SynchronisationManager {
         });
     }
 
-    public void getBeersAtReferences(final Set<DatabaseReference> references) {
+    public void getBeersAtReferences(final Set<String> referenceStrings) {
 
         Set<Beer> beers = new HashSet<>();
 
-        for (DatabaseReference reference : references) {
+        // Make sure it was actually set...
+        if (referenceStrings != null) {
+            for (String referenceStr : referenceStrings) {
 
-            reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    beers.add(dataSnapshot.getValue(Beer.class));
+                this.database.getReference().child(referenceStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Obtained data snapshot with key " + dataSnapshot.getKey());
+                        beers.add(dataSnapshot.getValue(Beer.class));
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Firebase RDB read cancelled!");
+                    }
+                });
+            }
+
+            // Delegate to new thread to not block UI thread
+            new Thread(() -> {
+                while (beers.size() != referenceStrings.size()) {
+                    try {
+                        synchronized (this) {
+                            wait(200);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Firebase RDB read cancelled!");
+                for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                    Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Attempting to callback");
+                    mutator.callbackGetBeersForReferenceList(beers);
                 }
-            });
+            }
+            ).start();
         }
 
-        new Thread(() -> {
-               while (beers.size() != references.size()) {
-                   try {
-                       wait();
-                   } catch (InterruptedException e) {
-                       e.printStackTrace();
-                   }
-               }
-
-               for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
-                   mutator.callbackGetBeersForReferenceList(beers);
-               }
-            }
-        ).start();
     }
 
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {

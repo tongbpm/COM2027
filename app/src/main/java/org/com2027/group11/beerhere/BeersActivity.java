@@ -429,6 +429,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             }
         }
         this.adapter.notifyDataSetChanged();
+
+        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
     }
 
     @Override
