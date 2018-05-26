@@ -1,16 +1,11 @@
 package org.com2027.group11.beerhere.utilities.database;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,19 +14,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
 
-import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -56,9 +47,9 @@ public class SynchronisationManager {
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
 
-    private Gson gson = new Gson();
-
     private final int IMAGE_REQUEST = 71;
+
+    private int userAge = 0;
 
     // Path enumerations for adding data to Firebase storage
     // Android doesn't like Enum structures, so use this for better performance
@@ -99,6 +90,8 @@ public class SynchronisationManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Path {}
 
+    private Map<String, Integer> drinkingAges = new HashMap<>();
+
     private Map<String, String> firebasePaths = new HashMap<String, String>() {
         {
             put("beer", "beers");
@@ -136,6 +129,8 @@ public class SynchronisationManager {
 
     protected SynchronisationManager() {
         Iterator iter = this.firebasePaths.entrySet().iterator();
+        getUserAgeFromDatabase();
+        populateAges();
         this.registeredCallbacks = new HashMap<FirebaseMutator, String>();
         this.childListeners = new HashMap<FirebaseMutator, ChildEventListener>();
     }
@@ -147,7 +142,73 @@ public class SynchronisationManager {
         return instance;
     }
 
+    private void populateAges(){
+        final int[] age = {-1};
+        for( Map.Entry<String, String> refPath : this.firebasePaths.entrySet()){
+                if(refPath.getValue().contains("countries")){
+                    DatabaseReference reference = this.database.getReference(refPath.getValue()).child("age");
+                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            age[0] = (int) dataSnapshot.getValue();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(LOG_TAG,databaseError.getDetails());
+                        }
+                    });
+                    drinkingAges.put(refPath.getKey(), age[0]);
+                }
+        }
+    }
+
+    private void getUserAgeFromDatabase() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        DatabaseReference ref = this.database.getReference("users/"+uid+"/age/dateOfBirth");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Date dateOfBirth = (Date) dataSnapshot.getValue();
+
+                Calendar dob = Calendar.getInstance();
+                dob.setTime(dateOfBirth);
+
+                Calendar now = Calendar.getInstance();
+
+                try {
+                    if (dob.after(now)) {
+                        throw new IllegalArgumentException("Cannot be born in the future");
+                    }
+                    int years = now.get(Calendar.YEAR)-dob.get(Calendar.YEAR);
+                    int currMonth = now.get(Calendar.MONTH);
+                    int dobMonth = dob.get(Calendar.MONTH);
+                    if(dobMonth > currMonth){
+                        years--;
+                    }else if(dobMonth == currMonth){
+                        int currDay = now.get(Calendar.DAY_OF_MONTH);
+                        int dobDay = dob.get(Calendar.DAY_OF_MONTH);
+                        if (dobDay > currDay) {
+                            years--;
+                        }
+                        SynchronisationManager.this.userAge = years;
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG,databaseError.getDetails());
+
+            }
+        });
+    }
+
+
     private void beginListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Path String country) {
+
         DatabaseReference reference = this.database.getReference();
 
         String countryPath = this.firebasePaths.get(country);
@@ -376,12 +437,16 @@ public class SynchronisationManager {
         ref.setValue(beer);
     }
 
+    public boolean checkIfUserOldEnough(String country) {
+        return !(userAge < drinkingAges.get(country));
+    }
+
     /**
      * Call this before using the manager so it can keep track of where to send updated objects,
      * as it operates asynchronously.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Path String country) {
+    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Path String country)  {
         if (this.registeredCallbacks.containsKey(mutatorContext)) {
             Log.w(LOG_TAG, "SyncManager | registerCallback | Mutator context already exists in callback");
         } else {
@@ -390,6 +455,7 @@ public class SynchronisationManager {
             Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context registered successfully.");
         }
     }
+
 
     /**
      * Call this if a class implementing the callback FirebaseMutator interface is no longer active.
