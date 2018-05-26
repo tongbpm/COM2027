@@ -1,5 +1,6 @@
 package org.com2027.group11.beerhere;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -18,15 +19,18 @@ import android.widget.ListView;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
+import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-public class FavoritesActivity extends AppCompatActivity {
+public class FavoritesActivity extends AppCompatActivity implements FirebaseMutator {
 
     private RecyclerView rvFavBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
+    private List<Beer> beers = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,19 +83,29 @@ public class FavoritesActivity extends AppCompatActivity {
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvFavBeers = findViewById(R.id.rvFav_beers);
-        adapter = new BeerListAdapter(this, getBeers());
+        adapter = new BeerListAdapter(this, this.beers);
         rvFavBeers.setAdapter(adapter);
         rvFavBeers.setLayoutManager(new LinearLayoutManager(this));
     }
 
 
+    /*
+      Mandatory override methods for FirebaseMutator iface
+     */
 
-    private List<Beer> getBeers() {
-        List<Beer> beers = new ArrayList<>();
-
-
-
-        return beers;
+    @Override
+    public void callbackGetBeersForReferenceList(Set<Beer> beers) {
+        if (beers != null) {
+            this.beers = new ArrayList<>(beers);
+        }
+        this.adapter.notifyDataSetChanged();
     }
+
+    @Override
+    public void callbackGetObjectsFromFirebase(List<Object> objects) {}
+    public void callbackObjectChangedFromFirebase(Object object) {}
+    public void callbackObjectRemovedFromFirebase(String id) {}
+    public void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap) {}
+    public void callbackNoChildrenForFirebasePath() {}
 
 }
