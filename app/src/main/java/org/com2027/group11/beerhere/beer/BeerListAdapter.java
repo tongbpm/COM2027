@@ -89,19 +89,17 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         final boolean isFavourite;
 
         holder.tvRank.setText(String.valueOf(position+1));
-        Log.i("beer-here", "attempting to set beer adapter value bitmap");
+
         if(beer.beerImageBmp != null) {
             holder.imBeer.setImageBitmap(beer.beerImageBmp);
         }
+
         holder.tvBeerTitle.setText(beer.name);
         holder.tvRating.setText(String.valueOf(beer.upvotes - beer.downvotes));
 
         StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
 
-        FirebaseUser user = mAuth.getCurrentUser(); //change to make this current user [CHANGE]
-
-        String s = user.getUid();
-
+        User user = null; //change to make this current user [CHANGE]
 
 
         if (user.favourites.contains(beer.ref)){
@@ -144,12 +142,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 //[FIREBASE] update beer fav status
                 //add to favs if is remove if isnt
 
-                if (isFavourite){
-                    removeBeerFromUserFavs(position);
-                }
-                else{
-                    addBeerToUserFavs(position);
-                }
+               user.updateFavourites(beer.ref);
 
                 //only true if unfaved beer while in favs view
                 if (removeBeerFromView){

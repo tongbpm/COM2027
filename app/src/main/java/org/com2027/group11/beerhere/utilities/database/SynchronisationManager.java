@@ -23,8 +23,10 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
+import org.com2027.group11.beerhere.FavoritesActivity;
 import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
 import java.io.ByteArrayInputStream;
@@ -424,15 +426,12 @@ public class SynchronisationManager {
         }
     }
 
-    /**
-     * CAll this to get favorites from user with set UID
-     * @param uid
-     */
+    public void updateUserFavourites(DatabaseReference ref, String uid, Set<DatabaseReference> favourites ){
+        //make sure path is correct so it doesnt fuck shit up
+        ref.child("favourites").setValue(favourites);
 
-    public Set<String> getFavoritesFromUser(String uid){
-        DatabaseReference ref = this.database.getReference().child("beer-here-aacfb").child("users").child(uid).child("favourites");
-
-        return null;
     }
+
+
 
 }
