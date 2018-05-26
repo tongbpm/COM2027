@@ -36,7 +36,6 @@ import android.widget.Toast;
 
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.login.LoginManager;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +45,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 
 import org.com2027.group11.beerhere.beer.Beer;
@@ -74,11 +72,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private DrawerLayout mDrawerLayout;
     private NavigationView headerLayout;
     private FirebaseAuth mAuth;
-
-
-
-
-
 
     private static final String LOG_TAG = "BEER-HERE";
     private FusedLocationProviderClient mFusedLocationClient;
@@ -208,10 +201,18 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         countriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+
+                firebaseManager.deregisterCallbackWithManager(BeersActivity.this, mCountry);
+                beers.clear();
+
+                Log.d("Previous Country: " ,mCountry);
                 mCountry = countriesSpinner.getItemAtPosition(position).toString();
                 mCountry = mCountry.replace(' ', '_');
+                Log.d("New Country: " ,mCountry);
 
-                // Add code for firebase etc here.
+                firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+
             }
 
             @Override
@@ -393,34 +394,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     public void callbackGetObjectsFromFirebase(List<Object> objects) {
         Log.e(LOG_TAG, String.valueOf(objects.size()));
         for (Object object : objects) {
-            Log.i(LOG_TAG, "Beer obtained! " + ((Beer) object).name);
+            Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
             if (!(this.beers.contains(object))) {
                 Log.e(LOG_TAG, String.valueOf(objects.size()));
                 this.beers.add((Beer) object);
 
-                if (((Beer) object).imageID != null) {
-                    //this.firebaseManager.getBitmapForBeerFromFirebase(((Beer) object).imageID);
-                } else {
+                if (((Beer) object).imageID == null) {
                     Log.e(LOG_TAG, "Beer Image ID is null!");
                 }
             }
         }
-        this.adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void callbackGetObjectsForCountryFromFirebase(List<Object> objects) {
-        Log.i(LOG_TAG, "BeersActivity | received firebase update of type List<Object> of size: " + String.valueOf(objects.size()));
-
-        // For now, simply wipe the Beers list and populate it again with the revised list
-        this.beers = new Vector<>();
-
-        // Have to convert every Object into Beer separately; can't downcast the entire list
-        for (Object object : objects) {
-            Beer beer = (Beer) object;
-            this.beers.add(beer);
-        }
-
         this.adapter.notifyDataSetChanged();
     }
 
@@ -487,5 +470,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         }
 
         this.adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void callbackNoChildrenForFirebasePath() {
+        rvBeers.setEmptyView(findViewById(R.id.no_beer_text));
     }
 }
