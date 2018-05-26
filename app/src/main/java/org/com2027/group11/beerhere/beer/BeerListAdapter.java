@@ -85,12 +85,12 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
 
     @Override
-    public void onBindViewHolder(final BeersViewHolder holder) {
-        int position = holder.getLayoutPosition()
-        final Beer beer = beers.get(position);
+    public void onBindViewHolder(final BeersViewHolder holder, int position) {
+        int pos = holder.getAdapterPosition();
+        final Beer beer = beers.get(pos);
         final boolean isFavourite;
 
-        holder.tvRank.setText(String.valueOf(position+1));
+        holder.tvRank.setText(String.valueOf(pos+1));
 
         if(beer.beerImageBmp != null) {
             holder.imBeer.setImageBitmap(beer.beerImageBmp);
@@ -148,7 +148,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                 //only true if unfaved beer while in favs view
                 if (removeBeerFromView){
                         //removes the beer from the list
-                        removeBeerFromFavListView(position);
+                        removeBeerFromFavListView(pos);
                 }
 
 
