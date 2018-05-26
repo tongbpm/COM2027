@@ -38,6 +38,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private DatabaseReference mDatabase;
+
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private Context mContext;
@@ -47,10 +48,13 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 
         setContentView(R.layout.activity_main);
+        FirebaseHandler.getmDatabase();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
         mContext = this.getApplicationContext();
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -65,6 +69,7 @@ public class SignInActivity extends AppCompatActivity {
                             .setAvailableProviders(providers)
                             .setIsSmartLockEnabled(true)
                             .build(),
+
                     RC_SIGN_IN);
         }else{
             Intent intent = new Intent(this, BeersActivity.class);
@@ -77,6 +82,8 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
 
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);

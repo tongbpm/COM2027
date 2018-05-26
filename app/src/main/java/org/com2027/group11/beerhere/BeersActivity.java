@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.IntentCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -29,15 +31,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.login.LoginManager;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 
 import org.com2027.group11.beerhere.beer.Beer;
@@ -67,7 +75,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
     private Vector<Beer> beers = new Vector<Beer>();
     private DrawerLayout mDrawerLayout;
     private NavigationView headerLayout;
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseAuth mAuth;
+
+
 
 
 
@@ -84,6 +94,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         setContentView(R.layout.activity_beers_page);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         headerLayout = findViewById(R.id.nav_view);
+        mAuth = FirebaseAuth.getInstance();
 
         Fresco.initialize(this);
 
@@ -190,6 +201,24 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         }
     }
 
+    private void signOut() {
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        //Snackbar.make(findViewById(R.id.main_layout), "Logged out.s", Snackbar.LENGTH_SHORT).show();
+                        Toast.makeText(BeersActivity.this, "You have been signed out", Toast.LENGTH_SHORT).show();
+
+                        Intent signOut = new Intent(BeersActivity.this, SignInActivity.class);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+                        //finish();
+                        startActivity(signOut);
+                    }
+                });
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -268,7 +297,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 return true;
 
             case R.id.nav_signout:
-                mAuth.signOut();
+                signOut();
                 break;
 
 
