@@ -110,7 +110,7 @@ public class SignUpActivity extends AppCompatActivity implements DatePickerFragm
         Log.d(TAG, "Form submitted");
         mCountryString = mCountry.getSelectedItem().toString();
         FirebaseUser firebaseUser = mAuth.getCurrentUser();
-        User user = new User(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), mDateOfBirthValue, mCountryString, null);
+        User user = new User(firebaseUser.getUid(), firebaseUser.getDisplayName(), firebaseUser.getEmail(), mDateOfBirthValue, mCountryString);
 
         writeNewUser(user);
         //Now user is signed up send them to beers page

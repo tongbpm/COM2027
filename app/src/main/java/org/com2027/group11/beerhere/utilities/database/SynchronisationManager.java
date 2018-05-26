@@ -478,8 +478,6 @@ public class SynchronisationManager {
     }
 
     public boolean checkIfUserOldEnough(String country) {
-        Log.d("User age: ", ((Integer)userAge).toString());
-        Log.d("Country age: ", (drinkingAges.get(country).toString()));
         return !(userAge < drinkingAges.get(country));
     }
 

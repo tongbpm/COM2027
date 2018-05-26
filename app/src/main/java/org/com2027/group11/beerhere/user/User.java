@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 
@@ -33,8 +34,10 @@ public class User {
     public Date dateOfBirth;
     public String country;
 
-    public Set<DatabaseReference> submissions = new HashSet<>();
-    public Set<DatabaseReference> favourites = new HashSet<>();
+    @Exclude
+    public Set<String> submissions = new HashSet<>();
+    @Exclude
+    public Set<String> favourites = new HashSet<>();
 
     @Exclude
     public DatabaseReference ref;
@@ -42,19 +45,37 @@ public class User {
     public User() {
     }
 
-    public User(String uid, String name, String email, Date dateOfBirth, String country, Set<DatabaseReference> favourites) {
+    public User(String uid, String name, String email, Date dateOfBirth, String country) {
         this.uid = uid;
         this.name = name;
         this.email = email;
         this.dateOfBirth = dateOfBirth;
         this.country = country;
         this.favourites = favourites;
+        this.submissions = submissions;
     }
 
     public void addSubmission(DatabaseReference dbRef){
-        submissions.add(dbRef);
+        submissions.add((dbRef.toString().substring(FirebaseDatabase.getInstance().getReference().toString().length()-1)).replaceFirst("m", ""));
         updateFirebase();
     }
+
+    public ArrayList<String>getSubmissions(){
+        return new ArrayList<String>(submissions);
+    }
+
+    public ArrayList<String>getFavourites(){
+        return new ArrayList<String>(favourites);
+    }
+
+    public void setSubmissions(ArrayList<String> submissions){
+        this.submissions = new HashSet<String>(submissions);
+    }
+
+    public void setFavourites(ArrayList<String> favourites){
+        this.favourites = new HashSet<String>(favourites);
+    }
+
 
     /**
      * adds to user favourites if not already in favourites
@@ -63,12 +84,15 @@ public class User {
      * @param beerRef
      */
     public void updateFavourites(DatabaseReference beerRef){
-        if(favourites.contains(beerRef)){
+        String favourite = (beerRef.toString().substring(FirebaseDatabase.getInstance().getReference().toString().length()-1)).replaceFirst("m", "");
+        if(favourites.contains(favourite)){
             //already in favorites -> so being removed
-            favourites.remove(beerRef);
+            favourites.remove(favourite);
+
         }else{
             //not in favoritesSoBeingAdded
-            favourites.add(beerRef);
+            favourites.add(favourite);
+
         }
 
         updateFirebase();
