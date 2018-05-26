@@ -1,6 +1,9 @@
 package org.com2027.group11.beerhere.utilities;
 
 import android.graphics.Bitmap;
+
+import org.com2027.group11.beerhere.user.User;
+
 import java.util.List;
 
 public interface FirebaseMutator {
@@ -10,5 +13,6 @@ public interface FirebaseMutator {
     void callbackObjectRemovedFromFirebase(String id);
     void callbackGetBitmapForBeerFromFirebase(String beerName, Bitmap bitmap);
     void callbackNoChildrenForFirebasePath();
+    void callbackGetUserFromFirebase(User user)
 
 }
