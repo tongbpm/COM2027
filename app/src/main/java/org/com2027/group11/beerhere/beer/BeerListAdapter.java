@@ -85,7 +85,8 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
 
     @Override
-    public void onBindViewHolder(final BeersViewHolder holder, final int position) {
+    public void onBindViewHolder(final BeersViewHolder holder) {
+        int position = holder.getLayoutPosition()
         final Beer beer = beers.get(position);
         final boolean isFavourite;
 
