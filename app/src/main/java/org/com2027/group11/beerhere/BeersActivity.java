@@ -15,14 +15,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.IntentCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -98,6 +95,8 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         mAuth = FirebaseAuth.getInstance();
 
         Fresco.initialize(this);
+
+        firebaseManager.getLoggedInUser();
 
         //sets the toolbar as the action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -210,16 +209,28 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-
                 firebaseManager.deregisterCallbackWithManager(BeersActivity.this, mCountry);
                 beers.clear();
 
-                Log.d("Previous Country: " ,"" +mCountry);
                 mCountry = countriesSpinner.getItemAtPosition(position).toString();
                 mCountry = mCountry.replace(' ', '_');
-                Log.d("New Country: " ,mCountry);
 
-                firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+                if(firebaseManager.checkIfUserOldEnough(mCountry)) {
+                    Log.d(TAG, "User is old enough");
+                    TextView textView = findViewById(R.id.no_beer_text);
+                    textView.setText(R.string.no_beer);
+                    rvBeers.setEmptyView(textView);
+
+                    Log.d("New Country: ", mCountry);
+
+                    firebaseManager.registerCallbackWithManager(BeersActivity.this, mCountry);
+                }else{
+                    Log.d(TAG, "User is not old enough");
+
+                    TextView textView = findViewById(R.id.no_beer_text);
+                    textView.setText(R.string.underage);
+                    rvBeers.setEmptyView(textView);
+                }
 
             }
 
@@ -293,14 +304,15 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 mCountry = address.get(0).getCountryName();
 
                 // If the user denies location permissions, just load beers of a default country
-                if (mCountry == null) {
-                    this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
-                } else {
-                    int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
-                    countriesSpinner.setSelection(spinnerCountryPosition);
-                    mCountry = mCountry.replace(' ', '_');
-                    this.firebaseManager.registerCallbackWithManager(this, mCountry);
-                }
+                    if (mCountry == null) {
+                        this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
+                    } else {
+                        int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
+                        countriesSpinner.setSelection(spinnerCountryPosition);
+                        mCountry = mCountry.replace(' ', '_');
+                        this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                    }
+
 
                 Log.d(TAG, "BeersActivity | updateCountryShown | Country = " + mCountry);
             }
@@ -343,6 +355,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 return true;
 
             case R.id.nav_signout:
+                SynchronisationManager.getInstance().loggedInUser = null;
                 signOut();
                 break;
 
