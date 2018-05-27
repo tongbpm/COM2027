@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -45,6 +46,8 @@ public class SubmissionActivity extends AppCompatActivity implements FirebaseMut
         setContentView(R.layout.activity_submission);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
+
+        this.firebaseManager.registerCallbackWithManager(this, null);
 
         //setSupportActionBar(toolbar);
         //adds the navigation drawer "hamburger" button
@@ -86,9 +89,9 @@ public class SubmissionActivity extends AppCompatActivity implements FirebaseMut
                     }
                     return false;
                 });
-
-
         displaySubmission();
+
+        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.submissions);
 
     }
 
@@ -156,9 +159,18 @@ public class SubmissionActivity extends AppCompatActivity implements FirebaseMut
 
     @Override
     public void callbackGetBeersForReferenceList(Set<Beer> beers) {
+        Log.i("BEER-HERE", "BEER callback called for SUBMISSIONS");
         if (beers != null) {
-            this.beers = new ArrayList<>(beers);
+            this.beers.clear();
+            this.beers.addAll(beers);
+            Log.i("BEER-HERE", "size of submissions: " + this.beers.size());
         }
-        this.adapter.notifyDataSetChanged();
+
+        SubmissionActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }

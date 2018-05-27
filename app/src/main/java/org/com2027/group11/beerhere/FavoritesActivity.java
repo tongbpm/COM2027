@@ -67,10 +67,6 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-
-
-        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
-
         //Navigation for Navigation Drawer
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
@@ -113,11 +109,13 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
 
         displayfavBeers();
 
+        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
+
     }
 
     public void displayfavBeers(){
         ViewGroup view = findViewById(android.R.id.content);
-        getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
+        getLayoutInflater().inflate(R.layout.content_favorites, view, false);
         rvFavBeers = findViewById(R.id.rvFav_beers);
         rvFavBeers.setEmptyView(findViewById(R.id.no_favorites_text));
         adapter = new BeerListAdapter(this, this.beers);
@@ -163,7 +161,8 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
     public void callbackGetBeersForReferenceList(Set<Beer> beers) {
         Log.i("BEER-HERE", "CALLBACK BEERS FAV ACTIVITY");
         if (beers != null) {
-            this.beers = new ArrayList<>(beers);
+            this.beers.clear();
+            this.beers.addAll(beers);
         }
 
         FavoritesActivity.this.runOnUiThread(new Runnable() {
