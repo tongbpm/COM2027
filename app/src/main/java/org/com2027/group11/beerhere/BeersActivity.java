@@ -99,6 +99,10 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
 
         firebaseManager.getLoggedInUser();
 
+        if (!userPermitedLocation()){
+            requestUsersLocationPermission();
+        }
+
         //sets the toolbar as the action bar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -187,10 +191,6 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         country = (TextView) findViewById(R.id.country);
-
-        if (!userPermitedLocation()){
-            requestUsersLocationPermission();
-        }
 
         if(userPermitedLocation()){
             Log.i(LOG_TAG, "User has allowed Beer Here to use device's location");

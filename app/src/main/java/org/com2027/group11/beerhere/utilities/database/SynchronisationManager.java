@@ -492,7 +492,7 @@ public class SynchronisationManager {
 
 
     public boolean checkIfUserOldEnough(String country) {
-        if(country.length() > 0) {
+        if(country.length() > 0 && drinkingAges.get(country) != null) {
             return !(userAge < drinkingAges.get(country));
         }
         return false;

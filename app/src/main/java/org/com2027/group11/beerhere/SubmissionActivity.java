@@ -52,7 +52,6 @@ public class SubmissionActivity extends AppCompatActivity implements FirebaseMut
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
-        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.submissions);
 
         //Navigation for Navigation Drawer
         NavigationView navigationView = findViewById(R.id.nav_view);
