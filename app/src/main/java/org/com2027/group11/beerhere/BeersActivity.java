@@ -309,20 +309,18 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
         try {
             address = geocoder.getFromLocation(lat, lng, 5);
             if(address.size()>0){
-                mCountry = address.get(0).getCountryName();
+                countriesSpinner.setSelection(countriesList.indexOf(address.get(0).getCountryName()));
 
+                mCountry = countriesSpinner.getSelectedItem().toString();
                 // If the user denies location permissions, just load beers of a default country
                     if (mCountry == null) {
                         this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
                     } else {
-                        int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
-                        if(countriesList.contains(mCountry)) {
-                            mCountry = mCountry.replace(' ', '_');
-                            Log.d(TAG, mCountry);
-                            this.firebaseManager.registerCallbackWithManager(this, mCountry);
-                        }else{
 
-                        }
+                        mCountry = mCountry.replace(' ', '_');
+                        Log.d(TAG, mCountry);
+                        this.firebaseManager.registerCallbackWithManager(this, mCountry);
+
                     }
 
 
