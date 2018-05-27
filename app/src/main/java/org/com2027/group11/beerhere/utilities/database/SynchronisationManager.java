@@ -381,7 +381,9 @@ public class SynchronisationManager {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Obtained data snapshot with key " + dataSnapshot.getKey());
-                        beers.add(dataSnapshot.getValue(Beer.class));
+                        Beer beer = dataSnapshot.getValue(Beer.class);
+                        beer.ref = SynchronisationManager.this.database.getReference().child(referenceStr);
+                        beers.add(beer);
                     }
 
                     @Override

@@ -40,7 +40,7 @@ public class Beer {
     public String imageID;
     public long timeCreated;
     public int hotness;
-    @Exclude
+
     public DatabaseReference ref;
     @Exclude
     public Set<String> upvoters = new HashSet<>();
