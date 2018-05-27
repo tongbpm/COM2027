@@ -58,6 +58,10 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
         rvFavBeers = (EmptyRecyclerView) findViewById(R.id.rvFav_beers);
 
+        TextView tv = (TextView) findViewById(R.id.no_favorites_text);
+        tv.setText(R.string.no_beer);
+        rvFavBeers.setEmptyView(tv);
+
         setSupportActionBar(toolbar);
         //adds the navigation drawer "hamburger" button
         ActionBar actionbar = getSupportActionBar();
