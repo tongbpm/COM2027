@@ -101,11 +101,6 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
             this.beers = new ArrayList<>(beers);
         }
 
-        if (this.beers.size() == 0) {
-            TextView tv = (TextView) findViewById(R.id.no_favorites_text);
-            tv.setText(R.string.no_beer);
-            this.rvFavBeers.setEmptyView(tv);
-        }
         this.adapter.notifyDataSetChanged();
     }
 
