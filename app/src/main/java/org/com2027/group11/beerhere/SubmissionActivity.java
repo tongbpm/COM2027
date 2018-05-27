@@ -46,7 +46,7 @@ public class SubmissionActivity extends AppCompatActivity implements FirebaseMut
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
 
-      //  setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
         //adds the navigation drawer "hamburger" button
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);

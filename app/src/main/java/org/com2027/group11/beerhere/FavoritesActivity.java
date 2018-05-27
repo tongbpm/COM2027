@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,13 +55,11 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
 
+        this.firebaseManager.registerCallbackWithManager(this, null);
+
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
         rvFavBeers = (EmptyRecyclerView) findViewById(R.id.rvFav_beers);
-
-        TextView tv = (TextView) findViewById(R.id.no_favorites_text);
-        tv.setText(R.string.no_beer);
-        rvFavBeers.setEmptyView(tv);
 
         setSupportActionBar(toolbar);
         //adds the navigation drawer "hamburger" button
@@ -120,6 +119,7 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         ViewGroup view = findViewById(android.R.id.content);
         getLayoutInflater().inflate(R.layout.content_beers_page, view, false);
         rvFavBeers = findViewById(R.id.rvFav_beers);
+        rvFavBeers.setEmptyView(findViewById(R.id.no_favorites_text));
         adapter = new BeerListAdapter(this, this.beers);
         rvFavBeers.setAdapter(adapter);
         rvFavBeers.setLayoutManager(new LinearLayoutManager(this));
@@ -161,11 +161,18 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
 
     @Override
     public void callbackGetBeersForReferenceList(Set<Beer> beers) {
+        Log.i("BEER-HERE", "CALLBACK BEERS FAV ACTIVITY");
         if (beers != null) {
             this.beers = new ArrayList<>(beers);
         }
 
-        this.adapter.notifyDataSetChanged();
+        FavoritesActivity.this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("BEER-HERE", "Adapter updated on Fav UI thread");
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

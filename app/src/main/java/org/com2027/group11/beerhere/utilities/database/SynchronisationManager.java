@@ -231,95 +231,99 @@ public class SynchronisationManager {
     }
 
 
-    private void beginListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Path String country) {
+    private void beginListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Nullable @Path String country) {
 
         DatabaseReference reference = this.database.getReference();
 
-        String countryPath = this.firebasePaths.get(country);
-        Log.i(LOG_TAG, "SyncManager | beginListening | creating ChildEventListener");
-        ChildEventListener listener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        if (country != null) {
+            String countryPath = this.firebasePaths.get(country);
+            Log.i(LOG_TAG, "SyncManager | beginListening | creating ChildEventListener");
+            ChildEventListener listener = new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                List<Object> returnedObjects = new ArrayList<Object>();
+                    List<Object> returnedObjects = new ArrayList<Object>();
 
-                Log.i(LOG_TAG, "SyncManager | CEListener | New child added to Firebase with key " + dataSnapshot.getKey());
-                HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
-                Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
-                returnedObjects.add(beer);
-
-                for (FirebaseMutator mut : registeredCallbacks.keySet()) {
-                    mut.callbackGetObjectsFromFirebase(returnedObjects);
-                    Log.d(LOG_TAG, "Callback got objects for country");
-                }
-                beer.ref = reference.child(countryPath).child("beers").child(beer.name);
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                for (FirebaseMutator mut : registeredCallbacks.keySet()) {
-                    Log.e(LOG_TAG, dataSnapshot.getKey());
+                    Log.i(LOG_TAG, "SyncManager | CEListener | New child added to Firebase with key " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
+                    returnedObjects.add(beer);
 
-                    Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
-
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
+                        mut.callbackGetObjectsFromFirebase(returnedObjects);
+                        Log.d(LOG_TAG, "Callback got objects for country");
+                    }
                     beer.ref = reference.child(countryPath).child("beers").child(beer.name);
 
-                    mut.callbackObjectChangedFromFirebase(beer);
                 }
-            }
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                for (FirebaseMutator mut : registeredCallbacks.keySet()) {
-                    mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
-                    Log.i(LOG_TAG, "SyncManager | CEListener | Child removed from Firebase with key " + dataSnapshot.getKey());
-                }
-            }
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
+                        Log.e(LOG_TAG, dataSnapshot.getKey());
+                        HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
+                        Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
 
-            }
+                        beer.ref = reference.child(countryPath).child("beers").child(beer.name);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
-            }
-        };
-
-        // Adding another listener to detect if there's no children, and trigger a callback
-        ValueEventListener valueListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.hasChildren()) {
-                    // No children
-                    for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
-                        mutator.callbackNoChildrenForFirebasePath();
+                        mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
+                        mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Child removed from Firebase with key " + dataSnapshot.getKey());
+                    }
+                }
 
-            }
-        };
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-        reference.child(countryPath).child("beers").addChildEventListener(listener);
-        reference.child(countryPath).child("beers").addValueEventListener(valueListener);
-        this.childListeners.put(mutatorContext, listener);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
+                }
+            };
+
+            // Adding another listener to detect if there's no children, and trigger a callback
+            ValueEventListener valueListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.hasChildren()) {
+                        // No children
+                        for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                            mutator.callbackNoChildrenForFirebasePath();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            reference.child(countryPath).child("beers").addChildEventListener(listener);
+            reference.child(countryPath).child("beers").addValueEventListener(valueListener);
+            this.childListeners.put(mutatorContext, listener);
+        }
     }
 
-    private void stopListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Path String country) {
+    private void stopListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Nullable @Path String country) {
         DatabaseReference reference = this.database.getReference();
 
-        String countryPath = this.firebasePaths.get(country);
-        ChildEventListener listener = this.childListeners.get(mutatorContext);
-        Log.i(LOG_TAG, "SyncManager | stopListening | removing Listener");
-        reference.child(countryPath).child("beers").removeEventListener(listener);
+        if (country != null) {
+            String countryPath = this.firebasePaths.get(country);
+            ChildEventListener listener = this.childListeners.get(mutatorContext);
+            Log.i(LOG_TAG, "SyncManager | stopListening | removing Listener");
+            reference.child(countryPath).child("beers").removeEventListener(listener);
+        }
     }
 
     @Nullable
@@ -503,7 +507,7 @@ public class SynchronisationManager {
      * as it operates asynchronously.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Path String country)  {
+    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Nullable @Path String country)  {
         if (this.registeredCallbacks.containsKey(mutatorContext)) {
             Log.w(LOG_TAG, "SyncManager | registerCallback | Mutator context already exists in callback");
         } else {
@@ -518,7 +522,7 @@ public class SynchronisationManager {
      * Call this if a class implementing the callback FirebaseMutator interface is no longer active.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Path String country) {
+    public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Nullable @Path String country) {
         if (this.registeredCallbacks.containsKey(mutatorContext)) {
             this.registeredCallbacks.remove(mutatorContext);
             this.stopListeningForCountryBeersFirebase(mutatorContext, country);
