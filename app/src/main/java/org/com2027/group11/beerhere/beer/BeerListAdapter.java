@@ -88,8 +88,10 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
     public void onBindViewHolder(final BeersViewHolder holder, int position) {
         int pos = holder.getAdapterPosition();
         final Beer beer = beers.get(pos);
-        final boolean isFavourite;
-        boolean tempBool = false;
+        boolean isFavourite = false;
+        String beerCountry = beer.ref.toString().split("/")[4];
+        String beerName = beer.ref.toString().split("/")[6];
+
 
         holder.tvRank.setText(String.valueOf(pos+1));
 
@@ -102,54 +104,56 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
         StorageHandler.setImageFromFirebase(beer.imageID, holder.imBeer);
 
-       User user = SynchronisationManager.getInstance().loggedInUser;
-
-       String beerCountry = beer.ref.toString().split("/")[4];
-       String beerName = beer.ref.toString().split("/")[6];
-
-        Log.i(TAG, "onBindViewHolder: " + "beerRef" + beer.ref);
-        Log.i(TAG, "onBindViewHolder: " + "beerCountry" + beerCountry);
-        Log.i(TAG, "onBindViewHolder: beerName " + beerName );
+        User user = SynchronisationManager.getInstance().loggedInUser;
 
         for (String s: user.favourites){
 
             String favCountry = beer.ref.toString().split("/")[4];
             String favName = beer.ref.toString().split("/")[6];
 
-            Log.i(TAG, "just fav whole string " + s);
-            Log.i(TAG, "onBindViewHolder: " + "favCountry" + favCountry);
-            Log.i(TAG, "onBindViewHolder: favName " + favName );
-
-
-            if (s.split("/")[2].equals(beerCountry)
-                    && s.split("/")[4].equals(beerName)){
-                tempBool = true;
+            if (favCountry.equals(beerCountry)
+                    && favName.equals(beerName)){
+                isFavourite = true;
             }
         }
 
-       if (tempBool){
-           isFavourite = true;
-       }
-        else {
-            isFavourite = false;
-        }
-
-
-        if (isFavourite) {
+        if (isFavourite){
             holder.favButton.setImageResource(R.drawable.x45);
+
         }
-        else{
+        else {
             holder.favButton.setImageResource(R.drawable.star45);
         }
+
 
         holder.favButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
 
+                boolean isFavourite = false;
                 boolean removeBeerFromView = false;
+                String beerCountry = beer.ref.toString().split("/")[4];
+                String beerName = beer.ref.toString().split("/")[6];
 
 
-                if (isFavourite) {
+                for (String s: user.favourites){
+
+                    Log.i(TAG, "onBindViewHolder: beerRef" + beer.ref);
+
+                    String favCountry = beer.ref.toString().split("/")[4];
+                    String favName = beer.ref.toString().split("/")[6];
+
+                    Log.i(TAG, "onBindViewHolder qwer: " + beerCountry + "," + favCountry + ";" + beerName + "," + favName);
+
+                    if (favCountry.equals(beerCountry)
+                            && favName.equals(beerName)){
+                        isFavourite = true;
+                    }
+                }
+
+                if (isFavourite){
+
+                    holder.favButton.setImageResource(R.drawable.x45);
                     Toast.makeText(v.getContext(), "You unfaved " + beer.name, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
 
@@ -161,10 +165,14 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
                     }
 
                 }
-                else{
+                else {
+                    holder.favButton.setImageResource(R.drawable.star45);
                     Toast.makeText(v.getContext(), "You faved " + beer.name, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.x45);
                 }
+
+
+
 
                 //[FIREBASE] update beer fav status
                 //add to favs if is remove if isnt
