@@ -43,4 +43,5 @@
     <string name="no_beer">This country does not have any beers - submit one!</string>
     <string name="no_favorites">You don\'t have any favorites yet - star one!</string>
     <string name="underage">Error - You are not old enough to drink in this country!</string>
+    <string name="no_submissions">You have not yet submitted any beers.</string>
 </resources>
