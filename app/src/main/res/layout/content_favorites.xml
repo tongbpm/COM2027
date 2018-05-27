@@ -14,15 +14,21 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
+        <org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rvFav_beers"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            >
-        </android.support.v7.widget.RecyclerView>
+            android:layout_marginTop="20dp">
+        </org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/no_favorites_text"
+            android:textSize="24sp"
+            />
 
 
     </LinearLayout>

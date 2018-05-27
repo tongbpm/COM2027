@@ -16,10 +16,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+import org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,7 @@ import java.util.Set;
 
 public class FavoritesActivity extends AppCompatActivity implements FirebaseMutator {
 
-    private RecyclerView rvFavBeers;
+    private EmptyRecyclerView rvFavBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
     private List<Beer> beers = new ArrayList<>();
@@ -37,7 +39,7 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.fav_drawer_layout);
-        rvFavBeers = (RecyclerView) findViewById(R.id.rvFav_beers);
+        rvFavBeers = (EmptyRecyclerView) findViewById(R.id.rvFav_beers);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
 
@@ -97,6 +99,12 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
     public void callbackGetBeersForReferenceList(Set<Beer> beers) {
         if (beers != null) {
             this.beers = new ArrayList<>(beers);
+        }
+
+        if (this.beers.size() == 0) {
+            TextView tv = (TextView) findViewById(R.id.no_favorites_text);
+            tv.setText(R.string.no_beer);
+            this.rvFavBeers.setEmptyView(tv);
         }
         this.adapter.notifyDataSetChanged();
     }
