@@ -316,9 +316,13 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                         this.firebaseManager.registerCallbackWithManager(this, SynchronisationManager.AUSTRIA);
                     } else {
                         int spinnerCountryPosition = countriesSpinnerAddapter.getPosition(mCountry);
-                        countriesSpinner.setSelection(spinnerCountryPosition);
-                        mCountry = mCountry.replace(' ', '_');
-                        this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                        if(countriesList.contains(mCountry)) {
+                            mCountry = mCountry.replace(' ', '_');
+                            Log.d(TAG, mCountry);
+                            this.firebaseManager.registerCallbackWithManager(this, mCountry);
+                        }else{
+
+                        }
                     }
 
 
@@ -415,6 +419,9 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 if (((Beer) object).imageID == null) {
                     Log.e(LOG_TAG, "Beer Image ID is null!");
                 }
+            }else{
+                TextView view = findViewById(R.id.no_beer_text);
+                view.setText(R.string.unsupported_country);
             }
         }
         this.adapter.notifyDataSetChanged();

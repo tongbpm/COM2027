@@ -44,4 +44,5 @@
     <string name="no_favorites">You don\'t have any favorites yet - star one!</string>
     <string name="underage">Error - You are not old enough to drink in this country!</string>
     <string name="no_submissions">You have not yet submitted any beers.</string>
+    <string name="unsupported_country">Beer Here does not yet support your country - please select a country from the drop down.</string>
 </resources>
