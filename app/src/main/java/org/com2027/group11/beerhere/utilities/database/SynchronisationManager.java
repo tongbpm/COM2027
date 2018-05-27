@@ -377,20 +377,24 @@ public class SynchronisationManager {
         if (referenceStrings != null) {
             for (String referenceStr : referenceStrings) {
 
-                this.database.getReference(referenceStr).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Obtained data snapshot with key " + dataSnapshot.getKey());
-                        Beer beer = dataSnapshot.getValue(Beer.class);
-                        beer.ref = SynchronisationManager.this.database.getReference(referenceStr);
-                        beers.add(beer);
-                    }
+                if (referenceStr != null) {
+                    this.database.getReference(referenceStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Obtained data snapshot with key " + dataSnapshot.getKey());
+                            Beer beer = dataSnapshot.getValue(Beer.class);
+                            beer.ref = SynchronisationManager.this.database.getReference(referenceStr);
+                            beers.add(beer);
+                        }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Firebase RDB read cancelled!");
-                    }
-                });
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Firebase RDB read cancelled!");
+                        }
+                    });
+                } else {
+                    Log.e(LOG_TAG, "SyncManager | getBeersAtReferences | reference is null!");
+                }
             }
 
             // Delegate to new thread to not block UI thread
@@ -412,6 +416,7 @@ public class SynchronisationManager {
             }
             ).start();
         }
+
 
     }
 
