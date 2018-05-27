@@ -127,12 +127,16 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                         case R.id.nav_home:
                             return true;
 
-
+                        case R.id.nav_submissions:
+                            startActivity(new Intent(BeersActivity.this, SubmissionActivity.class));
+                            return true;
                         case R.id.nav_favourites:
+                            startActivity(new Intent(BeersActivity.this, FavoritesActivity.class));
 
                             return true;
 
                         case R.id.nav_signout:
+                            SynchronisationManager.getInstance().loggedInUser = null;
                             signOut();
                             return true;
 
@@ -217,6 +221,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 mCountry = mCountry.replace(' ', '_');
 
                 if(mCountry != null) {
+                    Log.d(TAG, mCountry);
                     if (firebaseManager.checkIfUserOldEnough(mCountry)) {
                         Log.d(TAG, "User is old enough");
                         TextView textView = findViewById(R.id.no_beer_text);
@@ -347,23 +352,7 @@ public class BeersActivity extends AppCompatActivity implements FirebaseMutator 
                 mDrawerLayout.openDrawer(GravityCompat.START);
                 //Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show(); Testing if icon works
                 return true;
-
-            case R.id.nav_home:
-                return super.onOptionsItemSelected(item);
-
-
-            case R.id.nav_favourites:
-                Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show();
-
-                return true;
-
-            case R.id.nav_signout:
-                SynchronisationManager.getInstance().loggedInUser = null;
-                signOut();
-                break;
-
-
-        }
+                        }
 
         return super.onOptionsItemSelected(item);
     }

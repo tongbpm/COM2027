@@ -1,7 +1,9 @@
 package org.com2027.group11.beerhere;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -16,6 +18,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
@@ -38,45 +45,57 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.fav_drawer_layout);
-        rvFavBeers = (RecyclerView) findViewById(R.id.rvFav_beers);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-
-        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
-
-
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
         setSupportActionBar(toolbar);
-
+        //adds the navigation drawer "hamburger" button
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeAsUpIndicator(R.drawable.ic_menu);
+        rvFavBeers = (RecyclerView) findViewById(R.id.rvFav_beers);
 
 
-        NavigationView navigationView = findViewById(R.id.fav_nav_view);
+        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
+
+        //Navigation for Navigation Drawer
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(
-                new NavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+
+                menuItem -> {
                     //set item as selected to persist highlight
                     menuItem.setChecked(true);
                     //close drawer when item is tapped
-                    mDrawerLayout.closeDrawers();
+                    //mDrawerLayout.closeDrawers();
+                    //update the UI based on menuItem chosen
+                    switch (menuItem.getItemId()) {
+                        case R.id.nav_home:
+                            startActivity(new Intent(FavoritesActivity.this, BeersActivity.class));
+                            return true;
+
+                        case R.id.nav_submissions:
+
+                            startActivity(new Intent(FavoritesActivity.this, SubmissionActivity.class));
+                            return true;
+                        case R.id.nav_favourites:
+
+                            return true;
+
+                        case R.id.nav_signout:
+                            SynchronisationManager.getInstance().loggedInUser = null;
+                            signOut();
+                            return true;
+
+
+                    }
                     return false;
-                }}
-        );
+                });
 
 
 
         //Get the list of fav beers with intent
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+
+
 
         displayfavBeers();
 
@@ -89,6 +108,35 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         adapter = new BeerListAdapter(this, this.beers);
         rvFavBeers.setAdapter(adapter);
         rvFavBeers.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+
+
+    private void signOut() {
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(FavoritesActivity.this, "You have been signed out", Toast.LENGTH_SHORT).show();
+                        Intent signOut = new Intent(FavoritesActivity.this, SignInActivity.class);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        signOut.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
+                        //finish();
+                        startActivity(signOut);
+                    }
+                });
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                //Toast.makeText(this, "Clicked", Toast.LENGTH_SHORT).show(); Testing if icon works
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 
