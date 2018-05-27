@@ -2,27 +2,33 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <group android:checkableBehavior="single">
+    <group
+        android:id="@+id/menu_top"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
             android:icon="@android:drawable/ic_menu_today"
             android:title="@string/nav_home" />
         <item
             android:id="@+id/nav_submissions"
-            android:icon="@android:drawable/ic_input_get"
+            android:icon="@drawable/ic_beer"
             android:title="@string/nav_submissions" />
         <item
             android:id="@+id/nav_favourites"
             android:icon="@android:drawable/btn_star_big_on"
             android:title="@string/nav_favourites" />
-        <item
-            android:id="@+id/nav_countries"
-            android:icon="@android:drawable/ic_menu_mapmode"
-            android:title="@string/nav_countries" />
+    </group>
+    <group
+        android:id="@+id/menu_bottom"
+        android:checkableBehavior="single">
+
         <item
             android:id="@+id/nav_signout"
             android:icon="@android:drawable/ic_menu_revert"
             android:title="@string/sign_out" />
     </group>
+
+
+
 
 </menu>

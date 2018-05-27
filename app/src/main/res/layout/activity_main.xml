@@ -8,13 +8,6 @@
     android:orientation="vertical"
     tools:context="org.com2027.group11.beerhere.BeersActivity">
 
-    <TextView
-        android:id="@+id/main_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/title_text" />
-
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

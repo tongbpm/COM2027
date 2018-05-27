@@ -1,41 +1,34 @@
 package org.com2027.group11.beerhere.utilities.database;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringDef;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
 
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.google.gson.Gson;
 
-import org.com2027.group11.beerhere.R;
 import org.com2027.group11.beerhere.beer.Beer;
+import org.com2027.group11.beerhere.user.User;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by apotter on 23/04/18.
@@ -47,14 +40,17 @@ public class SynchronisationManager {
     private static SynchronisationManager instance = null;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private final FirebaseStorage storage = FirebaseStorage.getInstance();
-    private List<FirebaseMutator> registeredCallbacks;
+
+    // Associate a listener with a country
+    private Map<FirebaseMutator, String> registeredCallbacks;
+    private Map<FirebaseMutator, ChildEventListener> childListeners;
 
     private List<DatabaseReference> references = new ArrayList<DatabaseReference>();
-    private List<String> images = new ArrayList<>();
-
-    private Gson gson = new Gson();
 
     private final int IMAGE_REQUEST = 71;
+
+    private int userAge = 0;
+    public User loggedInUser =  null;
 
     // Path enumerations for adding data to Firebase storage
     // Android doesn't like Enum structures, so use this for better performance
@@ -95,6 +91,8 @@ public class SynchronisationManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Path {}
 
+    private Map<String, Integer> drinkingAges = new HashMap<>();
+
     private Map<String, String> firebasePaths = new HashMap<String, String>() {
         {
             put("beer", "beers");
@@ -132,60 +130,153 @@ public class SynchronisationManager {
 
     protected SynchronisationManager() {
         Iterator iter = this.firebasePaths.entrySet().iterator();
-        this.registeredCallbacks = new ArrayList<FirebaseMutator>();
+        getUserAgeFromDatabase();
+        populateAges();
+        this.registeredCallbacks = new HashMap<FirebaseMutator, String>();
+        this.childListeners = new HashMap<FirebaseMutator, ChildEventListener>();
+    }
 
-        // Update images
-        this.getImageReferenceArray();
+    public void getLoggedInUser() {
+        Log.d(LOG_TAG, "SyncManager | getLoggedInUser | getting user uid");
+        try {
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users/"+ uid);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    loggedInUser = dataSnapshot.getValue(User.class);
+                    Log.i(LOG_TAG, "SyncManager | getLoggedInUser | got user!");
+                }
 
-        while (iter.hasNext()) {
-            Map.Entry pair = (Map.Entry) iter.next();
-            this.references.add(this.database.getReference(pair.getValue().toString()));
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e(LOG_TAG, databaseError.getDetails());
+                }
+            });
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Firebase user UID is null!");
         }
 
-        for (DatabaseReference databaseReference : this.references) {
-            databaseReference.child("beers").addChildEventListener(new ChildEventListener() {
+    }
+
+    public static SynchronisationManager getInstance() {
+        if (instance == null) {
+            instance = new SynchronisationManager();
+        }
+        return instance;
+    }
+
+    private void populateAges(){
+        for( Map.Entry<String, String> refPath : this.firebasePaths.entrySet()){
+                if(refPath.getValue().contains("countries")){
+                    DatabaseReference reference = this.database.getReference(refPath.getValue()).child("age");
+                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.d(LOG_TAG, reference.toString());
+                            Log.d("DRINKING AGE:", (dataSnapshot.getValue(Integer.class).toString()));
+                            drinkingAges.put(refPath.getKey(), dataSnapshot.getValue(Integer.class));
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(LOG_TAG,databaseError.getDetails());
+                        }
+                    });
+                }
+        }
+    }
+
+    private void getUserAgeFromDatabase() {
+        String uid = FirebaseAuth.getInstance().getUid();
+        DatabaseReference ref = this.database.getReference("users/"+uid+"/dateOfBirth");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Date dateOfBirth = dataSnapshot.getValue(Date.class);
+
+                Calendar dob = Calendar.getInstance();
+                dob.setTime(dateOfBirth);
+
+                Calendar now = Calendar.getInstance();
+
+                try {
+                    if (dob.after(now)) {
+                        throw new IllegalArgumentException("Cannot be born in the future");
+                    }
+                    int years = now.get(Calendar.YEAR)-dob.get(Calendar.YEAR);
+                    int currMonth = now.get(Calendar.MONTH);
+                    int dobMonth = dob.get(Calendar.MONTH);
+                    if(dobMonth > currMonth){
+                        years--;
+                    }else if(dobMonth == currMonth){
+                        int currDay = now.get(Calendar.DAY_OF_MONTH);
+                        int dobDay = dob.get(Calendar.DAY_OF_MONTH);
+                        if (dobDay > currDay) {
+                            years--;
+                        }
+                    }
+                    SynchronisationManager.this.userAge = years;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(LOG_TAG,databaseError.getDetails());
+
+            }
+        });
+    }
+
+
+    private void beginListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Nullable @Path String country) {
+
+        DatabaseReference reference = this.database.getReference();
+
+        if (country != null) {
+            String countryPath = this.firebasePaths.get(country);
+            Log.i(LOG_TAG, "SyncManager | beginListening | creating ChildEventListener");
+            ChildEventListener listener = new ChildEventListener() {
                 @Override
                 public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                    // Update images
-                    getImageReferenceArray();
-
                     List<Object> returnedObjects = new ArrayList<Object>();
 
-                    Log.e(LOG_TAG, "added: " + dataSnapshot.getKey());
+                    Log.i(LOG_TAG, "SyncManager | CEListener | New child added to Firebase with key " + dataSnapshot.getKey());
                     HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                     Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
                     returnedObjects.add(beer);
 
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         mut.callbackGetObjectsFromFirebase(returnedObjects);
+                        Log.d(LOG_TAG, "Callback got objects for country");
                     }
+                    beer.ref = reference.child(countryPath).child("beers").child(beer.name);
 
-                    getBitmapForBeerFromFirebase(beer.name);
                 }
 
                 @Override
                 public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-                    // Update images
-                    getImageReferenceArray();
-
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         Log.e(LOG_TAG, dataSnapshot.getKey());
                         HashMap<String, Object> map = (HashMap<String, Object>) dataSnapshot.getValue();
                         Beer beer = createBeerFromFirebaseMap(map, dataSnapshot.getKey());
-                        Log.e(LOG_TAG, "OBJECT CHANGED");
 
-                        getBitmapForBeerFromFirebase(beer.name);
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Existing child modified on Firebase with key " + dataSnapshot.getKey());
+
+                        beer.ref = reference.child(countryPath).child("beers").child(beer.name);
+
                         mut.callbackObjectChangedFromFirebase(beer);
                     }
                 }
 
                 @Override
                 public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    for (FirebaseMutator mut : registeredCallbacks) {
+                    for (FirebaseMutator mut : registeredCallbacks.keySet()) {
                         mut.callbackObjectRemovedFromFirebase(dataSnapshot.getKey());
-                        Log.e(LOG_TAG, "OBJECT REMOVED");
+                        Log.i(LOG_TAG, "SyncManager | CEListener | Child removed from Firebase with key " + dataSnapshot.getKey());
                     }
                 }
 
@@ -196,17 +287,43 @@ public class SynchronisationManager {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Log.e(LOG_TAG, "Error: Firebase access event cancelled!");
+                    Log.wtf(LOG_TAG, "SyncManager | CEListener | Firebase RDB read cancelled with error " + databaseError.getDetails());
                 }
-            });
+            };
+
+            // Adding another listener to detect if there's no children, and trigger a callback
+            ValueEventListener valueListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.hasChildren()) {
+                        // No children
+                        for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                            mutator.callbackNoChildrenForFirebasePath();
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            reference.child(countryPath).child("beers").addChildEventListener(listener);
+            reference.child(countryPath).child("beers").addValueEventListener(valueListener);
+            this.childListeners.put(mutatorContext, listener);
         }
     }
 
-    public static SynchronisationManager getInstance() {
-        if (instance == null) {
-            instance = new SynchronisationManager();
+    private void stopListeningForCountryBeersFirebase(FirebaseMutator mutatorContext, @Nullable @Path String country) {
+        DatabaseReference reference = this.database.getReference();
+
+        if (country != null) {
+            String countryPath = this.firebasePaths.get(country);
+            ChildEventListener listener = this.childListeners.get(mutatorContext);
+            Log.i(LOG_TAG, "SyncManager | stopListening | removing Listener");
+            reference.child(countryPath).child("beers").removeEventListener(listener);
         }
-        return instance;
     }
 
     @Nullable
@@ -252,111 +369,52 @@ public class SynchronisationManager {
         });
     }
 
-    public void getObjectsForTypeFromFirebase(@Nullable FirebaseMutator firebaseAccessorContext, @NonNull @Path String type) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
-        if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
-        }
+    public void getBeersAtReferences(final Set<String> referenceStrings) {
 
-        DatabaseReference ref = this.database.getReference().child(path).child("beers");
-        Log.e(LOG_TAG, ref.getKey());
-        ref.orderByChild("rating").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(LOG_TAG, dataSnapshot.getKey());
-                Log.e(LOG_TAG, "Count " + dataSnapshot.getChildrenCount());
+        Set<Beer> beers = new HashSet<>();
 
-                List<Object> returnedObjects = new ArrayList<Object>();
-                getImageReferenceArray();
+        // Make sure it was actually set...
+        if (referenceStrings != null) {
+            for (String referenceStr : referenceStrings) {
 
-                for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                    HashMap<String, Object> map = (HashMap<String, Object>) childSnapshot.getValue();
-                    Beer beer = createBeerFromFirebaseMap(map, childSnapshot.getKey());
+                if (referenceStr != null) {
+                    this.database.getReference(referenceStr).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Obtained data snapshot with key " + dataSnapshot.getKey());
+                            Beer beer = dataSnapshot.getValue(Beer.class);
+                            beer.ref = SynchronisationManager.this.database.getReference(referenceStr);
+                            beers.add(beer);
+                        }
 
-
-                    returnedObjects.add(beer);
-                }
-
-                if (firebaseAccessorContext != null) {
-                    firebaseAccessorContext.callbackGetObjectsFromFirebase(returnedObjects);
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Firebase RDB read cancelled!");
+                        }
+                    });
                 } else {
-                    // Send callback message to all registered clients
-                    for (FirebaseMutator mut : registeredCallbacks) {
-                        mut.callbackGetObjectsFromFirebase(returnedObjects);
+                    Log.e(LOG_TAG, "SyncManager | getBeersAtReferences | reference is null!");
+                }
+            }
+
+            // Delegate to new thread to not block UI thread
+            new Thread(() -> {
+                while (beers.size() != referenceStrings.size()) {
+                    try {
+                        synchronized (this) {
+                            wait(200);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
+
+                for (FirebaseMutator mutator : registeredCallbacks.keySet()) {
+                    Log.e(LOG_TAG,"SyncManager | getBeersAtReferences | Attempting to callback");
+                    mutator.callbackGetBeersForReferenceList(beers);
+                }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, "Read cancelled!");
-            }
-        });
-    }
-
-    public void saveBitmapForBeerToFirebase(@NonNull @Path String type, @NonNull String beerName, @NonNull String imageID, Bitmap bitmap, @NonNull View notificationView) throws NullPointerException {
-        String path = this.searchForFirebasePath(type);
-        if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
-        }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-        byte[] data = baos.toByteArray();
-
-        StorageReference storageReference = this.storage.getReference().child("images");
-        String imgStorageString = type + "-" + beerName + "-" + imageID + ".jpg";
-        StorageReference imageReference = storageReference.child(imgStorageString);
-
-        // Show a notification to the user
-        final Snackbar sbarStart = Snackbar.make(notificationView, R.string.uploading_image, Snackbar.LENGTH_SHORT);
-        sbarStart.show();
-
-        Log.d(LOG_TAG, "Uploading Image");
-        UploadTask task = imageReference.putBytes(data);
-        task.addOnFailureListener(e -> {
-            e.printStackTrace();
-            sbarStart.setText(R.string.uploading_image_failed);
-            sbarStart.show();
-        });
-        task.addOnSuccessListener(taskSnapshot -> {
-            Log.d(LOG_TAG, "Upload Successful");
-            sbarStart.setText(R.string.uploading_image_success);
-            sbarStart.show();
-            images.add(imgStorageString);
-            saveImageReferenceArrayFirebase();
-        });
-
-    }
-
-    public void getBitmapForBeerFromFirebase(@NonNull String beerName) {
-        Log.i(LOG_TAG, "BitmapForBeer method called!");
-
-        StorageReference storageReference = this.storage.getReference().child("images");
-        final long SIZE = 1024 * 1024 * 2;
-
-        // Search for correct URI to download
-        for (String imgPath : this.images) {
-            String[] splitString = imgPath.split("-");
-            Log.i(LOG_TAG, "getBitmapForBeer: Found image for beer: " + beerName);
-
-            // Beer name should be the second value
-            if (splitString[1].equals(beerName)) {
-               StorageReference imageRef = storageReference.child(imgPath);
-
-               imageRef.getBytes(SIZE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                   @Override
-                   public void onSuccess(byte[] bytes) {
-                       ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                       Bitmap bitmap = BitmapFactory.decodeStream(bais);
-                       Log.i(LOG_TAG, "Bitmap value is : " + bitmap.toString());
-
-                       for (FirebaseMutator mut : registeredCallbacks) {
-                           mut.callbackGetBitmapForBeerFromFirebase(splitString[1], bitmap);
-                       }
-                   }
-               });
-            }
+            ).start();
         }
 
 
@@ -365,7 +423,7 @@ public class SynchronisationManager {
     public void deleteObjectByIdFromFirebase(@NonNull @Path String type, String id) throws NullPointerException {
         String path = this.searchForFirebasePath(type);
         if (path == null) {
-            throw new NullPointerException("Firebase database path does not exist.");
+            throw new NullPointerException("SyncManager | deleteObjectById | Firebase database path does not exist.");
         }
 
         DatabaseReference ref = this.database.getReference().getRoot().child(path);
@@ -403,7 +461,7 @@ public class SynchronisationManager {
 
         String image_id;
         try {
-            image_id =  (String)inMap.get("image_id");
+            image_id =  (String) inMap.get("imageID");
         } catch (NullPointerException e) {
             image_id = "";
         }
@@ -415,43 +473,40 @@ public class SynchronisationManager {
             rating = 0;
         }
 
-        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating);
+        Set<String> upvoters;
+        try{
+            upvoters = new HashSet<String>((ArrayList<String>)inMap.get("upvoters"));
+        }catch (NullPointerException e){
+            upvoters = new HashSet<>();
+        }
+
+        Set<String> downvoters;
+        try{
+            downvoters = new HashSet<String>((ArrayList<String>)inMap.get("downvoters"));
+        }catch(NullPointerException e){
+            downvoters = new HashSet<>();
+        }
+
+        Beer beer = new Beer(mapName, image_id, upvotes, downvotes, time_created, hotness, rating, upvoters, downvoters);
         return beer;
     }
 
-    private void saveImageReferenceArrayFirebase() {
-        DatabaseReference ref = this.database.getReference().child("image_paths");
-
-        ref.setValue(this.gson.toJson(this.images), new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                Log.i(LOG_TAG, "Image references saved successfully!");
-            }
-        });
+    public void updateBeer(DatabaseReference ref, Beer beer){
+        ref.setValue(beer);
     }
 
-    private void getImageReferenceArray() {
-        DatabaseReference ref = this.database.getReference().child("image_paths");
+    public void updateUser(final User user) {
+        Log.d(LOG_TAG, "SyncManager | updateUser | Writing user data to database");
+        //Write User to external database
+        this.database.getReference().child("users").child(user.uid).setValue(user);
+    }
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String json = (String) dataSnapshot.getValue();
-                Log.i(LOG_TAG, "raw path: " + json);
-                images = gson.fromJson(json, List.class);
 
-                if (images == null) {
-                    images = new ArrayList<String>();
-                }
-
-                Log.i(LOG_TAG, "Images updated!");
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(LOG_TAG, "Firebase Image reference reading failed");
-            }
-        });
+    public boolean checkIfUserOldEnough(String country) {
+        if(country.length() > 0 && drinkingAges.get(country) != null) {
+            return !(userAge < drinkingAges.get(country));
+        }
+        return false;
     }
 
     /**
@@ -459,24 +514,35 @@ public class SynchronisationManager {
      * as it operates asynchronously.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
-        if (this.registeredCallbacks.contains(mutatorContext)) {
-            Log.i(LOG_TAG, "Mutator context already exists in callback");
+    public void registerCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Nullable @Path String country)  {
+        if (this.registeredCallbacks.containsKey(mutatorContext)) {
+            Log.w(LOG_TAG, "SyncManager | registerCallback | Mutator context already exists in callback");
         } else {
-            Log.i(LOG_TAG, "Mutator context registered with SyncManager");
-            this.registeredCallbacks.add(mutatorContext);
+            this.registeredCallbacks.put(mutatorContext, country);
+            this.beginListeningForCountryBeersFirebase(mutatorContext, country);
+            Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context registered successfully.");
         }
     }
+
 
     /**
      * Call this if a class implementing the callback FirebaseMutator interface is no longer active.
      * @param mutatorContext - the reflective type of the class implementing the FirebaseMutator interface to receive callbacks
      */
-    public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext) {
-        if (this.registeredCallbacks.contains(mutatorContext)) {
-            Log.i(LOG_TAG, "Mutator context deregistered with SyncManager");
+    public void deregisterCallbackWithManager(@NonNull FirebaseMutator mutatorContext, @Nullable @Path String country) {
+        if (this.registeredCallbacks.containsKey(mutatorContext)) {
             this.registeredCallbacks.remove(mutatorContext);
+            this.stopListeningForCountryBeersFirebase(mutatorContext, country);
+            Log.i(LOG_TAG, "SyncManager | registerCallback | Mutator context successfully deregistered.");
         }
     }
+
+    public void updateUserFavourites(final User user) {
+        Log.d(LOG_TAG, "SyncManager | updateUser | Writing user data to database");
+        //Write User to external database
+        this.database.getReference().child("users").child(user.uid).setValue(user);
+    }
+
+
 
 }

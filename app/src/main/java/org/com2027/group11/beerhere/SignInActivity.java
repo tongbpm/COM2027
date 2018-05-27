@@ -9,8 +9,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import android.widget.TextView;
-
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -23,10 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.com2027.group11.beerhere.beer.Beer;
-import org.com2027.group11.beerhere.beer.BeerAdapter;
 import org.com2027.group11.beerhere.user.User;
-import org.com2027.group11.beerhere.user.UserDao;
-import org.com2027.group11.beerhere.utilities.database.AppDatabase;
 
 import java.util.Arrays;
 import java.util.List;
@@ -41,6 +36,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
 
     private DatabaseReference mDatabase;
+
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private Context mContext;
@@ -50,10 +46,13 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
 
         setContentView(R.layout.activity_main);
+        FirebaseHandler.getmDatabase();
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
         mContext = this.getApplicationContext();
 
         List<AuthUI.IdpConfig> providers = Arrays.asList(
@@ -68,10 +67,12 @@ public class SignInActivity extends AppCompatActivity {
                             .setAvailableProviders(providers)
                             .setIsSmartLockEnabled(true)
                             .build(),
+
                     RC_SIGN_IN);
         }else{
             Intent intent = new Intent(this, BeersActivity.class);
             startActivity(intent);
+            finish();
         }
 
     }
@@ -80,6 +81,8 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
 
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
@@ -93,14 +96,13 @@ public class SignInActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.hasChild(mAuth.getCurrentUser().getUid())) {
                             Log.d(TAG, "User has logged in before");
-                            new AsyncGetUser(mContext).execute(mAuth.getCurrentUser().getUid());
                             Intent beerIntent = new Intent(SignInActivity.this, BeersActivity.class);
                             startActivity(beerIntent);
+                            finish();
                         } else {
                             //Sends user to activity with sign up form
                             Intent signUpIntent = new Intent(SignInActivity.this, SignUpActivity.class);
                             startActivity(signUpIntent);
-
                         }
                     }
 
@@ -130,30 +132,4 @@ public class SignInActivity extends AppCompatActivity {
                     }
                 });
     }
-
-
-     private class AsyncGetUser extends AsyncTask<String, Void, User> {
-            private Context context;
-
-            public AsyncGetUser(Context context) {
-                this.context = context;
-            }
-
-            @Override
-            protected User doInBackground(String... strings) {
-                User user;
-                AppDatabase database = AppDatabase.getAppDatabase(context);
-                UserDao userDao = database.userDao();
-                Log.d(TAG, "Async Task first arg: " + strings[0]);
-                user = userDao.findByID(strings[0]);
-                return user;
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                Log.d(TAG, "Async Execution Finished");
-            }
-
-        }
-
-    }
+}

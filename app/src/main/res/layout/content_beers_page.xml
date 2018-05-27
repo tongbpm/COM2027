@@ -13,15 +13,49 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.RecyclerView
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="20dip"
+            android:layout_marginTop="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/country"
+                android:textSize="20dip"
+                android:text="Country: "
+                >
+            </TextView>
+
+            <Spinner
+                android:id="@+id/spinner_countries"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20dip"/>
+
+        </LinearLayout>
+
+
+
+        <org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rv_beers"
             android:layout_marginRight="20dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            >
-        </android.support.v7.widget.RecyclerView>
+            android:layout_marginTop="20dp"/>
+
+        <TextView
+            android:id="@+id/no_beer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_text"
+            android:text="@string/no_beer"
+            android:textAlignment="center"/>
+
+
 
 
     </LinearLayout>

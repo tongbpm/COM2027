@@ -1,4 +1,4 @@
-package org.com2027.group11.beerhere.utilities;
+package org.com2027.group11.beerhere.utilities.views;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
