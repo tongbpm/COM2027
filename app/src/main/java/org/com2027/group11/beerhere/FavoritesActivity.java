@@ -18,16 +18,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+<<<<<<< HEAD
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+=======
+import android.widget.TextView;
+>>>>>>> dev
 
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+<<<<<<< HEAD
 import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
+=======
+import org.com2027.group11.beerhere.utilities.views.EmptyRecyclerView;
+>>>>>>> dev
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +43,7 @@ import java.util.Set;
 
 public class FavoritesActivity extends AppCompatActivity implements FirebaseMutator {
 
-    private RecyclerView rvFavBeers;
+    private EmptyRecyclerView rvFavBeers;
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
     private List<Beer> beers = new ArrayList<>();
@@ -45,8 +53,17 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorites);
+<<<<<<< HEAD
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.fav_toolbar);
+=======
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.fav_drawer_layout);
+        rvFavBeers = (EmptyRecyclerView) findViewById(R.id.rvFav_beers);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+
+
+>>>>>>> dev
         setSupportActionBar(toolbar);
         //adds the navigation drawer "hamburger" button
         ActionBar actionbar = getSupportActionBar();
@@ -149,6 +166,7 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         if (beers != null) {
             this.beers = new ArrayList<>(beers);
         }
+
         this.adapter.notifyDataSetChanged();
     }
 

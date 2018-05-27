@@ -6,7 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class RecyclerViewEmptySupport extends RecyclerView{
+public class RecyclerViewEmptySupport extends RecyclerView {
     private View emptyView;
 
     private  AdapterDataObserver emptyObserver = new AdapterDataObserver() {
