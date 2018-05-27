@@ -107,6 +107,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
        String beerCountry = beer.ref.toString().split("/")[4];
        String beerName = beer.ref.toString().split("/")[6];
 
+        Log.i(TAG, "onBindViewHolder: " + "beerRef" + beer.ref);
         Log.i(TAG, "onBindViewHolder: " + "beerCountry" + beerCountry);
         Log.i(TAG, "onBindViewHolder: beerName " + beerName );
 
@@ -115,6 +116,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
             String favCountry = beer.ref.toString().split("/")[4];
             String favName = beer.ref.toString().split("/")[6];
 
+            Log.i(TAG, "just fav whole string " + s);
             Log.i(TAG, "onBindViewHolder: " + "favCountry" + favCountry);
             Log.i(TAG, "onBindViewHolder: favName " + favName );
 
