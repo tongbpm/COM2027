@@ -89,6 +89,7 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
         int pos = holder.getAdapterPosition();
         final Beer beer = beers.get(pos);
         final boolean isFavourite;
+        boolean tempBool = false;
 
         holder.tvRank.setText(String.valueOf(pos+1));
 
@@ -103,9 +104,30 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
        User user = SynchronisationManager.getInstance().loggedInUser;
 
-        if (user.favourites.contains(beer.ref)){
-           isFavourite = true;
+       String beerCountry = beer.ref.toString().split("/")[4];
+       String beerName = beer.ref.toString().split("/")[6];
+
+        Log.i(TAG, "onBindViewHolder: " + "beerCountry" + beerCountry);
+        Log.i(TAG, "onBindViewHolder: beerName " + beerName );
+
+        for (String s: user.favourites){
+
+            String favCountry = beer.ref.toString().split("/")[4];
+            String favName = beer.ref.toString().split("/")[6];
+
+            Log.i(TAG, "onBindViewHolder: " + "favCountry" + favCountry);
+            Log.i(TAG, "onBindViewHolder: favName " + favName );
+
+
+            if (s.split("/")[2].equals(beerCountry)
+                    && s.split("/")[4].equals(beerName)){
+                tempBool = true;
+            }
         }
+
+       if (tempBool){
+           isFavourite = true;
+       }
         else {
             isFavourite = false;
         }
@@ -124,12 +146,14 @@ public class BeerListAdapter extends RecyclerView.Adapter<BeerListAdapter.BeersV
 
                 boolean removeBeerFromView = false;
 
+
                 if (isFavourite) {
                     Toast.makeText(v.getContext(), "You unfaved " + beer.name, Toast.LENGTH_SHORT).show();
                     holder.favButton.setImageResource(R.drawable.star45);
 
                     //context is : org.com2027.group11.beerhere.FavoritesActivity@fd74857
                     //if the current activity is favourites
+                    Log.i(TAG, "onClick: " + this.getClass().getName());
                     if (v.getContext().toString().substring(29,32).equals("Fav")){
                         removeBeerFromView = true;
                     }
