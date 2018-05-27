@@ -20,6 +20,7 @@ import android.widget.ListView;
 import org.com2027.group11.beerhere.beer.Beer;
 import org.com2027.group11.beerhere.beer.BeerListAdapter;
 import org.com2027.group11.beerhere.utilities.FirebaseMutator;
+import org.com2027.group11.beerhere.utilities.database.SynchronisationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
     private BeerListAdapter adapter;
     private DrawerLayout mDrawerLayout;
     private List<Beer> beers = new ArrayList<>();
+    private SynchronisationManager firebaseManager = SynchronisationManager.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class FavoritesActivity extends AppCompatActivity implements FirebaseMuta
         rvFavBeers = (RecyclerView) findViewById(R.id.rvFav_beers);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
+        this.firebaseManager.getBeersAtReferences(this.firebaseManager.loggedInUser.favourites);
 
 
         setSupportActionBar(toolbar);
